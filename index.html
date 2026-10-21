@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schwedisch – Präpositionen</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Schwedisch">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0a1f33">
+<style>
+  :root {
+    --blue-0: #0a1f33; --blue-1: #0f2a47; --blue-2: #163a5c; --blue-3: #1f4c73;
+    --line: #6fa8cf; --line-dim: rgba(191,227,245,0.28); --ink: #eaf4fb; --ink-dim: #8fb4d1;
+    --amber: #f2b705; --amber-dim: rgba(242,183,5,0.16);
+    --mono: ui-monospace, 'SF Mono', Menlo, 'Courier New', monospace;
+    --sans: system-ui, -apple-system, 'Helvetica Neue', -apple-system, sans-serif;
+  }
+  :root:not([data-theme="light"]) { --blue-0:#0a1f33; --blue-1:#0f2a47; --blue-2:#163a5c; --ink:#eaf4fb; --ink-dim:#8fb4d1; --amber:#f2b705; --line:#6fa8cf; --line-dim:rgba(191,227,245,0.28); }
+  :root[data-theme="dark"] { --blue-0:#0a1f33; --blue-1:#0f2a47; --blue-2:#163a5c; --ink:#eaf4fb; --ink-dim:#8fb4d1; --amber:#f2b705; --line:#6fa8cf; --line-dim:rgba(191,227,245,0.28); }
+
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--blue-0);
+    background-image: linear-gradient(var(--line-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-dim) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrap { max-width: 640px; width: 100%; margin: 0 auto; padding: 28px 0 50px; }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 4px;
+  }
+  .sub {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+    margin-bottom: 22px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--blue-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill { height: 100%; background: var(--amber); transition: width 0.25s; }
+  .counter { text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--line); margin-bottom: 20px; }
+
+  .card-stage { perspective: 1600px; }
+  .card {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1), height 0.2s ease;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border: 1.5px solid var(--line);
+    background: var(--blue-1);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .face.back { transform: rotateY(180deg); }
+
+  .face::before {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--line);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .face.front::before { content: "FRAGE"; }
+  .face.back::before { content: "ANTWORT"; color: var(--amber); }
+
+  .question-text {
+    font-size: 1.18rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-bottom: auto;
+  }
+  .examples-de {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line-dim);
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+  .examples-de .lbl {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--line);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .answer-word {
+    font-family: var(--mono);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  .rule-text {
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .gloss { font-size: 0.8em; font-weight: 400; opacity: 0.75; margin-top: 8px; }
+  .examples-sv {
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    border-top: 1px dashed rgba(242,183,5,0.3);
+    padding-top: 14px;
+    margin-top: auto;
+  }
+  .examples-sv .lbl {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .examples-sv .sv-line { color: var(--ink); }
+  .examples-sv .de-line { color: var(--ink-dim); font-size: 0.8rem; }
+  .examples-sv .pair { margin-bottom: 8px; }
+  .page-ref {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--line);
+    margin-top: 10px;
+  }
+
+  .flip-hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--line);
+    margin-top: 14px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  button {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  button:hover { background: var(--blue-2); }
+  button:disabled { opacity: 0.35; cursor: default; }
+  button.primary { border-color: var(--amber); color: var(--amber); }
+
+  .shuffle-row { text-align: center; margin-top: 14px; }
+  .save-note { font-size: 0.72rem; opacity: 0.7; margin-top: 8px; min-height: 1em; }
+  .shuffle-row button { font-size: 0.75rem; padding: 6px 12px; }
+  body { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); -webkit-text-size-adjust: 100%; }
+  #importScreen { position: fixed; inset: 0; z-index: 50; background: var(--blue-0); color: var(--ink); display: none; align-items: center; justify-content: center; padding: 24px; padding-top: calc(24px + env(safe-area-inset-top, 0px)); text-align: center; }
+  #importScreen .box { max-width: 420px; }
+  #importScreen h2 { margin: 0 0 12px; }
+  #importScreen p { line-height: 1.5; opacity: .9; }
+  #importScreen .pick { display: inline-block; margin-top: 14px; padding: 12px 20px; border-radius: 10px; background: var(--amber); color: var(--blue-0); font-weight: 600; cursor: pointer; }
+  #importScreen .msg { margin-top: 12px; color: #ffb4a8; min-height: 1.2em; font-size: .9rem; }
+  #fileInput { display: none; }
+</style>
+</head>
+<body>
+<div id="importScreen">
+  <div class="box">
+    <h2>Karten laden</h2>
+    <p>Beim ersten Start fehlen noch die Karten. Wähle die Datei <b>karten.json</b> aus, zum Beispiel aus der Dateien-App. Das ist nur einmal nötig, danach funktioniert alles ohne Internet.</p>
+    <label class="pick" for="fileInput">Datei auswählen</label>
+    <div class="msg" id="importMsg" role="status"></div>
+  </div>
+</div>
+<input type="file" id="fileInput" accept=".json,application/json">
+<div class="wrap">
+  <h1>Alle Überschriften des Buchs — 337 Karten</h1>
+  <div class="sub">Karte antippen zum Umdrehen. Frage oben, deutsche Beispiele klein darunter.</div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="counter" id="counter"></div>
+
+  <div class="card-stage">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="question-text" id="qText"></div>
+        <div class="examples-de">
+          <span class="lbl">BEISPIELE (DEUTSCH)</span>
+          <div id="deExamples"></div>
+        </div>
+      </div>
+      <div class="face back">
+        <div class="answer-word" id="answerWord"></div>
+        <div class="rule-text" id="ruleText"></div>
+        <div class="examples-sv">
+          <span class="lbl">BEISPIELE (SCHWEDISCH)</span>
+          <div id="svExamples"></div>
+          <div class="page-ref" id="pageRef"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flip-hint">antippen zum Umdrehen</div>
+
+  <div class="controls">
+    <button id="prevBtn">← Zurück</button>
+    <button class="primary" id="flipBtn">Umdrehen</button>
+    <button id="nextBtn">Weiter →</button>
+  </div>
+  <div class="shuffle-row"><button id="shuffleBtn">🔀 Mischen</button> <button id="restartBtn">↺ Von vorn</button> <button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
+</div>
+
+<script>
+let cards = [];
+
+let order = cards.map((_, i) => i);
+let idx = 0;
+let flipped = false;
+
+const LS_KEY = 'schwedisch-app-pos-v1';
+const CARDS_KEY = 'schwedisch-app-cards-v1';
+let saveTimer = null;
+const saveNote = document.getElementById('saveNote');
+function validState(d) {
+  return !!d && Array.isArray(d.order) && d.order.length === cards.length && new Set(d.order).size === cards.length &&
+    d.order.every(n => Number.isInteger(n) && n >= 0 && n < cards.length) && Number.isInteger(d.idx) && d.idx >= 0 && d.idx < cards.length;
+}
+function saveNow() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ v: 1, order: order.slice(), idx: idx, savedAt: Date.now() })); saveNote.textContent = 'Position gespeichert.'; }
+  catch (e) { saveNote.textContent = 'Speichern auf diesem Gerät nicht möglich.'; }
+}
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
+function applyState(d) { order = d.order.slice(); idx = d.idx; }
+function validCards(a) { return Array.isArray(a) && a.length > 0 && a.every(c => c && typeof c.q === 'string' && typeof c.answer === 'string' && Array.isArray(c.sv)); }
+const importEl = document.getElementById('importScreen');
+const importMsg = document.getElementById('importMsg');
+function startWith(list) {
+  cards = list; order = cards.map((_, i) => i); idx = 0;
+  let local = null; try { local = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
+  if (validState(local)) applyState(local);
+  importEl.style.display = 'none';
+  render();
+  saveNote.textContent = 'Position wird auf diesem Gerät gespeichert.';
+}
+function importFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const raw = JSON.parse(r.result); const list = Array.isArray(raw) ? raw : raw.cards;
+      if (!validCards(list)) throw new Error('format');
+      try { localStorage.setItem(CARDS_KEY, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
+      importMsg.textContent = '';
+      startWith(list);
+    } catch (e) { importMsg.textContent = 'Die Datei konnte nicht gelesen werden. Ist es die Datei karten.json?'; importEl.style.display = 'flex'; }
+  };
+  r.onerror = () => { importMsg.textContent = 'Die Datei konnte nicht geöffnet werden.'; };
+  r.readAsText(file);
+}
+
+const cardEl = document.getElementById('card');
+const qText = document.getElementById('qText');
+const deExamples = document.getElementById('deExamples');
+const answerWord = document.getElementById('answerWord');
+const ruleText = document.getElementById('ruleText');
+const svExamples = document.getElementById('svExamples');
+const pageRef = document.getElementById('pageRef');
+const counter = document.getElementById('counter');
+const progressFill = document.getElementById('progressFill');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const flipBtn = document.getElementById('flipBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+
+function fitCardHeight() {
+  // Temporarily reveal both faces at natural size to measure content height
+  const frontFace = cardEl.querySelector('.face.front');
+  const backFace = cardEl.querySelector('.face.back');
+  const prevFrontOverflow = frontFace.style.overflowY;
+  const prevBackOverflow = backFace.style.overflowY;
+  frontFace.style.position = 'relative';
+  frontFace.style.transform = 'none';
+  backFace.style.position = 'relative';
+  backFace.style.transform = 'none';
+  backFace.style.display = 'flex';
+
+  const frontHeight = frontFace.scrollHeight;
+  const backHeight = backFace.scrollHeight;
+
+  frontFace.style.position = '';
+  frontFace.style.transform = '';
+  backFace.style.position = '';
+  backFace.style.transform = '';
+  backFace.style.display = '';
+  frontFace.style.overflowY = prevFrontOverflow;
+  backFace.style.overflowY = prevBackOverflow;
+
+  const tallest = Math.max(frontHeight, backHeight, 300);
+  cardEl.style.height = (tallest + 4) + 'px';
+}
+
+function render() {
+  const c = cards[order[idx]];
+  flipped = false;
+  cardEl.classList.remove('flipped');
+
+  qText.textContent = ''; { const ps = c.q.split('\n'); const a = document.createElement('div'); a.textContent = ps[0]; qText.appendChild(a); if (ps[1]) { const g = document.createElement('div'); g.className = 'gloss'; g.textContent = ps[1]; qText.appendChild(g); } }
+  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => `<div>${s}</div>`).join('');
+
+  answerWord.textContent = c.answer;
+  ruleText.textContent = c.rule;
+  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => `<div class="pair"><div class="sv-line">${sv}</div><div class="de-line">${de}</div></div>`).join('') : `<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ${c.page}.</div></div>`;
+  pageRef.textContent = `Prepositionsboken, S. ${c.page} · ${c.part}`;
+
+  counter.textContent = `Karte ${idx + 1} / ${cards.length} · ${c.part}`;
+  progressFill.style.width = `${((idx + 1) / cards.length) * 100}%`;
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = idx === cards.length - 1;
+
+  requestAnimationFrame(fitCardHeight);
+}
+
+window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
+
+function flip() {
+  flipped = !flipped;
+  cardEl.classList.toggle('flipped', flipped);
+}
+
+cardEl.addEventListener('click', flip);
+flipBtn.addEventListener('click', (e) => { e.stopPropagation(); flip(); });
+prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; render(); scheduleSave(); } });
+nextBtn.addEventListener('click', () => { if (idx < cards.length - 1) { idx++; render(); scheduleSave(); } });
+shuffleBtn.addEventListener('click', () => {
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  idx = 0;
+  render();
+  scheduleSave();
+});
+document.getElementById('restartBtn').addEventListener('click', () => { order = cards.map((_, i) => i); idx = 0; render(); scheduleSave(); });
+
+document.getElementById('fileInput').addEventListener('change', e => { importFile(e.target.files[0]); e.target.value = ''; });
+document.getElementById('loadBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+(function boot() {
+  let list = null;
+  try { list = JSON.parse(localStorage.getItem(CARDS_KEY)); } catch (e) {}
+  if (validCards(list)) startWith(list); else importEl.style.display = 'flex';
+})();
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
+</script>
+</body>
+</html>
