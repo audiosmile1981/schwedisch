@@ -64,7 +64,15 @@
   .progress-fill { height: 100%; background: var(--amber); transition: width 0.25s; }
   .counter { text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--line); margin-bottom: 20px; }
 
-  .card-stage { perspective: 1600px; }
+  .card-stage { perspective: 1600px; position: relative; touch-action: pan-y; transition: transform .22s ease, opacity .22s ease; will-change: transform; -webkit-user-select: none; user-select: none; }
+  .card-stage.dragging { transition: none; }
+  .swipe-badge { position: absolute; top: 14px; z-index: 5; padding: 6px 12px; font-weight: 600; font-size: .95rem; border: 2px solid; border-radius: 6px; opacity: 0; pointer-events: none; background: rgba(10,31,51,.85); }
+  .swipe-badge.right { left: 14px; color: #7ee2a4; border-color: #7ee2a4; transform: rotate(-8deg); }
+  .swipe-badge.left { right: 14px; color: var(--amber); border-color: var(--amber); transform: rotate(8deg); }
+  button.known { border-color: #7ee2a4; color: #7ee2a4; }
+  button.again { border-color: var(--amber); color: var(--amber); }
+  #doneScreen { display: none; text-align: center; padding: 36px 12px; border: 1px dashed var(--line); margin-top: 18px; }
+  #doneScreen p { line-height: 1.6; opacity: .9; }
   .card {
     position: relative;
     width: 100%;
@@ -201,6 +209,47 @@
   #importScreen .pick { display: inline-block; margin-top: 14px; padding: 12px 20px; border-radius: 10px; background: var(--amber); color: var(--blue-0); font-weight: 600; cursor: pointer; }
   #importScreen .msg { margin-top: 12px; color: #ffb4a8; min-height: 1.2em; font-size: .9rem; }
   #fileInput { display: none; }
+  #manageScreen { position: fixed; inset: 0; z-index: 40; background: var(--blue-0); color: var(--ink); display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  #manageScreen .mbox { max-width: 720px; margin: 0 auto; }
+  #manageScreen .mhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  #manageScreen h2 { margin: 0; font-size: 1.15rem; }
+  .mfilters { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .mfilters button { font-size: .78rem; padding: 6px 10px; }
+  .mfilters button.on { border-color: var(--amber); color: var(--amber); }
+  #mSearch { width: 100%; padding: 10px; background: var(--blue-1); color: var(--ink); border: 1px solid var(--line); font: inherit; font-size: 16px; }
+  .mcount { font-size: .75rem; opacity: .7; margin: 8px 0; }
+  .mrow { border: 1px solid var(--line); padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+  .mrow .mt { font-size: .9rem; line-height: 1.35; } .mrow .mg { font-size: .75rem; opacity: .7; } .mrow .mm { font-size: .72rem; color: var(--amber); margin-top: 3px; }
+  .mrow button { font-size: .75rem; padding: 6px 10px; flex-shrink: 0; }
+
+  .tabs { display: flex; gap: 8px; margin: 10px 0 16px; }
+  .tabs button { flex: 1; padding: 11px 8px; }
+  .tabs button.on { border-color: var(--amber); color: var(--amber); background: var(--blue-1); }
+  .scard { background: var(--blue-1); border: 1px solid var(--line); padding: 18px 16px; position: relative; }
+  .scard.ok { border-color: #7ee2a4; }
+  .scard.bad { border-color: #ff8a7a; }
+  .scard .slabel { font-size: .66rem; letter-spacing: .14em; opacity: .65; margin: 0 0 6px; }
+  .scard .slabel.sv { margin-top: 18px; }
+  .scard .sde { font-size: 1.08rem; line-height: 1.5; }
+  .scard .ssv { font-size: 1.12rem; line-height: 2.1; }
+  .scard input.blank { font: inherit; font-size: 16px; color: var(--amber); background: var(--blue-0); border: 0; border-bottom: 2px solid var(--amber); border-radius: 0; text-align: center; width: 9ch; padding: 2px 4px; margin: 0 4px; -webkit-appearance: none; appearance: none; }
+  .scard input.blank.wide { width: 14ch; }
+  .scard input.blank:focus { outline: none; background: var(--blue-2); }
+  .scard input.blank:disabled { opacity: 1; -webkit-text-fill-color: currentColor; }
+  .scard.ok input.blank { color: #7ee2a4; border-color: #7ee2a4; }
+  .scard.bad input.blank { color: #ff8a7a; border-color: #ff8a7a; }
+  .sfeed { margin-top: 14px; min-height: 1.4em; font-size: .92rem; }
+  .sfeed.ok { color: #7ee2a4; } .sfeed.bad { color: #ff8a7a; }
+  .sinfo { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: .82rem; line-height: 1.5; opacity: .85; }
+  .sinfo:empty { display: none; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 15% { transform: translateX(-10px); } 30% { transform: translateX(9px); } 45% { transform: translateX(-7px); } 60% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+  .shake { animation: shake .45s; }
+  .chars { text-align: center; margin-top: 10px; }
+  .chars button { font-size: .85rem; padding: 6px 14px; margin: 0 3px; }
+  button.rec { box-shadow: 0 0 0 2px var(--amber); }
+  .hidden { display: none !important; }
+  .donebox { text-align: center; padding: 36px 12px; border: 1px dashed var(--line); margin-top: 18px; }
+  .donebox p { line-height: 1.6; opacity: .9; }
 </style>
 </head>
 <body>
@@ -213,15 +262,29 @@
   </div>
 </div>
 <input type="file" id="fileInput" accept=".json,application/json">
+<div id="manageScreen">
+  <div class="mbox">
+    <div class="mhead"><h2>Karten verwalten</h2><button id="manageClose">Schließen</button></div>
+    <div class="mfilters" id="mFilters"></div>
+    <input type="search" id="mSearch" placeholder="Suchen (Überschrift, Kapitel)" autocomplete="off">
+    <div class="mcount" id="mCount"></div>
+    <div id="mList"></div>
+  </div>
+</div>
 <div class="wrap">
-  <h1>Alle Überschriften des Buchs — 337 Karten</h1>
-  <div class="sub">Karte antippen zum Umdrehen. Frage oben, deutsche Beispiele klein darunter.</div>
+  <h1>Schwedisch · Präpositionen</h1>
+  <div class="tabs"><button id="tabFlash" class="on">Flashcards</button><button id="tabSent">Sätze üben</button></div>
 
-  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="counter" id="counter"></div>
+  <div id="viewFlash">
+    <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="counter" id="counter"></div>
 
-  <div class="card-stage">
-    <div class="card" id="card">
+    <div id="studyArea">
+    <div class="card-stage" id="stage">
+      <div class="swipe-badge right" id="badgeRight">✓ Gewusst</div>
+      <div class="swipe-badge left" id="badgeLeft">↺ Nochmal</div>
+      <div class="card" id="card">
       <div class="face front">
         <div class="question-text" id="qText"></div>
         <div class="examples-de">
@@ -239,80 +302,221 @@
         </div>
       </div>
     </div>
+    </div>
+    <div class="flip-hint">antippen zum Umdrehen · wischen zum Bewerten</div>
+    <div class="controls">
+      <button class="again" id="againBtn">↺ Nochmal</button>
+      <button class="primary" id="flipBtn">Umdrehen</button>
+      <button class="known" id="knownBtn">Gewusst ✓</button>
+    </div>
+    </div>
+
+    <div id="doneScreen"><h2>Für heute geschafft 🎉</h2><p id="doneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="undoBtn">↶ Rückgängig</button> <button id="skipBtn">⏭ Später</button> <button id="shuffleBtn">🔀 Mischen</button><br>
+      <button id="manageBtn">🗂 Karten verwalten</button> <button id="resetBtn">⚙ Zurücksetzen</button>
+    </div>
   </div>
 
-  <div class="flip-hint">antippen zum Umdrehen</div>
+  <div id="viewSent" class="hidden">
+    <div class="sub">Setze die fehlende Präposition ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
+    <div class="progress-bar"><div class="progress-fill" id="sProgress"></div></div>
+    <div class="counter" id="sCounter"></div>
 
-  <div class="controls">
-    <button id="prevBtn">← Zurück</button>
-    <button class="primary" id="flipBtn">Umdrehen</button>
-    <button id="nextBtn">Weiter →</button>
+    <div id="sStudy">
+      <div class="card-stage" id="sStage">
+        <div class="swipe-badge right" id="sBadgeRight">✓ Gewusst</div>
+        <div class="swipe-badge left" id="sBadgeLeft">↺ Nochmal</div>
+        <div class="scard" id="sCard">
+          <div class="slabel">DEUTSCH</div>
+          <div class="sde" id="sDe"></div>
+          <div class="slabel sv">SCHWEDISCH</div>
+          <div class="ssv" id="sSv"><span id="sPre"></span><input class="blank" id="sInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Fehlende Präposition"><span id="sPost"></span></div>
+          <div class="sfeed" id="sFeed" aria-live="polite"></div>
+          <div class="sinfo" id="sInfo"></div>
+        </div>
+      </div>
+      <div class="chars" id="sChars"><button type="button" data-ch="å">å</button><button type="button" data-ch="ö">ö</button><button type="button" data-ch="ä">ä</button></div>
+      <div class="controls" id="sOpenRow">
+        <button id="sHintBtn">💡 Hinweis</button>
+        <button class="primary" id="sCheckBtn">Prüfen</button>
+        <button id="sRevealBtn">Lösung</button>
+      </div>
+      <div class="controls hidden" id="sDoneRow">
+        <button class="again" id="sAgainBtn">↺ Morgen nochmal</button>
+        <button class="known" id="sKnownBtn">Gewusst ✓</button>
+      </div>
+    </div>
+
+    <div id="sDone" class="hidden donebox"><h2>Für heute geschafft 🎉</h2><p id="sDoneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="sUndoBtn">↶ Rückgängig</button> <button id="sSkipBtn">⏭ Später</button> <button id="sShuffleBtn">🔀 Mischen</button><br>
+      <button id="sManageBtn">🗂 Sätze verwalten</button> <button id="sResetBtn">⚙ Zurücksetzen</button>
+    </div>
   </div>
-  <div class="shuffle-row"><button id="shuffleBtn">🔀 Mischen</button> <button id="restartBtn">↺ Von vorn</button> <button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
+
+  <div class="shuffle-row"><button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
 </div>
 
 <script>
-let cards = [];
+const $ = id => document.getElementById(id);
+const INTERVALS = [3, 7, 10];
+const LS_CARDS = 'schwedisch-app-cards-v1';
+const LS_FLASH = 'schwedisch-app-learn-v2';
+const LS_SENT = 'schwedisch-app-sent-v1';
+const LS_TAB = 'schwedisch-app-tab';
+const saveNote = $('saveNote'), importEl = $('importScreen'), importMsg = $('importMsg');
+function note(t) { saveNote.textContent = t; }
 
-let order = cards.map((_, i) => i);
-let idx = 0;
-let flipped = false;
-
-const LS_KEY = 'schwedisch-app-pos-v1';
-const CARDS_KEY = 'schwedisch-app-cards-v1';
-let saveTimer = null;
-const saveNote = document.getElementById('saveNote');
-function validState(d) {
-  return !!d && Array.isArray(d.order) && d.order.length === cards.length && new Set(d.order).size === cards.length &&
-    d.order.every(n => Number.isInteger(n) && n >= 0 && n < cards.length) && Number.isInteger(d.idx) && d.idx >= 0 && d.idx < cards.length;
+// ---------- Hilfsfunktionen ----------
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function today() { return ymd(new Date()); }
+function addDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
+function addDaysFrom(s, n) { const [y, m, d] = s.split('-').map(Number); const x = new Date(y, m - 1, d); x.setDate(x.getDate() + n); return ymd(x); }
+function niceDate(s) {
+  if (s === addDays(1)) return 'morgen';
+  const [y, m, d] = s.split('-').map(Number); return 'am ' + new Date(y, m - 1, d).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 }
-function saveNow() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify({ v: 1, order: order.slice(), idx: idx, savedAt: Date.now() })); saveNote.textContent = 'Position gespeichert.'; }
-  catch (e) { saveNote.textContent = 'Speichern auf diesem Gerät nicht möglich.'; }
-}
-function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
-function applyState(d) { order = d.order.slice(); idx = d.idx; }
+function hashStr(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); }
+function hashCard(c) { return hashStr(c.part + '|' + c.q); }
+function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function validCards(a) { return Array.isArray(a) && a.length > 0 && a.every(c => c && typeof c.q === 'string' && typeof c.answer === 'string' && Array.isArray(c.sv)); }
-const importEl = document.getElementById('importScreen');
-const importMsg = document.getElementById('importMsg');
-function startWith(list) {
-  cards = list; order = cards.map((_, i) => i); idx = 0;
-  let local = null; try { local = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
-  if (validState(local)) applyState(local);
-  importEl.style.display = 'none';
-  render();
-  saveNote.textContent = 'Position wird auf diesem Gerät gespeichert.';
-}
-function importFile(file) {
-  if (!file) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      const raw = JSON.parse(r.result); const list = Array.isArray(raw) ? raw : raw.cards;
-      if (!validCards(list)) throw new Error('format');
-      try { localStorage.setItem(CARDS_KEY, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
-      importMsg.textContent = '';
-      startWith(list);
-    } catch (e) { importMsg.textContent = 'Die Datei konnte nicht gelesen werden. Ist es die Datei karten.json?'; importEl.style.display = 'flex'; }
-  };
-  r.onerror = () => { importMsg.textContent = 'Die Datei konnte nicht geöffnet werden.'; };
-  r.readAsText(file);
+function nextStatus(prev, kind) {
+  if (kind === 'again') return { s: 'again', stage: 0, due: addDays(1), at: today() };
+  const stage = (prev && prev.s === 'review' ? prev.stage : 0) + 1;
+  if (stage > INTERVALS.length) return { s: 'mastered', stage: stage, at: today() };
+  return { s: 'review', stage: stage, due: addDays(INTERVALS[stage - 1]), at: today() };
 }
 
-const cardEl = document.getElementById('card');
-const qText = document.getElementById('qText');
-const deExamples = document.getElementById('deExamples');
-const answerWord = document.getElementById('answerWord');
-const ruleText = document.getElementById('ruleText');
-const svExamples = document.getElementById('svExamples');
-const pageRef = document.getElementById('pageRef');
-const counter = document.getElementById('counter');
-const progressFill = document.getElementById('progressFill');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const flipBtn = document.getElementById('flipBtn');
-const shuffleBtn = document.getElementById('shuffleBtn');
+// ---------- Lernstand (für Karten und Sätze gleich) ----------
+class Learner {
+  constructor(lsKey) { this.lsKey = lsKey; this.items = []; this.keys = []; this.status = {}; this.order = []; this.queue = []; this.history = []; this.builtOn = ''; }
+  init(items, keys, shuffleNew) {
+    this.items = items; this.keys = keys; this.history = []; this.status = {}; this.order = [];
+    const idxByKey = {}; keys.forEach((k, i) => { if (!(k in idxByKey)) idxByKey[k] = i; });
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(this.lsKey)); } catch (e) {}
+    if (saved && saved.status && typeof saved.status === 'object') {
+      Object.keys(saved.status).forEach(k => {
+        if (!(k in idxByKey)) return;
+        let st = saved.status[k]; if (!st || typeof st !== 'object') return;
+        if (st.s === 'known') st = { s: 'review', stage: 1, due: addDaysFrom(st.at || today(), INTERVALS[0]), at: st.at || today() };
+        if (st.s === 'again') st = { s: 'again', stage: 0, due: st.due || addDays(1), at: st.at };
+        if (st.s === 'review' || st.s === 'again' || st.s === 'mastered') this.status[k] = st;
+      });
+    }
+    const seen = new Set();
+    if (saved && Array.isArray(saved.order)) saved.order.forEach(k => { if (k in idxByKey && !seen.has(k)) { seen.add(k); this.order.push(idxByKey[k]); } });
+    const rest = []; items.forEach((_, i) => { if (!seen.has(keys[i]) && idxByKey[keys[i]] === i) { seen.add(keys[i]); rest.push(i); } });
+    if (shuffleNew) shuffleArray(rest);
+    this.order = this.order.concat(rest);
+    this.buildQueue();
+  }
+  save() {
+    try { localStorage.setItem(this.lsKey, JSON.stringify({ v: 2, order: this.order.map(i => this.keys[i]), status: this.status, savedAt: Date.now() })); note('Gespeichert.'); }
+    catch (e) { note('Speichern auf diesem Gerät nicht möglich.'); }
+  }
+  buildQueue() {
+    const t = today(), due = [], fresh = []; this.builtOn = t;
+    const pos = {}; this.order.forEach((i, p) => { pos[i] = p; });
+    this.order.forEach(i => { const st = this.status[this.keys[i]]; if (!st) fresh.push(i); else if ((st.s === 'again' || st.s === 'review') && st.due <= t) due.push(i); });
+    const dueOf = i => this.status[this.keys[i]].due;
+    due.sort((a, b) => (dueOf(a) < dueOf(b) ? -1 : dueOf(a) > dueOf(b) ? 1 : pos[a] - pos[b]));
+    this.queue = due.concat(fresh);
+  }
+  stats() {
+    const t = today(); let mastered = 0, review = 0, again = 0, next = null;
+    this.keys.forEach(k => {
+      const st = this.status[k]; if (!st) return;
+      if (st.s === 'mastered') mastered++;
+      else { if (st.s === 'review') review++; else again++; if (st.due > t && (!next || st.due < next)) next = st.due; }
+    });
+    return { mastered, review, again, next, fresh: this.items.length - mastered - review - again };
+  }
+  stateOf(i) { const st = this.status[this.keys[i]]; return st ? st.s : 'fresh'; }
+  tag(i) { const st = this.status[this.keys[i]]; return !st ? '' : st.s === 'review' ? 'Wiederholung ' + st.stage + '/' + INTERVALS.length + ' · ' : 'Nochmal · '; }
+  rate(kind) {
+    if (!this.queue.length) return;
+    const i = this.queue[0], k = this.keys[i];
+    this.history.push({ i, prev: this.status[k] ? Object.assign({}, this.status[k]) : null }); if (this.history.length > 40) this.history.shift();
+    this.status[k] = nextStatus(this.status[k], kind);
+    this.queue.shift(); this.save();
+  }
+  undo() {
+    const h = this.history.pop(); if (!h) return false;
+    if (h.prev) this.status[this.keys[h.i]] = h.prev; else delete this.status[this.keys[h.i]];
+    this.queue = this.queue.filter(x => x !== h.i); this.queue.unshift(h.i); this.save(); return true;
+  }
+  skip() { if (this.queue.length > 1) { this.queue.push(this.queue.shift()); return true; } return false; }
+  shuffle() { shuffleArray(this.order); this.buildQueue(); this.save(); }
+  resetAll() { this.status = {}; this.history = []; this.order = this.items.map((_, i) => i); this.buildQueue(); this.save(); }
+  reactivate(i) { this.status[this.keys[i]] = { s: 'again', stage: 0, due: today(), at: today() }; this.afterManage(); }
+  practiceToday(i) { const st = this.status[this.keys[i]]; if (st) st.due = today(); this.afterManage(); }
+  moveFront(i) { this.order = [i].concat(this.order.filter(x => x !== i)); this.afterManage(); }
+  afterManage() { this.history = []; this.buildQueue(); this.save(); }
+  doneText() {
+    const st = this.stats(); let txt = 'Gemeistert: ' + st.mastered + ' · In Wiederholung: ' + st.review + ' · Nochmal: ' + st.again + ' · Neu: ' + st.fresh + ' (von ' + this.items.length + ').';
+    if (st.next) txt += ' Nächste Wiederholung ' + niceDate(st.next) + '.';
+    if (st.mastered === this.items.length && this.items.length) txt += ' Alles gemeistert.';
+    return txt;
+  }
+}
+const F = new Learner(LS_FLASH);   // Flashcards
+const S = new Learner(LS_SENT);    // Sätze
+let cards = [], tasks = [];
 
+// ---------- Wischen (gemeinsam) ----------
+function bindSwipe(stageEl, badgeR, badgeL, o) {
+  let drag = null, suppress = false;
+  const th = () => Math.max(80, stageEl.offsetWidth * 0.25);
+  function reset() { stageEl.style.transform = ''; stageEl.style.opacity = ''; badgeR.style.opacity = 0; badgeL.style.opacity = 0; }
+  function commit(kind) {
+    if (!o.hasCard() || stageEl.dataset.busy) return;
+    if (!o.canSwipe()) { reset(); o.onBlocked(); return; }
+    stageEl.dataset.busy = '1';
+    const dir = kind === 'known' ? 1 : -1;
+    badgeR.style.opacity = kind === 'known' ? 1 : 0; badgeL.style.opacity = kind === 'again' ? 1 : 0;
+    stageEl.style.transform = 'translateX(' + (dir * Math.max(window.innerWidth, 500)) + 'px) rotate(' + (dir * 18) + 'deg)'; stageEl.style.opacity = '0';
+    setTimeout(() => {
+      stageEl.style.transition = 'none'; reset();
+      o.onCommit(kind);
+      requestAnimationFrame(() => { stageEl.style.transition = ''; delete stageEl.dataset.busy; });
+    }, 230);
+  }
+  function end(cancel) {
+    if (!drag) return; const d = drag; drag = null;
+    if (!d.active) return;
+    suppress = true; setTimeout(() => { suppress = false; }, 60);
+    stageEl.classList.remove('dragging');
+    if (!cancel && d.dx > th()) commit('known'); else if (!cancel && d.dx < -th()) commit('again'); else reset();
+  }
+  stageEl.addEventListener('pointerdown', e => {
+    if (!o.hasCard() || stageEl.dataset.busy || (e.button && e.button > 0)) return;
+    if (e.target && e.target.closest && e.target.closest('input,button,textarea')) return;
+    drag = { x: e.clientX, y: e.clientY, dx: 0, active: false };
+  });
+  stageEl.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.active) {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) { drag.active = true; stageEl.classList.add('dragging'); try { stageEl.setPointerCapture(e.pointerId); } catch (x) {} }
+      else { if (Math.abs(dy) > 12) drag = null; return; }
+    }
+    drag.dx = dx;
+    const p = Math.min(1, Math.abs(dx) / th());
+    stageEl.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 25) + 'deg)';
+    badgeR.style.opacity = dx > 0 ? p : 0; badgeL.style.opacity = dx < 0 ? p : 0;
+  });
+  stageEl.addEventListener('pointerup', () => end(false));
+  stageEl.addEventListener('pointercancel', () => end(true));
+  return { commit, suppressed: () => suppress };
+}
+
+// ---------- Modul 1: Flashcards ----------
+const cardEl = $('card'), qText = $('qText'), deExamples = $('deExamples'), answerWord = $('answerWord'), ruleText = $('ruleText'), svExamples = $('svExamples'), pageRef = $('pageRef');
+const counter = $('counter'), progressFill = $('progressFill');
+let flipped = false;
 function fitCardHeight() {
   // Temporarily reveal both faces at natural size to measure content height
   const frontFace = cardEl.querySelector('.face.front');
@@ -340,57 +544,274 @@ function fitCardHeight() {
   cardEl.style.height = (tallest + 4) + 'px';
 }
 
-function render() {
-  const c = cards[order[idx]];
-  flipped = false;
-  cardEl.classList.remove('flipped');
 
-  qText.textContent = ''; { const ps = c.q.split('\n'); const a = document.createElement('div'); a.textContent = ps[0]; qText.appendChild(a); if (ps[1]) { const g = document.createElement('div'); g.className = 'gloss'; g.textContent = ps[1]; qText.appendChild(g); } }
-  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => `<div>${s}</div>`).join('');
 
+function renderFlash() {
+  const st = F.stats();
+  progressFill.style.width = (F.items.length ? ((st.mastered + st.review) / F.items.length) * 100 : 0) + '%';
+  const done = F.queue.length === 0;
+  $('studyArea').style.display = done ? 'none' : '';
+  $('doneScreen').style.display = done ? 'block' : 'none';
+  $('undoBtn').disabled = F.history.length === 0;
+  $('skipBtn').disabled = F.queue.length < 2;
+  if (done) { $('doneText').textContent = F.doneText(); counter.textContent = 'Heute ist nichts mehr offen'; return; }
+  const c = cards[F.queue[0]];
+  flipped = false; cardEl.classList.remove('flipped');
+  qText.textContent = '';
+  { const ps = c.q.split('\n'); const a = document.createElement('div'); a.textContent = ps[0]; qText.appendChild(a); if (ps[1]) { const g = document.createElement('div'); g.className = 'gloss'; g.textContent = ps[1]; qText.appendChild(g); } }
+  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => '<div>' + s + '</div>').join('');
   answerWord.textContent = c.answer;
   ruleText.textContent = c.rule;
-  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => `<div class="pair"><div class="sv-line">${sv}</div><div class="de-line">${de}</div></div>`).join('') : `<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ${c.page}.</div></div>`;
-  pageRef.textContent = `Prepositionsboken, S. ${c.page} · ${c.part}`;
-
-  counter.textContent = `Karte ${idx + 1} / ${cards.length} · ${c.part}`;
-  progressFill.style.width = `${((idx + 1) / cards.length) * 100}%`;
-  prevBtn.disabled = idx === 0;
-  nextBtn.disabled = idx === cards.length - 1;
-
+  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => '<div class="pair"><div class="sv-line">' + sv + '</div><div class="de-line">' + de + '</div></div>').join('') : '<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</div></div>';
+  pageRef.textContent = 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
+  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + c.part;
   requestAnimationFrame(fitCardHeight);
 }
+const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
+  hasCard: () => F.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
+  onCommit: kind => { F.rate(kind); renderFlash(); }
+});
+function flipCard() { if (!F.queue.length) return; flipped = !flipped; cardEl.classList.toggle('flipped', flipped); }
+cardEl.addEventListener('click', () => { if (!swipeF.suppressed()) flipCard(); });
+$('flipBtn').addEventListener('click', flipCard);
+$('knownBtn').addEventListener('click', () => swipeF.commit('known'));
+$('againBtn').addEventListener('click', () => swipeF.commit('again'));
+$('undoBtn').addEventListener('click', () => { if (F.undo()) renderFlash(); });
+$('skipBtn').addEventListener('click', () => { if (F.skip()) renderFlash(); });
+$('shuffleBtn').addEventListener('click', () => { F.shuffle(); renderFlash(); });
+function armReset(btn, label, fn) {
+  let armed = null;
+  btn.addEventListener('click', () => {
+    if (armed === null) { btn.textContent = 'Wirklich? Alles löschen'; armed = setTimeout(() => { armed = null; btn.textContent = label; }, 5000); return; }
+    clearTimeout(armed); armed = null; btn.textContent = label; fn();
+  });
+}
+armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); renderFlash(); });
 
-window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
-
-function flip() {
-  flipped = !flipped;
-  cardEl.classList.toggle('flipped', flipped);
+// ---------- Modul 2: Sätze üben ----------
+const PREPS = new Set(['på','i','hos','ovanpå','utanpå','innanför','utanför','inuti','inom','över','ovanför','under','nedanför','framför','bakom','före','efter','bredvid','intill','mittemot','bland','mellan','mot','till','om','runt','runtom','kring','omkring','längs','utmed','utefter','från','ur','åt','genom','förbi','via','uppför','nerför','med','utom','enligt','vid','för','sedan','per','inför','utan','av','framemot','ungefär','cirka','medelst','gällande','beträffande','angående','rörande','avseende','emot']);
+const COMPOUNDS = ['på grund av', 'tack vare', 'med anledning av', 'till följd av', 'i stället för', 'med hjälp av', 'när det gäller', 'i fråga om', 'vad gäller', 'vad beträffar', 'från och med', 'till och med'];
+const ALT = {
+  'ÖVER/OVANFÖR': ['över', 'ovanför'], 'RUNT(OM)/KRING/OMKRING': ['runt', 'runtom', 'kring', 'omkring'], 'MOT/FRAMEMOT': ['mot', 'framemot', 'emot'],
+  'GÄLLANDE/BETRÄFFANDE/ANGÅENDE/RÖRANDE/AVSEENDE': ['gällande', 'beträffande', 'angående', 'rörande', 'avseende'],
+  'GENOM/VIA': ['genom', 'via'], 'OMKRING/UNGEFÄR/CIRKA': ['omkring', 'ungefär', 'cirka'], 'FÖR/ÖVER': ['för', 'över']
+};
+function tokensPos(s) { const out = [], re = /\p{L}+/gu; let m; while ((m = re.exec(s))) out.push({ t: m[0].toLowerCase(), i: m.index, l: m[0].length }); return out; }
+function targetsOf(answer) {
+  let a = answer.toLowerCase(); const comps = [];
+  COMPOUNDS.forEach(c => { if (a.includes(c)) { comps.push(c); a = a.split(c).join(' '); } });
+  return { comps, singles: new Set(tokensPos(a).map(x => x.t).filter(t => PREPS.has(t))) };
+}
+function buildTasks(list) {
+  const out = [], seen = new Set();
+  list.forEach((c, ci) => {
+    const T = targetsOf(c.answer); const group = ALT[c.answer.toUpperCase().replace(/\s+/g, '')] || null;
+    c.sv.forEach(pair => {
+      const s = String(pair[0]).trim(); if (!/[.!?]$/.test(s) || /[\/()…=:—–"„“]/.test(s)) return;
+      const wc = s.split(/\s+/).length; if (wc < 3 || wc > 22) return;
+      const occ = []; let mask = s.toLowerCase();
+      T.comps.forEach(cp => { let from = 0, k; while ((k = mask.indexOf(cp, from)) >= 0) { occ.push({ i: k, l: cp.length, t: cp }); mask = mask.slice(0, k) + ' '.repeat(cp.length) + mask.slice(k + cp.length); from = k + cp.length; } });
+      tokensPos(mask).forEach(x => { if (T.singles.has(x.t)) occ.push({ i: x.i, l: x.l, t: x.t }); });
+      if (occ.length !== 1 || seen.has(s)) return; seen.add(s);
+      const o = occ[0];
+      out.push({ ci, key: hashStr(s), sv: s, de: String(pair[1]), pre: s.slice(0, o.i), ans: s.slice(o.i, o.i + o.l), post: s.slice(o.i + o.l), alt: group && group.includes(o.t) ? group.filter(x => x !== o.t) : [] });
+    });
+  });
+  return out;
+}
+const norm = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
+const strip = s => norm(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function judge(input, t) {
+  const v = norm(input), opts = [t.ans].concat(t.alt).map(norm);
+  if (opts.includes(v)) return 'exact';
+  const sv = strip(input); if (opts.map(strip).includes(sv)) return 'accent';
+  return 'wrong';
 }
 
-cardEl.addEventListener('click', flip);
-flipBtn.addEventListener('click', (e) => { e.stopPropagation(); flip(); });
-prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; render(); scheduleSave(); } });
-nextBtn.addEventListener('click', () => { if (idx < cards.length - 1) { idx++; render(); scheduleSave(); } });
-shuffleBtn.addEventListener('click', () => {
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  idx = 0;
-  render();
-  scheduleSave();
+const sCard = $('sCard'), sInput = $('sInput'), sFeed = $('sFeed'), sInfo = $('sInfo');
+let sState = { attempts: 0, resolved: null };
+function setFeed(text, cls) { sFeed.textContent = text; sFeed.className = 'sfeed' + (cls ? ' ' + cls : ''); }
+function shakeCard() { sCard.classList.remove('shake'); void sCard.offsetWidth; sCard.classList.add('shake'); }
+function renderSent() {
+  const st = S.stats();
+  $('sProgress').style.width = (S.items.length ? ((st.mastered + st.review) / S.items.length) * 100 : 0) + '%';
+  $('sUndoBtn').disabled = S.history.length === 0;
+  $('sSkipBtn').disabled = S.queue.length < 2;
+  const none = S.items.length === 0, done = S.queue.length === 0;
+  $('sStudy').classList.toggle('hidden', done); $('sDone').classList.toggle('hidden', !done);
+  if (done) { $('sDoneText').textContent = none ? 'In den geladenen Karten wurden keine passenden Sätze gefunden.' : S.doneText(); $('sCounter').textContent = none ? '' : 'Heute ist nichts mehr offen'; return; }
+  const t = S.items[S.queue[0]];
+  sState = { attempts: 0, resolved: null };
+  $('sCounter').textContent = 'Heute noch ' + S.queue.length + ' · ' + S.tag(S.queue[0]).replace(/ · $/, '');
+  $('sDe').textContent = t.de; $('sPre').textContent = t.pre; $('sPost').textContent = t.post;
+  sInput.value = ''; sInput.disabled = false; sInput.className = 'blank' + (t.ans.includes(' ') ? ' wide' : '');
+  sCard.className = 'scard'; setFeed(''); sInfo.textContent = '';
+  $('sOpenRow').classList.remove('hidden'); $('sDoneRow').classList.add('hidden');
+  $('sAgainBtn').classList.remove('rec'); $('sKnownBtn').classList.remove('rec');
+}
+function showInfo(t) {
+  const c = cards[t.ci]; const head = c.q.split('\n'); sInfo.textContent = '';
+  const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.sv;
+  const b = document.createElement('div'); b.style.marginTop = '6px'; b.textContent = 'Karte: ' + head[0] + (head[1] ? ' (' + head[1] + ')' : '') + ' · ' + c.part + ', S. ' + c.page;
+  const r = document.createElement('div'); r.style.marginTop = '6px'; r.textContent = 'Regel: ' + c.rule;
+  sInfo.append(a, b, r);
+}
+function resolveSent(kind, extra) {
+  const t = S.items[S.queue[0]]; sState.resolved = kind;
+  sInput.value = t.ans; sInput.disabled = true;
+  sCard.classList.add(kind === 'correct' ? 'ok' : 'bad');
+  if (kind === 'correct') setFeed('Richtig ✓' + (sState.attempts === 1 ? ' (beim zweiten Versuch)' : '') + (extra ? ' · ' + extra : '') + ' – jetzt nach rechts wischen.', 'ok');
+  else setFeed('Leider falsch. Die Lösung steht oben – nach links wischen, dann kommt der Satz morgen wieder.', 'bad');
+  showInfo(t);
+  $('sOpenRow').classList.add('hidden'); $('sDoneRow').classList.remove('hidden');
+  $('sAgainBtn').classList.toggle('rec', kind === 'failed'); $('sKnownBtn').classList.toggle('rec', kind === 'correct');
+  if (kind === 'failed') shakeCard();
+}
+function checkSent() {
+  if (sState.resolved || !S.queue.length) return;
+  const t = S.items[S.queue[0]], v = sInput.value;
+  if (!v.trim()) { setFeed('Gib zuerst eine Präposition ein.'); sInput.focus(); return; }
+  const verdict = judge(v, t);
+  if (verdict !== 'wrong') { resolveSent('correct', verdict === 'accent' ? 'Achte auf die Akzente: ' + t.ans : ''); return; }
+  sState.attempts++;
+  if (sState.attempts >= 2) { resolveSent('failed'); return; }
+  shakeCard(); setFeed('Nicht ganz. Versuch es noch einmal.', 'bad'); sInput.focus(); sInput.select();
+}
+function revealSent() { if (sState.resolved || !S.queue.length) return; sState.attempts = 2; resolveSent('failed'); }
+function hintSent() {
+  if (sState.resolved || !S.queue.length) return;
+  const c = cards[S.items[S.queue[0]].ci], ps = c.q.split('\n');
+  setFeed('Hinweis: ' + ps[0] + (ps[1] ? ' (' + ps[1] + ')' : ''));
+}
+const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
+  hasCard: () => S.queue.length > 0, canSwipe: () => sState.resolved !== null,
+  onBlocked: () => { shakeCard(); setFeed('Erst die Präposition eingeben, oder „Lösung" tippen.'); },
+  onCommit: kind => { S.rate(kind); renderSent(); }
 });
-document.getElementById('restartBtn').addEventListener('click', () => { order = cards.map((_, i) => i); idx = 0; render(); scheduleSave(); });
+$('sCheckBtn').addEventListener('click', checkSent);
+$('sRevealBtn').addEventListener('click', revealSent);
+$('sHintBtn').addEventListener('click', hintSent);
+$('sKnownBtn').addEventListener('click', () => swipeS.commit('known'));
+$('sAgainBtn').addEventListener('click', () => swipeS.commit('again'));
+sInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkSent(); } });
+$('sUndoBtn').addEventListener('click', () => { if (S.undo()) renderSent(); });
+$('sSkipBtn').addEventListener('click', () => { if (S.skip()) renderSent(); });
+$('sShuffleBtn').addEventListener('click', () => { S.shuffle(); renderSent(); });
+armReset($('sResetBtn'), '⚙ Zurücksetzen', () => { S.resetAll(); renderSent(); });
+document.querySelectorAll('#sChars button').forEach(b => {
+  b.addEventListener('mousedown', e => e.preventDefault());
+  b.addEventListener('click', () => { if (sInput.disabled) return; sInput.setRangeText(b.dataset.ch, sInput.selectionStart, sInput.selectionEnd, 'end'); sInput.focus(); });
+});
 
-document.getElementById('fileInput').addEventListener('change', e => { importFile(e.target.files[0]); e.target.value = ''; });
-document.getElementById('loadBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+// ---------- Verwaltung (für beide Module) ----------
+let mCtx = null, mFilter = 'mastered', mQuery = '';
+const FILTERS = [['mastered', 'Gemeistert'], ['review', 'In Wiederholung'], ['again', 'Nochmal'], ['fresh', 'Neu'], ['all', 'Alle']];
+function stateText(L, i) {
+  const st = L.status[L.keys[i]];
+  if (!st) return 'Neu';
+  if (st.s === 'mastered') return 'Gemeistert';
+  const when = st.due <= today() ? 'heute' : niceDate(st.due);
+  return (st.s === 'review' ? 'Wiederholung ' + st.stage + '/' + INTERVALS.length : 'Nochmal') + ' · fällig ' + when;
+}
+function openManage(ctx) { mCtx = ctx; mFilter = 'mastered'; mQuery = ''; $('mSearch').value = ''; $('manageScreen').style.display = 'block'; renderManage(); }
+function renderManage() {
+  const L = mCtx.L; const f = $('mFilters'); f.textContent = '';
+  const counts = { all: L.items.length, mastered: 0, review: 0, again: 0, fresh: 0 };
+  L.items.forEach((_, i) => { counts[L.stateOf(i)]++; });
+  FILTERS.forEach(([k, label]) => {
+    const b = document.createElement('button'); b.textContent = label + ' (' + counts[k] + ')'; if (k === mFilter) b.className = 'on';
+    b.addEventListener('click', () => { mFilter = k; renderManage(); }); f.appendChild(b);
+  });
+  const q = mQuery.trim().toLowerCase(), rows = [];
+  L.items.forEach((_, i) => {
+    if (mFilter !== 'all' && L.stateOf(i) !== mFilter) return;
+    const [t1, t2] = mCtx.text(i); if (q && !(t1 + ' ' + t2).toLowerCase().includes(q)) return;
+    rows.push(i);
+  });
+  $('mCount').textContent = rows.length + ' Einträge' + (rows.length > 150 ? ' (die ersten 150 werden angezeigt, grenze mit der Suche ein)' : '');
+  const list = $('mList'); list.textContent = '';
+  rows.slice(0, 150).forEach(i => {
+    const [t1, t2] = mCtx.text(i), s = L.stateOf(i);
+    const row = document.createElement('div'); row.className = 'mrow';
+    const left = document.createElement('div');
+    const a = document.createElement('div'); a.className = 'mt'; a.textContent = t1;
+    const b = document.createElement('div'); b.className = 'mg'; b.textContent = t2;
+    const c = document.createElement('div'); c.className = 'mm'; c.textContent = stateText(L, i);
+    left.append(a, b, c);
+    const btn = document.createElement('button');
+    const after = () => { mCtx.after(); renderManage(); };
+    if (s === 'mastered') { btn.textContent = 'Wieder aktivieren'; btn.addEventListener('click', () => { L.reactivate(i); after(); }); }
+    else if (s === 'fresh') { btn.textContent = 'Als Nächstes'; btn.addEventListener('click', () => { L.moveFront(i); after(); }); }
+    else { btn.textContent = 'Heute üben'; btn.addEventListener('click', () => { L.practiceToday(i); after(); }); }
+    row.append(left, btn); list.appendChild(row);
+  });
+}
+$('manageBtn').addEventListener('click', () => openManage({ L: F, after: renderFlash, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
+$('sManageBtn').addEventListener('click', () => openManage({ L: S, after: renderSent, text: i => [tasks[i].pre + ' ___ ' + tasks[i].post, tasks[i].de] }));
+$('manageClose').addEventListener('click', () => { $('manageScreen').style.display = 'none'; });
+$('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderManage(); });
+
+// ---------- Tabs ----------
+function showView(v) {
+  const sent = v === 'sent';
+  $('viewFlash').classList.toggle('hidden', sent); $('viewSent').classList.toggle('hidden', !sent);
+  $('tabFlash').classList.toggle('on', !sent); $('tabSent').classList.toggle('on', sent);
+  try { localStorage.setItem(LS_TAB, v); } catch (e) {}
+  if (sent) renderSent(); else renderFlash();
+}
+$('tabFlash').addEventListener('click', () => showView('flash'));
+$('tabSent').addEventListener('click', () => showView('sent'));
+const activeView = () => ($('viewSent').classList.contains('hidden') ? 'flash' : 'sent');
+document.addEventListener('keydown', e => {
+  if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block') return;
+  const typing = e.target && e.target.tagName === 'INPUT';
+  if (activeView() === 'flash') {
+    if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) renderFlash(); }
+  } else if (!typing) {
+    if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
+  }
+});
+
+// ---------- Start und Karten laden ----------
+function startWith(list) {
+  cards = list;
+  F.init(cards, cards.map(hashCard), false);
+  tasks = buildTasks(cards);
+  S.init(tasks, tasks.map(t => t.key), true);
+  importEl.style.display = 'none';
+  let v = 'flash'; try { v = localStorage.getItem(LS_TAB) === 'sent' ? 'sent' : 'flash'; } catch (e) {}
+  showView(v);
+  note('Fortschritt wird auf diesem Gerät gespeichert.');
+}
+function importFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const raw = JSON.parse(r.result); const list = Array.isArray(raw) ? raw : raw.cards;
+      if (!validCards(list)) throw new Error('format');
+      try { localStorage.setItem(LS_CARDS, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
+      importMsg.textContent = '';
+      startWith(list);
+    } catch (e) { importMsg.textContent = 'Die Datei konnte nicht gelesen werden. Ist es die Datei karten.json?'; importEl.style.display = 'flex'; }
+  };
+  r.onerror = () => { importMsg.textContent = 'Die Datei konnte nicht geöffnet werden.'; };
+  r.readAsText(file);
+}
+$('fileInput').addEventListener('change', e => { importFile(e.target.files[0]); e.target.value = ''; });
+$('loadBtn').addEventListener('click', () => $('fileInput').click());
+window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !cards.length) return;
+  if (F.builtOn !== today() || S.builtOn !== today()) { F.buildQueue(); S.buildQueue(); activeView() === 'sent' ? renderSent() : renderFlash(); }
+});
 (function boot() {
   let list = null;
-  try { list = JSON.parse(localStorage.getItem(CARDS_KEY)); } catch (e) {}
+  try { list = JSON.parse(localStorage.getItem(LS_CARDS)); } catch (e) {}
   if (validCards(list)) startWith(list); else importEl.style.display = 'flex';
 })();
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
+
 </script>
 </body>
 </html>
