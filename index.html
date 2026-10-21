@@ -28,8 +28,6 @@
     margin: 0;
     min-height: 100%;
     background: var(--blue-0);
-    background-image: linear-gradient(var(--line-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-dim) 1px, transparent 1px);
-    background-size: 28px 28px;
     color: var(--ink);
     font-family: var(--sans);
     padding: env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);
@@ -222,6 +220,37 @@
   .mrow .mt { font-size: .9rem; line-height: 1.35; } .mrow .mg { font-size: .75rem; opacity: .7; } .mrow .mm { font-size: .72rem; color: var(--amber); margin-top: 3px; }
   .mrow button { font-size: .75rem; padding: 6px 10px; flex-shrink: 0; }
 
+  .bigbtn { display: block; width: 100%; text-align: left; padding: 20px 18px; margin: 12px 0; background: var(--blue-1); border: 1px solid var(--line); }
+  .bigbtn:hover { background: var(--blue-2); }
+  .bigbtn .bt { display: block; font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .bigbtn .bs { display: block; margin-top: 6px; font-size: .82rem; color: var(--amber); }
+  .streakbox { border: 1px solid var(--line); background: var(--blue-1); padding: 16px; margin: 14px 0 18px; text-align: center; }
+  .streakmain { font-size: 1.35rem; font-weight: 600; }
+  .streakbest { font-size: .78rem; opacity: .7; margin-top: 2px; min-height: 1em; }
+  .dots { display: flex; justify-content: center; gap: 10px; margin: 14px 0 6px; }
+  .dayc { text-align: center; } .dl { font-size: .66rem; opacity: .65; margin-top: 4px; }
+  .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); margin: 0 auto; }
+  .dot.on { background: var(--amber); border-color: var(--amber); }
+  .dot.today { box-shadow: 0 0 0 2px var(--blue-1), 0 0 0 4px var(--line); }
+  .dot.on.today { box-shadow: 0 0 0 2px var(--blue-1), 0 0 0 4px var(--amber); }
+  .streaknote { font-size: .82rem; opacity: .85; margin-top: 8px; }
+  .topbar { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; }
+  .topbar .ttl { font-size: 1.1rem; font-weight: 600; }
+  .goalline { font-size: .74rem; opacity: .85; margin: 4px 0 2px; }
+  .gprog { height: 4px; background: var(--blue-2); margin-bottom: 12px; }
+  .gfill { height: 100%; background: #7ee2a4; width: 0; transition: width .25s; }
+  #goalScreen, #praiseScreen { position: fixed; inset: 0; z-index: 60; background: rgba(5,16,28,.82); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .gbox, .pbox { background: var(--blue-1); border: 1px solid var(--line); padding: 22px 20px; max-width: 380px; width: 100%; text-align: center; }
+  .gbox h2, .pbox h2 { margin: 0 0 10px; }
+  .grow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 14px 0; }
+  .grow .step { display: flex; align-items: center; gap: 12px; } .grow b { min-width: 2.5ch; font-size: 1.1rem; }
+  .grow button { width: 40px; padding: 8px 0; font-size: 1.1rem; }
+  .gnote { font-size: .78rem; opacity: .75; line-height: 1.5; }
+  .pemoji { font-size: 3rem; animation: pop .5s ease-out; }
+  .pbox p { line-height: 1.55; } .prow { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .pemoji { animation: none; } .gfill { transition: none; } }
+
   .tabs { display: flex; gap: 8px; margin: 10px 0 16px; }
   .tabs button { flex: 1; padding: 11px 8px; }
   .tabs button.on { border-color: var(--amber); color: var(--amber); background: var(--blue-1); }
@@ -261,6 +290,12 @@
     <div class="msg" id="importMsg" role="status"></div>
   </div>
 </div>
+<div id="goalScreen" role="dialog" aria-modal="true" aria-label="Tagesziele"><div class="gbox"><h2>Tagesziele</h2>
+  <div class="grow"><span>Flashcards pro Tag</span><span class="step"><button id="gFm" aria-label="weniger">−</button><b id="gFv">20</b><button id="gFp" aria-label="mehr">+</button></span></div>
+  <div class="grow"><span>Sätze pro Tag</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
+  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der beiden Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <button class="primary" id="goalClose">Fertig</button></div></div>
+<div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
 <div id="manageScreen">
   <div class="mbox">
@@ -272,13 +307,25 @@
   </div>
 </div>
 <div class="wrap">
-  <h1>Schwedisch · Präpositionen</h1>
-  <div class="tabs"><button id="tabFlash" class="on">Flashcards</button><button id="tabSent">Sätze üben</button></div>
+  <div id="viewHome">
+    <h1>Schwedisch · Präpositionen</h1>
+    <div class="streakbox">
+      <div class="streakmain" id="streakMain"></div>
+      <div class="streakbest" id="streakBest"></div>
+      <div class="dots" id="weekDots" role="img" aria-label="Die letzten sieben Tage"></div>
+      <div class="streaknote" id="streakNote"></div>
+    </div>
+    <button class="bigbtn" id="goFlash"><span class="bt">Flashcards</span><span class="bs" id="homeFSub"></span></button>
+    <button class="bigbtn" id="goSent"><span class="bt">Sätze üben</span><span class="bs" id="homeSSub"></span></button>
+    <div class="shuffle-row"><button id="goalsBtn">🎯 Tagesziele</button> <button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
+  </div>
 
-  <div id="viewFlash">
+  <div id="viewFlash" class="hidden">
+    <div class="topbar"><button id="backF">‹ Start</button><span class="ttl">Flashcards</span></div>
     <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="counter" id="counter"></div>
+    <div class="goalline" id="fGoal"></div><div class="gprog"><div class="gfill" id="fGFill"></div></div>
 
     <div id="studyArea">
     <div class="card-stage" id="stage">
@@ -320,9 +367,11 @@
   </div>
 
   <div id="viewSent" class="hidden">
+    <div class="topbar"><button id="backS">‹ Start</button><span class="ttl">Sätze üben</span></div>
     <div class="sub">Setze die fehlende Präposition ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
     <div class="progress-bar"><div class="progress-fill" id="sProgress"></div></div>
     <div class="counter" id="sCounter"></div>
+    <div class="goalline" id="sGoal"></div><div class="gprog"><div class="gfill" id="sGFill"></div></div>
 
     <div id="sStudy">
       <div class="card-stage" id="sStage">
@@ -357,7 +406,6 @@
     </div>
   </div>
 
-  <div class="shuffle-row"><button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
 </div>
 
 <script>
@@ -366,7 +414,7 @@ const INTERVALS = [3, 7, 10];
 const LS_CARDS = 'schwedisch-app-cards-v1';
 const LS_FLASH = 'schwedisch-app-learn-v2';
 const LS_SENT = 'schwedisch-app-sent-v1';
-const LS_TAB = 'schwedisch-app-tab';
+const LS_STREAK = 'schwedisch-app-streak-v1';
 const saveNote = $('saveNote'), importEl = $('importScreen'), importMsg = $('importMsg');
 function note(t) { saveNote.textContent = t; }
 
@@ -466,6 +514,94 @@ const F = new Learner(LS_FLASH);   // Flashcards
 const S = new Learner(LS_SENT);    // Sätze
 let cards = [], tasks = [];
 
+// ---------- Tagesziele und Streak ----------
+let streak = { goalF: 20, goalS: 10, daily: {}, praised: {} };
+const MILESTONES = { 3: 'Drei Tage am Stück – der Anfang einer Gewohnheit.', 7: 'Eine ganze Woche in Folge!', 14: 'Zwei Wochen am Stück, das ist richtig stark.', 30: 'Dreißig Tage in Folge – das ist echte Ausdauer.', 50: 'Fünfzig Tage! Das Wissen sitzt.', 100: 'Hundert Tage in Folge. Respekt!', 365: 'Ein ganzes Jahr, du bist eine Legende.' };
+const PRAISE = [['Bra jobbat!', 'Gut gemacht!'], ['Snyggt!', 'Stark!'], ['Grymt!', 'Richtig gut!'], ['Fantastiskt!', 'Fantastisch!'], ['Det sitter!', 'Das sitzt!'], ['Stark insats!', 'Starke Leistung!']];
+function loadStreak() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(LS_STREAK)); } catch (e) {}
+  if (d && typeof d === 'object') {
+    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
+  }
+  const cut = addDays(-400); Object.keys(streak.daily).forEach(k => { if (k < cut) delete streak.daily[k]; });
+  const cutP = addDays(-10); Object.keys(streak.praised).forEach(k => { if (k < cutP) delete streak.praised[k]; });
+}
+function saveStreak() { try { localStorage.setItem(LS_STREAK, JSON.stringify(streak)); } catch (e) {} }
+function peekDay(d) { return streak.daily[d] || null; }
+function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, gf: streak.goalF, gs: streak.goalS }; return streak.daily[d]; }
+function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs)); }
+function streakInfo() {
+  const t = today(); let cur = 0, d = t;
+  if (!qualifies(peekDay(t))) d = addDaysFrom(t, -1);
+  while (qualifies(peekDay(d))) { cur++; d = addDaysFrom(d, -1); }
+  const days = Object.keys(streak.daily).filter(k => qualifies(streak.daily[k])).sort();
+  let best = 0, run = 0, prev = null;
+  days.forEach(k => { run = prev && addDaysFrom(prev, 1) === k ? run + 1 : 1; if (run > best) best = run; prev = k; });
+  return { cur, best, todayDone: qualifies(peekDay(t)) };
+}
+function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS }; }
+function track(kind, delta) {
+  const e = dayEntry(today());
+  e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
+  saveStreak();
+  if (delta > 0) maybePraise(kind);
+  updateGoalLines();
+}
+function maybePraise(kind) {
+  const t = today(), e = dayEntry(t), goal = kind === 'f' ? e.gf : e.gs;
+  if (!(goal > 0) || e[kind] !== goal) return;
+  const pr = streak.praised[t] || (streak.praised[t] = {});
+  if (pr[kind]) return; pr[kind] = true; saveStreak();
+  const other = kind === 'f' ? (e.gs > 0 && e.s >= e.gs) : (e.gf > 0 && e.f >= e.gf);
+  const info = streakInfo();
+  setTimeout(() => showPraise(kind, e[kind], info, other), 350);
+}
+function showPraise(kind, count, info, other) {
+  const p = PRAISE[Math.floor(Math.random() * PRAISE.length)];
+  $('pEmoji').textContent = '🎉';
+  $('pTitle').textContent = p[0] + ' (' + p[1] + ')';
+  let txt = 'Tagesziel erreicht: ' + count + (kind === 'f' ? ' Flashcards' : ' Sätze') + ' heute geübt. ';
+  if (other) txt += 'Dein Streak-Tag stand schon, und jetzt hast du auch dieses Ziel geschafft.';
+  else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
+  $('pText').textContent = txt;
+  $('praiseScreen').style.display = 'flex';
+}
+$('pContinue').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; });
+$('pHome').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; showView('home'); });
+function goalLine(textEl, fillEl, count, goal) {
+  const done = goal > 0 && count >= goal;
+  textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
+  fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
+}
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); }
+function renderHome() {
+  const info = streakInfo(), v = dayView();
+  $('streakMain').textContent = info.cur > 0 ? '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
+  $('streakBest').textContent = info.best > 0 ? 'Rekord: ' + info.best + (info.best === 1 ? ' Tag' : ' Tage') : '';
+  if (info.todayDone) $('streakNote').textContent = 'Heute geschafft ✓ Dein Streak lebt.';
+  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Flashcards oder ' + Math.max(0, v.gs - v.s) + ' Sätze.';
+  const dots = $('weekDots'); dots.textContent = '';
+  for (let k = 6; k >= 0; k--) {
+    const d = addDays(-k), [y, m, dd] = d.split('-').map(Number), wrap = document.createElement('div'); wrap.className = 'dayc';
+    const dot = document.createElement('div'); dot.className = 'dot' + (qualifies(peekDay(d)) ? ' on' : '') + (k === 0 ? ' today' : '');
+    dot.setAttribute('aria-label', new Date(y, m - 1, dd).toLocaleDateString('de-DE', { weekday: 'long' }) + (qualifies(peekDay(d)) ? ': Ziel erreicht' : ': kein Ziel erreicht'));
+    const lab = document.createElement('div'); lab.className = 'dl'; lab.textContent = new Date(y, m - 1, dd).toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '');
+    wrap.append(dot, lab); dots.appendChild(wrap);
+  }
+  $('homeFSub').textContent = 'Heute ' + v.f + ' von ' + v.gf + (v.f >= v.gf ? ' ✓' : '') + ' · ' + F.queue.length + ' offen';
+  $('homeSSub').textContent = 'Heute ' + v.s + ' von ' + v.gs + (v.s >= v.gs ? ' ✓' : '') + ' · ' + S.queue.length + ' offen';
+}
+function renderGoalModal() { $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; }
+function changeGoal(kind, delta) {
+  const key = kind === 'f' ? 'goalF' : 'goalS'; streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
+  const e = peekDay(today()); if (e) { e[kind === 'f' ? 'gf' : 'gs'] = streak[key]; }
+  saveStreak(); renderGoalModal();
+}
+$('gFm').addEventListener('click', () => changeGoal('f', -5)); $('gFp').addEventListener('click', () => changeGoal('f', 5));
+$('gSm').addEventListener('click', () => changeGoal('s', -5)); $('gSp').addEventListener('click', () => changeGoal('s', 5));
+$('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
+$('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
+
 // ---------- Wischen (gemeinsam) ----------
 function bindSwipe(stageEl, badgeR, badgeL, o) {
   let drag = null, suppress = false;
@@ -547,6 +683,7 @@ function fitCardHeight() {
 
 
 function renderFlash() {
+  updateGoalLines();
   const st = F.stats();
   progressFill.style.width = (F.items.length ? ((st.mastered + st.review) / F.items.length) * 100 : 0) + '%';
   const done = F.queue.length === 0;
@@ -569,14 +706,14 @@ function renderFlash() {
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
   hasCard: () => F.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
-  onCommit: kind => { F.rate(kind); renderFlash(); }
+  onCommit: kind => { F.rate(kind); track('f', 1); renderFlash(); }
 });
 function flipCard() { if (!F.queue.length) return; flipped = !flipped; cardEl.classList.toggle('flipped', flipped); }
 cardEl.addEventListener('click', () => { if (!swipeF.suppressed()) flipCard(); });
 $('flipBtn').addEventListener('click', flipCard);
 $('knownBtn').addEventListener('click', () => swipeF.commit('known'));
 $('againBtn').addEventListener('click', () => swipeF.commit('again'));
-$('undoBtn').addEventListener('click', () => { if (F.undo()) renderFlash(); });
+$('undoBtn').addEventListener('click', () => { if (F.undo()) { track('f', -1); renderFlash(); } });
 $('skipBtn').addEventListener('click', () => { if (F.skip()) renderFlash(); });
 $('shuffleBtn').addEventListener('click', () => { F.shuffle(); renderFlash(); });
 function armReset(btn, label, fn) {
@@ -633,6 +770,7 @@ let sState = { attempts: 0, resolved: null };
 function setFeed(text, cls) { sFeed.textContent = text; sFeed.className = 'sfeed' + (cls ? ' ' + cls : ''); }
 function shakeCard() { sCard.classList.remove('shake'); void sCard.offsetWidth; sCard.classList.add('shake'); }
 function renderSent() {
+  updateGoalLines();
   const st = S.stats();
   $('sProgress').style.width = (S.items.length ? ((st.mastered + st.review) / S.items.length) * 100 : 0) + '%';
   $('sUndoBtn').disabled = S.history.length === 0;
@@ -686,7 +824,7 @@ function hintSent() {
 const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
   hasCard: () => S.queue.length > 0, canSwipe: () => sState.resolved !== null,
   onBlocked: () => { shakeCard(); setFeed('Erst die Präposition eingeben, oder „Lösung" tippen.'); },
-  onCommit: kind => { S.rate(kind); renderSent(); }
+  onCommit: kind => { S.rate(kind); track('s', 1); renderSent(); }
 });
 $('sCheckBtn').addEventListener('click', checkSent);
 $('sRevealBtn').addEventListener('click', revealSent);
@@ -694,7 +832,7 @@ $('sHintBtn').addEventListener('click', hintSent);
 $('sKnownBtn').addEventListener('click', () => swipeS.commit('known'));
 $('sAgainBtn').addEventListener('click', () => swipeS.commit('again'));
 sInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkSent(); } });
-$('sUndoBtn').addEventListener('click', () => { if (S.undo()) renderSent(); });
+$('sUndoBtn').addEventListener('click', () => { if (S.undo()) { track('s', -1); renderSent(); } });
 $('sSkipBtn').addEventListener('click', () => { if (S.skip()) renderSent(); });
 $('sShuffleBtn').addEventListener('click', () => { S.shuffle(); renderSent(); });
 armReset($('sResetBtn'), '⚙ Zurücksetzen', () => { S.resetAll(); renderSent(); });
@@ -751,23 +889,23 @@ $('sManageBtn').addEventListener('click', () => openManage({ L: S, after: render
 $('manageClose').addEventListener('click', () => { $('manageScreen').style.display = 'none'; });
 $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderManage(); });
 
-// ---------- Tabs ----------
+// ---------- Navigation ----------
 function showView(v) {
-  const sent = v === 'sent';
-  $('viewFlash').classList.toggle('hidden', sent); $('viewSent').classList.toggle('hidden', !sent);
-  $('tabFlash').classList.toggle('on', !sent); $('tabSent').classList.toggle('on', sent);
-  try { localStorage.setItem(LS_TAB, v); } catch (e) {}
-  if (sent) renderSent(); else renderFlash();
+  ['home', 'flash', 'sent'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else renderHome();
+  window.scrollTo(0, 0);
 }
-$('tabFlash').addEventListener('click', () => showView('flash'));
-$('tabSent').addEventListener('click', () => showView('sent'));
-const activeView = () => ($('viewSent').classList.contains('hidden') ? 'flash' : 'sent');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : 'home');
+$('goFlash').addEventListener('click', () => showView('flash'));
+$('goSent').addEventListener('click', () => showView('sent'));
+$('backF').addEventListener('click', () => showView('home'));
+$('backS').addEventListener('click', () => showView('home'));
 document.addEventListener('keydown', e => {
-  if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block') return;
-  const typing = e.target && e.target.tagName === 'INPUT';
-  if (activeView() === 'flash') {
-    if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) renderFlash(); }
-  } else if (!typing) {
+  if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block' || $('goalScreen').style.display === 'flex' || $('praiseScreen').style.display === 'flex') return;
+  const typing = e.target && e.target.tagName === 'INPUT', v = activeView();
+  if (v === 'flash') {
+    if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) { track('f', -1); renderFlash(); } }
+  } else if (v === 'sent' && !typing) {
     if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
   }
 });
@@ -779,8 +917,8 @@ function startWith(list) {
   tasks = buildTasks(cards);
   S.init(tasks, tasks.map(t => t.key), true);
   importEl.style.display = 'none';
-  let v = 'flash'; try { v = localStorage.getItem(LS_TAB) === 'sent' ? 'sent' : 'flash'; } catch (e) {}
-  showView(v);
+  loadStreak();
+  showView('home');
   note('Fortschritt wird auf diesem Gerät gespeichert.');
 }
 function importFile(file) {
@@ -803,7 +941,7 @@ $('loadBtn').addEventListener('click', () => $('fileInput').click());
 window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || !cards.length) return;
-  if (F.builtOn !== today() || S.builtOn !== today()) { F.buildQueue(); S.buildQueue(); activeView() === 'sent' ? renderSent() : renderFlash(); }
+  if (F.builtOn !== today() || S.builtOn !== today()) { F.buildQueue(); S.buildQueue(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else renderHome(); }
 });
 (function boot() {
   let list = null;
