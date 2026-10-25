@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Schwedisch – Präpositionen</title>
+<title>Schwedisch</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -277,6 +277,18 @@
   .chars button { font-size: .85rem; padding: 6px 14px; margin: 0 3px; }
   button.rec { box-shadow: 0 0 0 2px var(--amber); }
   .hidden { display: none !important; }
+  #vCard { height: 320px; }
+  .face.vf { justify-content: center; align-items: center; text-align: center; }
+  .face.vf::before { position: absolute; top: 26px; left: 24px; }
+  .vde { font-size: 1.6rem; font-weight: 600; line-height: 1.25; }
+  .vsv { font-family: var(--mono); font-size: 1.15rem; color: var(--amber); margin-top: 10px; }
+  .vgroup { position: absolute; left: 24px; right: 24px; bottom: 18px; font-family: var(--mono); font-size: .7rem; color: var(--line); }
+  .vhead { font-size: 1rem; color: var(--ink-dim); margin-bottom: 16px; }
+  .vhead b { font-family: var(--mono); color: var(--amber); font-weight: 600; }
+  .vforms { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 16px; row-gap: 11px; align-items: baseline; }
+  .vforms dt { font-family: var(--mono); font-size: .72rem; color: var(--line); }
+  .vforms dd { margin: 0; font-size: 1.12rem; color: var(--ink); }
+  .vfilter { width: 100%; margin-bottom: 12px; padding: 10px; background: var(--blue-1); color: var(--ink); border: 1px solid var(--line); font-family: var(--mono); font-size: 16px; border-radius: 0; }
   .donebox { text-align: center; padding: 36px 12px; border: 1px dashed var(--line); margin-top: 18px; }
   .donebox p { line-height: 1.6; opacity: .9; }
 </style>
@@ -293,7 +305,8 @@
 <div id="goalScreen" role="dialog" aria-modal="true" aria-label="Tagesziele"><div class="gbox"><h2>Tagesziele</h2>
   <div class="grow"><span>Flashcards pro Tag</span><span class="step"><button id="gFm" aria-label="weniger">−</button><b id="gFv">20</b><button id="gFp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Sätze pro Tag</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
-  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der beiden Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <div class="grow"><span>Verben pro Tag</span><span class="step"><button id="gVm" aria-label="weniger">−</button><b id="gVv">15</b><button id="gVp" aria-label="mehr">+</button></span></div>
+  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der drei Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
@@ -308,7 +321,7 @@
 </div>
 <div class="wrap">
   <div id="viewHome">
-    <h1>Schwedisch · Präpositionen</h1>
+    <h1>Schwedisch</h1>
     <div class="streakbox">
       <div class="streakmain" id="streakMain"></div>
       <div class="streakbest" id="streakBest"></div>
@@ -317,6 +330,7 @@
     </div>
     <button class="bigbtn" id="goFlash"><span class="bt">Flashcards</span><span class="bs" id="homeFSub"></span></button>
     <button class="bigbtn" id="goSent"><span class="bt">Sätze üben</span><span class="bs" id="homeSSub"></span></button>
+    <button class="bigbtn" id="goVerb"><span class="bt">Starke Verben</span><span class="bs" id="homeVSub"></span></button>
     <div class="shuffle-row"><button id="goalsBtn">🎯 Tagesziele</button> <button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
   </div>
 
@@ -406,6 +420,45 @@
     </div>
   </div>
 
+  <div id="viewVerb" class="hidden">
+    <div class="topbar"><button id="backV">‹ Start</button><span class="ttl">Starke Verben</span></div>
+    <div class="sub">Vorne Deutsch, hinten alle Formen. Nach rechts wischen: gewusst, kommt nach 3, 7 und 10 Tagen wieder. Nach links wischen: nochmal, morgen wieder.</div>
+    <select class="vfilter" id="vFilter" aria-label="Gruppe wählen"></select>
+    <div class="progress-bar"><div class="progress-fill" id="vProgress"></div></div>
+    <div class="counter" id="vCounter"></div>
+    <div class="goalline" id="vGoal"></div><div class="gprog"><div class="gfill" id="vGFill"></div></div>
+
+    <div id="vStudy">
+      <div class="card-stage" id="vStage">
+        <div class="swipe-badge right" id="vBadgeRight">✓ Gewusst</div>
+        <div class="swipe-badge left" id="vBadgeLeft">↺ Nochmal</div>
+        <div class="card" id="vCard">
+          <div class="face front vf">
+            <div><div class="vde" id="vDe"></div><div class="vsv" id="vSv"></div></div>
+            <div class="vgroup" id="vGroupLbl"></div>
+          </div>
+          <div class="face back">
+            <div class="vhead" id="vHead"></div>
+            <dl class="vforms" id="vForms"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="flip-hint">antippen zum Umdrehen · wischen zum Bewerten</div>
+      <div class="controls">
+        <button class="again" id="vAgainBtn">↺ Nochmal</button>
+        <button class="primary" id="vFlipBtn">Umdrehen</button>
+        <button class="known" id="vKnownBtn">Gewusst ✓</button>
+      </div>
+    </div>
+
+    <div id="vDone" class="hidden donebox"><h2>Für heute geschafft 🎉</h2><p id="vDoneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="vUndoBtn">↶ Rückgängig</button> <button id="vSkipBtn">⏭ Später</button> <button id="vShuffleBtn">🔀 Mischen</button><br>
+      <button id="vManageBtn">🗂 Verben verwalten</button> <button id="vResetBtn">⚙ Zurücksetzen</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -415,6 +468,8 @@ const LS_CARDS = 'schwedisch-app-cards-v1';
 const LS_FLASH = 'schwedisch-app-learn-v2';
 const LS_SENT = 'schwedisch-app-sent-v1';
 const LS_STREAK = 'schwedisch-app-streak-v1';
+const LS_VERB = 'schwedisch-app-verb-v1';
+const LS_VFILTER = 'schwedisch-app-verb-filter-v1';
 const saveNote = $('saveNote'), importEl = $('importScreen'), importMsg = $('importMsg');
 function note(t) { saveNote.textContent = t; }
 
@@ -512,24 +567,25 @@ class Learner {
 }
 const F = new Learner(LS_FLASH);   // Flashcards
 const S = new Learner(LS_SENT);    // Sätze
+const V = new Learner(LS_VERB);    // Starke Verben
 let cards = [], tasks = [];
 
 // ---------- Tagesziele und Streak ----------
-let streak = { goalF: 20, goalS: 10, daily: {}, praised: {} };
+let streak = { goalF: 20, goalS: 10, goalV: 15, daily: {}, praised: {} };
 const MILESTONES = { 3: 'Drei Tage am Stück – der Anfang einer Gewohnheit.', 7: 'Eine ganze Woche in Folge!', 14: 'Zwei Wochen am Stück, das ist richtig stark.', 30: 'Dreißig Tage in Folge – das ist echte Ausdauer.', 50: 'Fünfzig Tage! Das Wissen sitzt.', 100: 'Hundert Tage in Folge. Respekt!', 365: 'Ein ganzes Jahr, du bist eine Legende.' };
 const PRAISE = [['Bra jobbat!', 'Gut gemacht!'], ['Snyggt!', 'Stark!'], ['Grymt!', 'Richtig gut!'], ['Fantastiskt!', 'Fantastisch!'], ['Det sitter!', 'Das sitzt!'], ['Stark insats!', 'Starke Leistung!']];
 function loadStreak() {
   let d = null; try { d = JSON.parse(localStorage.getItem(LS_STREAK)); } catch (e) {}
   if (d && typeof d === 'object') {
-    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
+    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
   }
   const cut = addDays(-400); Object.keys(streak.daily).forEach(k => { if (k < cut) delete streak.daily[k]; });
   const cutP = addDays(-10); Object.keys(streak.praised).forEach(k => { if (k < cutP) delete streak.praised[k]; });
 }
 function saveStreak() { try { localStorage.setItem(LS_STREAK, JSON.stringify(streak)); } catch (e) {} }
 function peekDay(d) { return streak.daily[d] || null; }
-function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, gf: streak.goalF, gs: streak.goalS }; return streak.daily[d]; }
-function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs)); }
+function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; return e; }
+function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv)); }
 function streakInfo() {
   const t = today(); let cur = 0, d = t;
   if (!qualifies(peekDay(t))) d = addDaysFrom(t, -1);
@@ -539,7 +595,7 @@ function streakInfo() {
   days.forEach(k => { run = prev && addDaysFrom(prev, 1) === k ? run + 1 : 1; if (run > best) best = run; prev = k; });
   return { cur, best, todayDone: qualifies(peekDay(t)) };
 }
-function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS }; }
+function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV }; }
 function track(kind, delta) {
   const e = dayEntry(today());
   e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
@@ -548,11 +604,11 @@ function track(kind, delta) {
   updateGoalLines();
 }
 function maybePraise(kind) {
-  const t = today(), e = dayEntry(t), goal = kind === 'f' ? e.gf : e.gs;
+  const t = today(), e = dayEntry(t), goal = e['g' + kind];
   if (!(goal > 0) || e[kind] !== goal) return;
   const pr = streak.praised[t] || (streak.praised[t] = {});
   if (pr[kind]) return; pr[kind] = true; saveStreak();
-  const other = kind === 'f' ? (e.gs > 0 && e.s >= e.gs) : (e.gf > 0 && e.f >= e.gf);
+  const other = ['f', 's', 'v'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
   const info = streakInfo();
   setTimeout(() => showPraise(kind, e[kind], info, other), 350);
 }
@@ -560,7 +616,7 @@ function showPraise(kind, count, info, other) {
   const p = PRAISE[Math.floor(Math.random() * PRAISE.length)];
   $('pEmoji').textContent = '🎉';
   $('pTitle').textContent = p[0] + ' (' + p[1] + ')';
-  let txt = 'Tagesziel erreicht: ' + count + (kind === 'f' ? ' Flashcards' : ' Sätze') + ' heute geübt. ';
+  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Flashcards', s: ' Sätze', v: ' Verben' })[kind] + ' heute geübt. ';
   if (other) txt += 'Dein Streak-Tag stand schon, und jetzt hast du auch dieses Ziel geschafft.';
   else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
   $('pText').textContent = txt;
@@ -573,13 +629,13 @@ function goalLine(textEl, fillEl, count, goal) {
   textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
   fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
 }
-function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); }
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); }
 function renderHome() {
   const info = streakInfo(), v = dayView();
   $('streakMain').textContent = info.cur > 0 ? '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
   $('streakBest').textContent = info.best > 0 ? 'Rekord: ' + info.best + (info.best === 1 ? ' Tag' : ' Tage') : '';
   if (info.todayDone) $('streakNote').textContent = 'Heute geschafft ✓ Dein Streak lebt.';
-  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Flashcards oder ' + Math.max(0, v.gs - v.s) + ' Sätze.';
+  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Flashcards, ' + Math.max(0, v.gs - v.s) + ' Sätze oder ' + Math.max(0, v.gv - v.v) + ' Verben.';
   const dots = $('weekDots'); dots.textContent = '';
   for (let k = 6; k >= 0; k--) {
     const d = addDays(-k), [y, m, dd] = d.split('-').map(Number), wrap = document.createElement('div'); wrap.className = 'dayc';
@@ -590,15 +646,17 @@ function renderHome() {
   }
   $('homeFSub').textContent = 'Heute ' + v.f + ' von ' + v.gf + (v.f >= v.gf ? ' ✓' : '') + ' · ' + F.queue.length + ' offen';
   $('homeSSub').textContent = 'Heute ' + v.s + ' von ' + v.gs + (v.s >= v.gs ? ' ✓' : '') + ' · ' + S.queue.length + ' offen';
+  $('homeVSub').textContent = 'Heute ' + v.v + ' von ' + v.gv + (v.v >= v.gv ? ' ✓' : '') + ' · ' + V.queue.length + ' offen';
 }
-function renderGoalModal() { $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; }
+function renderGoalModal() { $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; }
 function changeGoal(kind, delta) {
-  const key = kind === 'f' ? 'goalF' : 'goalS'; streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
-  const e = peekDay(today()); if (e) { e[kind === 'f' ? 'gf' : 'gs'] = streak[key]; }
+  const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
+  const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
   saveStreak(); renderGoalModal();
 }
 $('gFm').addEventListener('click', () => changeGoal('f', -5)); $('gFp').addEventListener('click', () => changeGoal('f', 5));
 $('gSm').addEventListener('click', () => changeGoal('s', -5)); $('gSp').addEventListener('click', () => changeGoal('s', 5));
+$('gVm').addEventListener('click', () => changeGoal('v', -5)); $('gVp').addEventListener('click', () => changeGoal('v', 5));
 $('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
 $('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
 
@@ -841,6 +899,191 @@ document.querySelectorAll('#sChars button').forEach(b => {
   b.addEventListener('click', () => { if (sInput.disabled) return; sInput.setRangeText(b.dataset.ch, sInput.selectionStart, sInput.selectionEnd, 'end'); sInput.focus(); });
 });
 
+// ---------- Modul 3: Starke Verben ----------
+const VGROUPS = {
+  r1:"Reihe 1: i – e – i",
+  r2:"Reihe 2: i – a – u",
+  r3:"Reihe 3: y/ju/u – ö – u",
+  r4:"Reihe 4: a – o – a",
+  r5:"Reihe 5: ä – a – u",
+  eig:"Eigenes Muster",
+  sch:"Unregelmäßig schwach",
+  mod:"Hilfs- und Modalverben"
+};
+// [Gruppe, Deutsch, Schwedisch, Präsens, Präteritum, Perfekt, Imperativ, Partizip]
+const VERBS = [
+["r1","beißen","bita","biter","bet","har bitit","bit!","biten / bitet / bitna"],
+["r1","werden","bli","blir","blev","har blivit","bli!","bliven / blivet / blivna"],
+["r1","treiben","driva","driver","drev","har drivit","driv!","driven / drivet / drivna"],
+["r1","gleiten","glida","glider","gled","har glidit","glid!","–"],
+["r1","reiben","gnida","gnider","gned","har gnidit","gnid!","gniden / gnidet / gnidna"],
+["r1","greifen, festnehmen","gripa","griper","grep","har gripit","grip!","gripen / gripet / gripna"],
+["r1","steigen, schreiten","kliva","kliver","klev","har klivit","kliv!","–"],
+["r1","kneifen","knipa","kniper","knep","har knipit","knip!","knipen / knipet / knipna"],
+["r1","wimmern","kvida","kvider","kved","har kvidit","kvid!","–"],
+["r1","leiden","lida","lider","led","har lidit","lid!","liden / lidet / lidna"],
+["r1","knicksen","niga","niger","neg","har nigit","nig!","–"],
+["r1","piepen","pipa","piper","pep","har pipit","pip!","–"],
+["r1","reiten","rida","rider","red","har ridit","rid!","riden / ridet / ridna"],
+["r1","reißen, abreißen","riva","river","rev","har rivit","riv!","riven / rivet / rivna"],
+["r1","scheinen","skina","skiner","sken","har skinit","skin!","–"],
+["r1","schreiten","skrida","skrider","skred","har skridit","skrid!","–"],
+["r1","schreien","skrika","skriker","skrek","har skrikit","skrik!","–"],
+["r1","schreiben","skriva","skriver","skrev","har skrivit","skriv!","skriven / skrivet / skrivna"],
+["r1","reißen, schuften","slita","sliter","slet","har slitit","slit!","sliten / slitet / slitna"],
+["r1","sich davonstehlen","smita","smiter","smet","har smitit","smit!","–"],
+["r1","verbreiten","sprida","sprider","spred (spridde)","har spritt (spridit)","sprid!","spridd / spritt / spridda"],
+["r1","steigen","stiga","stiger","steg","har stigit","stig!","–"],
+["r1","kämpfen, streiten","strida","strider","stred","har stridit","strid!","–"],
+["r1","brennen, Schmerz","svida","svider","sved","har svidit","–","–"],
+["r1","im Stich lassen, verraten","svika","sviker","svek","har svikit","svik!","sviken / sviket / svikna"],
+["r1","schweigen","tiga","tiger","teg","har tigit","tig!","–"],
+["r1","falten, weichen","vika","viker","vek","har vikit","vik!","viken / viket / vikna"],
+["r1","heulen, pfeifen, Wind","vina","viner","ven","har vinit","–","–"],
+["r1","drehen","vrida","vrider","vred","har vridit","vrid!","vriden / vridet / vridna"],
+["r2","binden","binda","binder","band","har bundit","bind!","bunden / bundet / bundna"],
+["r2","brennen","brinna","brinner","brann","har brunnit","brinn!","brunnen / brunnet / brunna"],
+["r2","bersten, platzen","brista","brister","brast","har brustit","–","brusten / brustet / brustna"],
+["r2","trinken","dricka","dricker","drack","har druckit","drick!","drucken / drucket / druckna"],
+["r2","finden","finna","finner","fann","har funnit","finn!","funnen / funnet / funna"],
+["r2","vorhanden sein, es gibt","finnas","finns","fanns","har funnits","–","–"],
+["r2","verschwinden","försvinna","försvinner","försvann","har försvunnit","försvinn!","försvunnen / försvunnet / försvunna"],
+["r2","schaffen, Zeit haben","hinna","hinner","hann","har hunnit","hinn!","–"],
+["r2","rinnen, fließen","rinna","rinner","rann","har runnit","rinn!","–"],
+["r2","sitzen","sitta","sitter","satt","har suttit","sitt!","–"],
+["r2","schlüpfen","slinka","slinker","slank","har slunkit","slink!","–"],
+["r2","nicht müssen, verschont bleiben","slippa","slipper","slapp","har sluppit","slipp!","–"],
+["r2","spinnen, schnurren","spinna","spinner","spann","har spunnit","spinn!","spunnen / spunnet / spunna"],
+["r2","platzen, reißen","spricka","spricker","sprack","har spruckit","–","sprucken / sprucket / spruckna"],
+["r2","laufen, rennen","springa","springer","sprang","har sprungit","spring!","–"],
+["r2","stechen; abhauen","sticka","sticker","stack","har stuckit","stick!","stucken / stucket / stuckna"],
+["r2","stinken","stinka","stinker","stank","har stunkit","–","–"],
+["r2","gewinnen","vinna","vinner","vann","har vunnit","vinn!","vunnen / vunnet / vunna"],
+["r3","einladen, anbieten","bjuda","bjuder","bjöd","har bjudit","bjud!","bjuden / bjudet / bjudna"],
+["r3","brechen","bryta","bryter","bröt","har brutit","bryt!","bruten / brutet / brutna"],
+["r3","taugen","duga","duger","dög (dugde)","har dugt","–","–"],
+["r3","tauchen","dyka","dyker","dök","har dykt (dykit)","dyk!","–"],
+["r3","fliegen","flyga","flyger","flög","har flugit","flyg!","–"],
+["r3","treiben, fließen","flyta","flyter","flöt","har flutit","flyt!","–"],
+["r3","schnauben","fnysa","fnyser","fnös (fnyste)","har fnyst","fnys!","–"],
+["r3","frieren, gefrieren","frysa","fryser","frös","har frusit","frys!","frusen / fruset / frusna"],
+["r3","gießen, Metall/Beton","gjuta","gjuter","göt","har gjutit","gjut!","gjuten / gjutet / gjutna"],
+["r3","hauen, hacken","hugga","hugger","högg","har huggit","hugg!","huggen / hugget / huggna"],
+["r3","spalten","klyva","klyver","klöv","har kluvit","klyv!","kluven / kluvet / kluvna"],
+["r3","knoten, binden","knyta","knyter","knöt","har knutit","knyt!","knuten / knutet / knutna"],
+["r3","kriechen","krypa","kryper","kröp","har krupit","kryp!","–"],
+["r3","erklingen","ljuda","ljuder","ljöd","har ljudit","–","–"],
+["r3","lügen","ljuga","ljuger","ljög","har ljugit","ljug!","ljugen / ljuget / ljugna"],
+["r3","genießen","njuta","njuter","njöt","har njutit","njut!","njuten / njutet / njutna"],
+["r3","kneifen, zwicken","nypa","nyper","nöp","har nupit","nyp!","–"],
+["r3","niesen","nysa","nyser","nös (nyste)","har nyst","nys!","–"],
+["r3","qualmen, rauchen","ryka","ryker","rök","har rukit","–","–"],
+["r3","brüllen","ryta","ryter","röt","har rutit","ryt!","–"],
+["r3","sieden, köcheln","sjuda","sjuder","sjöd","har sjudit","sjud!","–"],
+["r3","singen","sjunga","sjunger","sjöng","har sjungit","sjung!","sjungen / sjunget / sjungna"],
+["r3","sinken","sjunka","sjunker","sjönk","har sjunkit","sjunk!","sjunken / sjunket / sjunkna"],
+["r3","schießen; schieben","skjuta","skjuter","sköt","har skjutit","skjut!","skjuten / skjutet / skjutna"],
+["r3","prahlen","skryta","skryter","skröt","har skrutit","skryt!","–"],
+["r3","schleichen","smyga","smyger","smög","har smugit","smyg!","–"],
+["r3","sich schnäuzen","snyta","snyter","snöt","har snutit","snyt!","–"],
+["r3","streichen; bügeln","stryka","stryker","strök","har strukit","stryk!","struken / struket / strukna"],
+["r3","saugen","suga","suger","sög","har sugit","sug!","sugen / suget / sugna"],
+["r3","saufen","supa","super","söp","har supit","sup!","–"],
+["r3","heulen","tjuta","tjuter","tjöt","har tjutit","tjut!","–"],
+["r3","zur Neige gehen","tryta","tryter","tröt","har trutit","–","–"],
+["r4","ziehen","dra, draga","drar","drog","har dragit","dra!","dragen / draget / dragna"],
+["r4","fahren, reisen","fara","far","for","har farit","far!","–"],
+["r4","krähen","gala","gal","gol","har galit","gal!","–"],
+["r4","schlagen","slå","slår","slog","har slagit","slå!","slagen / slaget / slagna"],
+["r4","nehmen","ta, taga","tar","tog","har tagit","ta!","tagen / taget / tagna"],
+["r5","tragen","bära","bär","bar","har burit","bär!","buren / buret / burna"],
+["r5","schneiden","skära","skär","skar","har skurit","skär!","skuren / skuret / skurna"],
+["r5","schmelzen, intransitiv","smälta","smälter","smalt (smälte)","har smultit (smält)","–","smält / smält / smälta"],
+["r5","stehlen","stjäla","stjäl","stal","har stulit","stjäl!","stulen / stulet / stulna"],
+["r5","hungern","svälta","svälter","svalt","har svultit","–","svulten / svultet / svultna"],
+["r5","schwören; fluchen","svära","svär","svor","har svurit","svär!","svuren / svuret / svurna"],
+["eig","bitten, beten","be","ber","bad","har bett","be!","bedd / bett / bedda"],
+["eig","sterben","dö","dör","dog","har dött","dö!","–"],
+["eig","fallen","falla","faller","föll","har fallit","fall!","fallen / fallet / fallna"],
+["eig","bekommen; dürfen","få","får","fick","har fått","–","fådd / fått / fådda"],
+["eig","geben","ge, giva","ger","gav","har gett (givit)","ge!","given / givet / givna"],
+["eig","weinen","gråta","gråter","grät","har gråtit","gråt!","–"],
+["eig","gehen","gå","går","gick","har gått","gå!","gången / gånget / gångna"],
+["eig","halten","hålla","håller","höll","har hållit","håll!","hållen / hållet / hållna"],
+["eig","kommen","komma","kommer","kom","har kommit","kom!","kommen / kommet / komna"],
+["eig","lächeln","le","ler","log","har lett","le!","–"],
+["eig","liegen","ligga","ligger","låg","har legat","ligg!","–"],
+["eig","lassen; klingen","låta","låter","lät","har låtit","låt!","–"],
+["eig","sehen","se","ser","såg","har sett","se!","sedd / sett / sedda"],
+["eig","schlafen","sova","sover","sov","har sovit","sov!","–"],
+["eig","stehen","stå","står","stod","har stått","stå!","–"],
+["eig","sein","vara","är","var","har varit","var!","–"],
+["eig","essen","äta","äter","åt","har ätit","ät!","äten / ätet / ätna"],
+["sch","verbergen","dölja","döljer","dolde","har dolt","dölj!","dold / dolt / dolda"],
+["sch","erfreuen","glädja","gläder","gladde","har glatt","–","–"],
+["sch","machen, tun","göra","gör","gjorde","har gjort","gör!","gjord / gjort / gjorda"],
+["sch","haben","ha","har","hade","har haft","ha!","–"],
+["sch","heißen","heta","heter","hette","har hetat","–","–"],
+["sch","legen","lägga","lägger","la (lade)","har lagt","lägg!","lagd / lagt / lagda"],
+["sch","schmieren, salben","smörja","smörjer","smorde","har smort","smörj!","smord / smort / smorda"],
+["sch","schlucken","svälja","sväljer","svalde","har svalt","svälj!","svald / svalt / svalda"],
+["sch","sagen","säga","säger","sa (sade)","har sagt","säg!","sagd / sagt / sagda"],
+["sch","verkaufen","sälja","säljer","sålde","har sålt","sälj!","såld / sålt / sålda"],
+["sch","setzen","sätta","sätter","satte","har satt","sätt!","satt / satt / satta"],
+["sch","sich trauen","töras","törs","tordes","har torts","–","–"],
+["sch","wissen","veta","vet","visste","har vetat","vet!","–"],
+["sch","wählen","välja","väljer","valde","har valt","välj!","vald / valt / valda"],
+["sch","gewöhnen","vänja","vänjer","vande","har vant","vänj!","vand / vant / vanda"],
+["mod","sollen, Empfehlung","böra","bör","borde","har bort","–","–"],
+["mod","können","kunna","kan","kunde","har kunnat","–","–"],
+["mod","mögen, Wunsch; sich fühlen","må","må","måtte","–","–","–"],
+["mod","müssen","måste","måste","måste","har måst","–","–"],
+["mod","sollen; werden, Zukunft","ska, skola","ska (skall)","skulle","har skolat","–","–"],
+["mod","wollen","vilja","vill","ville","har velat","–","–"]
+].map(r => ({ g: r[0], de: r[1], sv: r[2], pres: r[3], pret: r[4], perf: r[5], imp: r[6], part: r[7] }));
+let vGroup = 'all';
+try { const g = localStorage.getItem(LS_VFILTER); if (g && (g === 'all' || g in VGROUPS)) vGroup = g; } catch (e) {}
+const vFilter = $('vFilter');
+vFilter.innerHTML = '<option value="all">Alle Verben (' + VERBS.length + ')</option>' + Object.keys(VGROUPS).map(k => '<option value="' + k + '">' + VGROUPS[k] + ' (' + VERBS.filter(x => x.g === k).length + ')</option>').join('');
+vFilter.value = vGroup;
+function applyVerbFilter() { V.buildQueue(); if (vGroup !== 'all') V.queue = V.queue.filter(i => VERBS[i].g === vGroup); }
+vFilter.addEventListener('change', () => { vGroup = vFilter.value; try { localStorage.setItem(LS_VFILTER, vGroup); } catch (e) {} V.history = []; applyVerbFilter(); renderVerb(); });
+const vCard = $('vCard'); let vFlipped = false;
+const jag = x => x === '–' ? '–' : 'jag ' + x;
+function renderVerb() {
+  updateGoalLines();
+  const pool = VERBS.map((_, i) => i).filter(i => vGroup === 'all' || VERBS[i].g === vGroup);
+  const learned = pool.filter(i => { const s = V.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
+  $('vProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
+  $('vUndoBtn').disabled = V.history.length === 0;
+  $('vSkipBtn').disabled = V.queue.length < 2;
+  const done = V.queue.length === 0;
+  $('vStudy').classList.toggle('hidden', done); $('vDone').classList.toggle('hidden', !done);
+  if (done) { $('vDoneText').textContent = vGroup === 'all' ? V.doneText() : 'In dieser Gruppe ist heute nichts mehr offen. Wähle oben eine andere Gruppe oder „Alle Verben“.'; $('vCounter').textContent = 'Heute ist nichts mehr offen'; return; }
+  const i = V.queue[0], c = VERBS[i];
+  vFlipped = false; vCard.classList.remove('flipped');
+  $('vDe').textContent = c.de; $('vSv').textContent = '(' + c.sv + ')'; $('vGroupLbl').textContent = VGROUPS[c.g];
+  const head = $('vHead'); head.textContent = c.de + ' '; const b = document.createElement('b'); b.textContent = '(' + c.sv + ')'; head.appendChild(b);
+  const dl = $('vForms'); dl.textContent = '';
+  [['Präsens', jag(c.pres)], ['Präteritum', jag(c.pret)], ['Perfekt', jag(c.perf)], ['Imperativ', c.imp], ['Partizip', c.part]].forEach(([l, v]) => {
+    const dt = document.createElement('dt'); dt.textContent = l; const dd = document.createElement('dd'); dd.textContent = v; dl.append(dt, dd);
+  });
+  $('vCounter').textContent = 'Heute noch ' + V.queue.length + ' · ' + V.tag(i) + VGROUPS[c.g];
+}
+const swipeV = bindSwipe($('vStage'), $('vBadgeRight'), $('vBadgeLeft'), {
+  hasCard: () => V.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
+  onCommit: kind => { V.rate(kind); track('v', 1); renderVerb(); }
+});
+function flipVerb() { if (!V.queue.length) return; vFlipped = !vFlipped; vCard.classList.toggle('flipped', vFlipped); }
+vCard.addEventListener('click', () => { if (!swipeV.suppressed()) flipVerb(); });
+$('vFlipBtn').addEventListener('click', flipVerb);
+$('vKnownBtn').addEventListener('click', () => swipeV.commit('known'));
+$('vAgainBtn').addEventListener('click', () => swipeV.commit('again'));
+$('vUndoBtn').addEventListener('click', () => { if (V.undo()) { track('v', -1); renderVerb(); } });
+$('vSkipBtn').addEventListener('click', () => { if (V.skip()) renderVerb(); });
+$('vShuffleBtn').addEventListener('click', () => { V.shuffle(); applyVerbFilter(); renderVerb(); });
+armReset($('vResetBtn'), '⚙ Zurücksetzen', () => { V.resetAll(); applyVerbFilter(); renderVerb(); });
+
 // ---------- Verwaltung (für beide Module) ----------
 let mCtx = null, mFilter = 'mastered', mQuery = '';
 const FILTERS = [['mastered', 'Gemeistert'], ['review', 'In Wiederholung'], ['again', 'Nochmal'], ['fresh', 'Neu'], ['all', 'Alle']];
@@ -886,25 +1129,30 @@ function renderManage() {
 }
 $('manageBtn').addEventListener('click', () => openManage({ L: F, after: renderFlash, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
 $('sManageBtn').addEventListener('click', () => openManage({ L: S, after: renderSent, text: i => [tasks[i].pre + ' ___ ' + tasks[i].post, tasks[i].de] }));
+$('vManageBtn').addEventListener('click', () => openManage({ L: V, after: () => { applyVerbFilter(); renderVerb(); }, text: i => [VERBS[i].de + ' (' + VERBS[i].sv + ')', VGROUPS[VERBS[i].g]] }));
 $('manageClose').addEventListener('click', () => { $('manageScreen').style.display = 'none'; });
 $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderManage(); });
 
 // ---------- Navigation ----------
 function showView(v) {
-  ['home', 'flash', 'sent'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
-  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else renderHome();
+  ['home', 'flash', 'sent', 'verb'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else renderHome();
   window.scrollTo(0, 0);
 }
-const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : 'home');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : 'home');
 $('goFlash').addEventListener('click', () => showView('flash'));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
 $('backS').addEventListener('click', () => showView('home'));
+$('goVerb').addEventListener('click', () => showView('verb'));
+$('backV').addEventListener('click', () => showView('home'));
 document.addEventListener('keydown', e => {
   if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block' || $('goalScreen').style.display === 'flex' || $('praiseScreen').style.display === 'flex') return;
   const typing = e.target && e.target.tagName === 'INPUT', v = activeView();
   if (v === 'flash') {
     if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) { track('f', -1); renderFlash(); } }
+  } else if (v === 'verb') {
+    if (e.key === 'ArrowRight') swipeV.commit('known'); else if (e.key === 'ArrowLeft') swipeV.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipVerb(); } else if (e.key.toLowerCase() === 'z') { if (V.undo()) { track('v', -1); renderVerb(); } }
   } else if (v === 'sent' && !typing) {
     if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
   }
@@ -916,6 +1164,7 @@ function startWith(list) {
   F.init(cards, cards.map(hashCard), false);
   tasks = buildTasks(cards);
   S.init(tasks, tasks.map(t => t.key), true);
+  V.init(VERBS, VERBS.map(x => 'v:' + x.sv), false); applyVerbFilter();
   importEl.style.display = 'none';
   loadStreak();
   showView('home');
@@ -941,7 +1190,7 @@ $('loadBtn').addEventListener('click', () => $('fileInput').click());
 window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || !cards.length) return;
-  if (F.builtOn !== today() || S.builtOn !== today()) { F.buildQueue(); S.buildQueue(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else renderHome(); }
+  if (F.builtOn !== today() || S.builtOn !== today() || V.builtOn !== today()) { F.buildQueue(); S.buildQueue(); applyVerbFilter(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else renderHome(); }
 });
 (function boot() {
   let list = null;

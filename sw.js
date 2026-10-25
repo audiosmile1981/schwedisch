@@ -1,4 +1,4 @@
-const CACHE = 'schwedisch-app-v6';
+const CACHE = 'schwedisch-app-v7';
 const FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
