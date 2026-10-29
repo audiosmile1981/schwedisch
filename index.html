@@ -236,6 +236,18 @@
   .streaknote { font-size: .82rem; opacity: .85; margin-top: 8px; }
   .topbar { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; }
   .topbar .ttl { font-size: 1.1rem; font-weight: 600; }
+  .topbar .editbtn { margin-left: auto; font-size: 1.05rem; padding: 6px 12px; }
+  #editScreen { position: fixed; inset: 0; z-index: 50; background: var(--blue-0); color: var(--ink); display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  #editScreen .ebox { max-width: 720px; margin: 0 auto; }
+  #editScreen h2 { margin: 0 0 4px; font-size: 1.15rem; }
+  #editScreen .enote { font-size: .8rem; opacity: .75; margin: 0 0 14px; line-height: 1.5; }
+  #editScreen label { display: block; font-family: var(--mono); font-size: .72rem; color: var(--line); margin: 14px 0 5px; }
+  #editScreen .ehint { font-size: .75rem; opacity: .7; margin-top: 4px; line-height: 1.4; }
+  #editScreen input, #editScreen textarea { width: 100%; box-sizing: border-box; background: var(--blue-1); color: var(--ink); border: 1px solid var(--line); border-radius: 0; padding: 10px; font: inherit; font-size: 16px; line-height: 1.45; }
+  #editScreen textarea { min-height: 5.5em; resize: vertical; }
+  #editScreen input:focus, #editScreen textarea:focus { outline: 2px solid var(--amber); outline-offset: 0; }
+  #editScreen .emsg { color: #ff8a7a; font-size: .85rem; min-height: 1.2em; margin-top: 12px; }
+  #editScreen .erow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
   .goalline { font-size: .74rem; opacity: .85; margin: 4px 0 2px; }
   .gprog { height: 4px; background: var(--blue-2); margin-bottom: 12px; }
   .gfill { height: 100%; background: #7ee2a4; width: 0; transition: width .25s; }
@@ -311,6 +323,19 @@
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
+<div id="editScreen" role="dialog" aria-modal="true" aria-label="Karte bearbeiten">
+  <div class="ebox">
+    <h2>Karte bearbeiten</h2>
+    <p class="enote">Änderungen gelten nur auf diesem Gerät. Dein Lernfortschritt für diese Karte bleibt erhalten.</p>
+    <div id="eFields"></div>
+    <div class="emsg" id="eMsg" role="status"></div>
+    <div class="erow">
+      <button class="primary" id="eSave">Speichern</button>
+      <button id="eCancel">Abbrechen</button>
+      <button id="eRestore">Original wiederherstellen</button>
+    </div>
+  </div>
+</div>
 <div id="manageScreen">
   <div class="mbox">
     <div class="mhead"><h2>Karten verwalten</h2><button id="manageClose">Schließen</button></div>
@@ -337,7 +362,7 @@
   </div>
 
   <div id="viewFlash" class="hidden">
-    <div class="topbar"><button id="backF">‹ Start</button><span class="ttl">Flashcards Präpositionen</span></div>
+    <div class="topbar"><button id="backF">‹ Start</button><span class="ttl">Flashcards Präpositionen</span><button class="editbtn" id="editF" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="counter" id="counter"></div>
@@ -383,7 +408,7 @@
   </div>
 
   <div id="viewSent" class="hidden">
-    <div class="topbar"><button id="backS">‹ Start</button><span class="ttl">Präpositionen üben</span></div>
+    <div class="topbar"><button id="backS">‹ Start</button><span class="ttl">Präpositionen üben</span><button class="editbtn" id="editS" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Setze die fehlende Präposition ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
     <div class="progress-bar"><div class="progress-fill" id="sProgress"></div></div>
     <div class="counter" id="sCounter"></div>
@@ -423,7 +448,7 @@
   </div>
 
   <div id="viewVerb" class="hidden">
-    <div class="topbar"><button id="backV">‹ Start</button><span class="ttl">Flashcards starke Verben</span></div>
+    <div class="topbar"><button id="backV">‹ Start</button><span class="ttl">Flashcards starke Verben</span><button class="editbtn" id="editV" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Vorne Deutsch, hinten alle Formen. Nach rechts wischen: gewusst, kommt nach 3, 7 und 10 Tagen wieder. Nach links wischen: nochmal, morgen wieder.</div>
     <select class="vfilter" id="vFilter" aria-label="Gruppe wählen"></select>
     <div class="progress-bar"><div class="progress-fill" id="vProgress"></div></div>
@@ -462,7 +487,7 @@
   </div>
 
   <div id="viewWork" class="hidden">
-    <div class="topbar"><button id="backW">‹ Start</button><span class="ttl">Starke Verben üben</span></div>
+    <div class="topbar"><button id="backW">‹ Start</button><span class="ttl">Starke Verben üben</span><button class="editbtn" id="editW" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Setze die richtige Verbform ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
     <select class="vfilter" id="wFilter" aria-label="Verbform wählen"></select>
     <div class="progress-bar"><div class="progress-fill" id="wProgress"></div></div>
@@ -506,6 +531,18 @@
 
 <script>
 const $ = id => document.getElementById(id);
+const LS_EDITS = 'schwedisch-app-edits-v1';
+let EDITS = { f: {}, s: {}, v: {}, w: {} };
+try { const d = JSON.parse(localStorage.getItem(LS_EDITS)); if (d && typeof d === 'object') ['f', 's', 'v', 'w'].forEach(k => { if (d[k] && typeof d[k] === 'object') EDITS[k] = d[k]; }); } catch (e) {}
+function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+function parseGap(sv) {
+  const a = sv.indexOf('{'), b = sv.indexOf('}');
+  if (a < 0 || b < a + 2 || sv.indexOf('{', a + 1) >= 0 || sv.indexOf('}', b + 1) >= 0) return null;
+  const opts = sv.slice(a + 1, b).split('|').map(x => x.trim()).filter(Boolean); if (!opts.length) return null;
+  return { pre: sv.slice(0, a), ans: opts[0], alt: opts.slice(1), post: sv.slice(b + 1) };
+}
+const joinGap = t => t.pre + '{' + [t.ans].concat(t.alt || []).join('|') + '}' + t.post;
 const INTERVALS = [3, 7, 10];
 const LS_CARDS = 'schwedisch-app-cards-v1';
 const LS_FLASH = 'schwedisch-app-learn-v2';
@@ -756,6 +793,7 @@ function bindSwipe(stageEl, badgeR, badgeL, o) {
 }
 
 // ---------- Modul 1: Flashcards ----------
+function fView(i) { const e = EDITS.f[F.keys[i]]; return e ? Object.assign({}, cards[i], e) : cards[i]; }
 const cardEl = $('card'), qText = $('qText'), deExamples = $('deExamples'), answerWord = $('answerWord'), ruleText = $('ruleText'), svExamples = $('svExamples'), pageRef = $('pageRef');
 const counter = $('counter'), progressFill = $('progressFill');
 let flipped = false;
@@ -797,17 +835,18 @@ function renderFlash() {
   $('doneScreen').style.display = done ? 'block' : 'none';
   $('undoBtn').disabled = F.history.length === 0;
   $('skipBtn').disabled = F.queue.length < 2;
+  $('editF').disabled = done;
   if (done) { $('doneText').textContent = F.doneText(); counter.textContent = 'Heute ist nichts mehr offen'; return; }
-  const c = cards[F.queue[0]];
+  const c = fView(F.queue[0]);
   flipped = false; cardEl.classList.remove('flipped');
   qText.textContent = '';
   { const ps = c.q.split('\n'); const a = document.createElement('div'); a.textContent = ps[0]; qText.appendChild(a); if (ps[1]) { const g = document.createElement('div'); g.className = 'gloss'; g.textContent = ps[1]; qText.appendChild(g); } }
-  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => '<div>' + s + '</div>').join('');
+  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => '<div>' + esc(s) + '</div>').join('');
   answerWord.textContent = c.answer;
   ruleText.textContent = c.rule;
-  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => '<div class="pair"><div class="sv-line">' + sv + '</div><div class="de-line">' + de + '</div></div>').join('') : '<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</div></div>';
+  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => '<div class="pair"><div class="sv-line">' + esc(sv) + '</div><div class="de-line">' + esc(de || '') + '</div></div>').join('') : '<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</div></div>';
   pageRef.textContent = 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
-  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + c.part;
+  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + c.part + (EDITS.f[F.keys[F.queue[0]]] ? ' · ✎ bearbeitet' : '');
   requestAnimationFrame(fitCardHeight);
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
@@ -832,6 +871,7 @@ function armReset(btn, label, fn) {
 armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); renderFlash(); });
 
 // ---------- Modul 2: Sätze üben ----------
+function sView(i) { const e = EDITS.s[S.keys[i]]; return e ? Object.assign({}, S.items[i], e) : S.items[i]; }
 const PREPS = new Set(['på','i','hos','ovanpå','utanpå','innanför','utanför','inuti','inom','över','ovanför','under','nedanför','framför','bakom','före','efter','bredvid','intill','mittemot','bland','mellan','mot','till','om','runt','runtom','kring','omkring','längs','utmed','utefter','från','ur','åt','genom','förbi','via','uppför','nerför','med','utom','enligt','vid','för','sedan','per','inför','utan','av','framemot','ungefär','cirka','medelst','gällande','beträffande','angående','rörande','avseende','emot']);
 const COMPOUNDS = ['på grund av', 'tack vare', 'med anledning av', 'till följd av', 'i stället för', 'med hjälp av', 'när det gäller', 'i fråga om', 'vad gäller', 'vad beträffar', 'från och med', 'till och med'];
 const ALT = {
@@ -882,11 +922,11 @@ function renderSent() {
   $('sUndoBtn').disabled = S.history.length === 0;
   $('sSkipBtn').disabled = S.queue.length < 2;
   const none = S.items.length === 0, done = S.queue.length === 0;
-  $('sStudy').classList.toggle('hidden', done); $('sDone').classList.toggle('hidden', !done);
+  $('sStudy').classList.toggle('hidden', done); $('sDone').classList.toggle('hidden', !done); $('editS').disabled = done;
   if (done) { $('sDoneText').textContent = none ? 'In den geladenen Karten wurden keine passenden Sätze gefunden.' : S.doneText(); $('sCounter').textContent = none ? '' : 'Heute ist nichts mehr offen'; return; }
-  const t = S.items[S.queue[0]];
+  const t = sView(S.queue[0]);
   sState = { attempts: 0, resolved: null };
-  $('sCounter').textContent = 'Heute noch ' + S.queue.length + ' · ' + S.tag(S.queue[0]).replace(/ · $/, '');
+  $('sCounter').textContent = ['Heute noch ' + S.queue.length, S.tag(S.queue[0]).replace(/ · $/, ''), EDITS.s[S.keys[S.queue[0]]] ? '✎ bearbeitet' : ''].filter(Boolean).join(' · ');
   $('sDe').textContent = t.de; $('sPre').textContent = t.pre; $('sPost').textContent = t.post;
   sInput.value = ''; sInput.disabled = false; sInput.className = 'blank' + (t.ans.includes(' ') ? ' wide' : '');
   sCard.className = 'scard'; setFeed(''); sInfo.textContent = '';
@@ -895,13 +935,13 @@ function renderSent() {
 }
 function showInfo(t) {
   const c = cards[t.ci]; const head = c.q.split('\n'); sInfo.textContent = '';
-  const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.sv;
+  const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.pre + t.ans + t.post;
   const b = document.createElement('div'); b.style.marginTop = '6px'; b.textContent = 'Karte: ' + head[0] + (head[1] ? ' (' + head[1] + ')' : '') + ' · ' + c.part + ', S. ' + c.page;
   const r = document.createElement('div'); r.style.marginTop = '6px'; r.textContent = 'Regel: ' + c.rule;
   sInfo.append(a, b, r);
 }
 function resolveSent(kind, extra) {
-  const t = S.items[S.queue[0]]; sState.resolved = kind;
+  const t = sView(S.queue[0]); sState.resolved = kind;
   sInput.value = t.ans; sInput.disabled = true;
   sCard.classList.add(kind === 'correct' ? 'ok' : 'bad');
   if (kind === 'correct') setFeed('Richtig ✓' + (sState.attempts === 1 ? ' (beim zweiten Versuch)' : '') + (extra ? ' · ' + extra : '') + ' – jetzt nach rechts wischen.', 'ok');
@@ -913,7 +953,7 @@ function resolveSent(kind, extra) {
 }
 function checkSent() {
   if (sState.resolved || !S.queue.length) return;
-  const t = S.items[S.queue[0]], v = sInput.value;
+  const t = sView(S.queue[0]), v = sInput.value;
   if (!v.trim()) { setFeed('Gib zuerst eine Präposition ein.'); sInput.focus(); return; }
   const verdict = judge(v, t);
   if (verdict !== 'wrong') { resolveSent('correct', verdict === 'accent' ? 'Achte auf die Akzente: ' + t.ans : ''); return; }
@@ -924,7 +964,7 @@ function checkSent() {
 function revealSent() { if (sState.resolved || !S.queue.length) return; sState.attempts = 2; resolveSent('failed'); }
 function hintSent() {
   if (sState.resolved || !S.queue.length) return;
-  const c = cards[S.items[S.queue[0]].ci], ps = c.q.split('\n');
+  const c = cards[sView(S.queue[0]).ci], ps = c.q.split('\n');
   setFeed('Hinweis: ' + ps[0] + (ps[1] ? ' (' + ps[1] + ')' : ''));
 }
 const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
@@ -1090,6 +1130,7 @@ const VERBS = [
 ["mod","wollen","vilja","vill","ville","har velat","–","–"]
 ].map(r => ({ g: r[0], de: r[1], sv: r[2], pres: r[3], pret: r[4], perf: r[5], imp: r[6], part: r[7] }));
 let vGroup = 'all';
+function vView(i) { const e = EDITS.v[V.keys[i]]; return e ? Object.assign({}, VERBS[i], e) : VERBS[i]; }
 try { const g = localStorage.getItem(LS_VFILTER); if (g && (g === 'all' || g in VGROUPS)) vGroup = g; } catch (e) {}
 const vFilter = $('vFilter');
 vFilter.innerHTML = '<option value="all">Alle Verben (' + VERBS.length + ')</option>' + Object.keys(VGROUPS).map(k => '<option value="' + k + '">' + VGROUPS[k] + ' (' + VERBS.filter(x => x.g === k).length + ')</option>').join('');
@@ -1106,9 +1147,9 @@ function renderVerb() {
   $('vUndoBtn').disabled = V.history.length === 0;
   $('vSkipBtn').disabled = V.queue.length < 2;
   const done = V.queue.length === 0;
-  $('vStudy').classList.toggle('hidden', done); $('vDone').classList.toggle('hidden', !done);
+  $('vStudy').classList.toggle('hidden', done); $('vDone').classList.toggle('hidden', !done); $('editV').disabled = done;
   if (done) { $('vDoneText').textContent = vGroup === 'all' ? V.doneText() : 'In dieser Gruppe ist heute nichts mehr offen. Wähle oben eine andere Gruppe oder „Alle Verben“.'; $('vCounter').textContent = 'Heute ist nichts mehr offen'; return; }
-  const i = V.queue[0], c = VERBS[i];
+  const i = V.queue[0], c = vView(i);
   vFlipped = false; vCard.classList.remove('flipped');
   $('vDe').textContent = c.de; $('vSv').textContent = '(' + c.sv + ')'; $('vGroupLbl').textContent = VGROUPS[c.g];
   const head = $('vHead'); head.textContent = c.de + ' '; const b = document.createElement('b'); b.textContent = '(' + c.sv + ')'; head.appendChild(b);
@@ -1116,7 +1157,7 @@ function renderVerb() {
   [['Präsens', jag(c.pres)], ['Präteritum', jag(c.pret)], ['Perfekt', jag(c.perf)], ['Imperativ', c.imp], ['Partizip', c.part]].forEach(([l, v]) => {
     const dt = document.createElement('dt'); dt.textContent = l; const dd = document.createElement('dd'); dd.textContent = v; dl.append(dt, dd);
   });
-  $('vCounter').textContent = 'Heute noch ' + V.queue.length + ' · ' + V.tag(i) + VGROUPS[c.g];
+  $('vCounter').textContent = 'Heute noch ' + V.queue.length + ' · ' + V.tag(i) + VGROUPS[c.g] + (EDITS.v[V.keys[i]] ? ' · ✎ bearbeitet' : '');
 }
 const swipeV = bindSwipe($('vStage'), $('vBadgeRight'), $('vBadgeLeft'), {
   hasCard: () => V.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
@@ -1643,6 +1684,7 @@ const WTASKS = VSENT.map(([vb, fm, de, sv]) => {
   return { key: 'w:' + vb + ':' + fm, vb, fm, de, pre: sv.slice(0, a), ans: opts[0], alt: opts.slice(1), post: sv.slice(b + 1), full: sv.slice(0, a) + opts[0] + sv.slice(b + 1) };
 });
 let wForm = 'all';
+function wView(i) { const e = EDITS.w[W.keys[i]]; if (!e) return WTASKS[i]; const t = Object.assign({}, WTASKS[i], e); t.full = t.pre + t.ans + t.post; return t; }
 try { const g = localStorage.getItem(LS_WFILTER); if (g && (g === 'all' || g in WFORMS)) wForm = g; } catch (e) {}
 const wFilter = $('wFilter');
 wFilter.innerHTML = '<option value="all">Alle Formen (' + WTASKS.length + ')</option>' + Object.keys(WFORMS).map(k => '<option value="' + k + '">' + WFORMS[k] + ' (' + WTASKS.filter(t => t.fm === k).length + ')</option>').join('');
@@ -1661,11 +1703,11 @@ function renderWork() {
   $('wUndoBtn').disabled = W.history.length === 0;
   $('wSkipBtn').disabled = W.queue.length < 2;
   const done = W.queue.length === 0;
-  $('wStudy').classList.toggle('hidden', done); $('wDone').classList.toggle('hidden', !done);
+  $('wStudy').classList.toggle('hidden', done); $('wDone').classList.toggle('hidden', !done); $('editW').disabled = done;
   if (done) { $('wDoneText').textContent = wForm === 'all' ? W.doneText() : 'Bei dieser Form ist heute nichts mehr offen. Wähle oben eine andere Form oder „Alle Formen“.'; $('wCounter').textContent = 'Heute ist nichts mehr offen'; return; }
-  const t = WTASKS[W.queue[0]];
+  const t = wView(W.queue[0]);
   wState = { attempts: 0, resolved: null };
-  $('wCounter').textContent = 'Heute noch ' + W.queue.length + ' · ' + W.tag(W.queue[0]) + WFORMS[t.fm];
+  $('wCounter').textContent = 'Heute noch ' + W.queue.length + ' · ' + W.tag(W.queue[0]) + WFORMS[t.fm] + (EDITS.w[W.keys[W.queue[0]]] ? ' · ✎ bearbeitet' : '');
   $('wDe').textContent = t.de; $('wForm').textContent = WFORMS[t.fm].toUpperCase();
   $('wPre').textContent = t.pre; $('wPost').textContent = t.post;
   wInput.value = ''; wInput.disabled = false; wInput.className = 'blank' + (t.ans.length > 8 ? ' wide' : '');
@@ -1682,7 +1724,7 @@ function wShowInfo(t) {
   if (t.alt.length) { const c = document.createElement('div'); c.style.marginTop = '6px'; c.textContent = 'Auch richtig: ' + t.alt.join(', '); wInfo.appendChild(c); }
 }
 function resolveWork(kind) {
-  const t = WTASKS[W.queue[0]]; wState.resolved = kind;
+  const t = wView(W.queue[0]); wState.resolved = kind;
   wInput.value = t.ans; wInput.disabled = true;
   wCard.classList.add(kind === 'correct' ? 'ok' : 'bad');
   if (kind === 'correct') wSetFeed('Richtig ✓' + (wState.attempts === 1 ? ' (beim zweiten Versuch)' : '') + ' – jetzt nach rechts wischen.', 'ok');
@@ -1694,7 +1736,7 @@ function resolveWork(kind) {
 }
 function checkWork() {
   if (wState.resolved || !W.queue.length) return;
-  const t = WTASKS[W.queue[0]], v = wInput.value;
+  const t = wView(W.queue[0]), v = wInput.value;
   if (!v.trim()) { wSetFeed('Gib zuerst eine Verbform ein.'); wInput.focus(); return; }
   const verdict = judge(v, t);
   if (verdict === 'exact') { resolveWork('correct'); return; }
@@ -1705,7 +1747,7 @@ function checkWork() {
 function revealWork() { if (wState.resolved || !W.queue.length) return; wState.attempts = 2; resolveWork('failed'); }
 function hintWork() {
   if (wState.resolved || !W.queue.length) return;
-  const t = WTASKS[W.queue[0]], v = VERB_BY_SV[t.vb];
+  const t = wView(W.queue[0]), v = VERB_BY_SV[t.vb];
   wSetFeed('Hinweis: ' + v.sv + ' (' + v.de + ') · gesucht: ' + WFORMS[t.fm]);
 }
 const swipeW = bindSwipe($('wStage'), $('wBadgeRight'), $('wBadgeLeft'), {
@@ -1727,6 +1769,79 @@ document.querySelectorAll('#wChars button').forEach(b => {
   b.addEventListener('mousedown', e => e.preventDefault());
   b.addEventListener('click', () => { if (wInput.disabled) return; wInput.setRangeText(b.dataset.ch, wInput.selectionStart, wInput.selectionEnd, 'end'); wInput.focus(); });
 });
+
+// ---------- Karten bearbeiten (alle Module) ----------
+let eCtx = null;
+const GAP_HINT = 'Die Lösung steht in geschweiften Klammern, z. B. Hon {skrev} ett brev. Weitere richtige Antworten mit | trennen: {sa|sade}.';
+const EDITORS = {
+  f: { L: F, kind: 'f', view: fView, render: () => renderFlash(),
+    fields: [
+      { k: 'q', label: 'VORDERSEITE', multi: true, hint: 'Erste Zeile: Überschrift. Zweite Zeile (optional): Erklärung.' },
+      { k: 'de', label: 'DEUTSCHE BEISPIELE (VORDERSEITE)', multi: true, hint: 'Ein Satz pro Zeile.' },
+      { k: 'answer', label: 'PRÄPOSITION (RÜCKSEITE)' },
+      { k: 'rule', label: 'REGEL', multi: true },
+      { k: 'sv', label: 'SCHWEDISCHE BEISPIELE MIT ÜBERSETZUNG', multi: true, hint: 'Ein Beispiel pro Zeile: schwedischer Satz | deutscher Satz' }
+    ],
+    get: c => ({ q: c.q, de: (c.de || c.sv.map(p => p[1])).filter(Boolean).join('\n'), answer: c.answer, rule: c.rule, sv: c.sv.map(p => p[0] + (p[1] ? ' | ' + p[1] : '')).join('\n') }),
+    put: v => {
+      if (!v.q.trim() || !v.answer.trim()) return 'Vorderseite und Präposition dürfen nicht leer sein.';
+      const sv = v.sv.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const k = l.indexOf('|'); return k < 0 ? [l, ''] : [l.slice(0, k).trim(), l.slice(k + 1).trim()]; });
+      return { q: v.q.replace(/\s+$/, ''), de: v.de.split('\n').map(l => l.trim()).filter(Boolean), answer: v.answer.trim(), rule: v.rule.trim(), sv };
+    } },
+  s: { L: S, kind: 's', view: sView, render: () => renderSent(),
+    fields: [
+      { k: 'de', label: 'DEUTSCHER SATZ', multi: true },
+      { k: 'sv', label: 'SCHWEDISCHER SATZ MIT LÜCKE', multi: true, hint: GAP_HINT.replace('Hon {skrev} ett brev', 'Boken ligger {på} bordet').replace('{sa|sade}', '{över|ovanför}') }
+    ],
+    get: t => ({ de: t.de, sv: joinGap(t) }),
+    put: v => { const g = parseGap(v.sv.trim()); if (!g) return 'Im schwedischen Satz muss genau eine Lösung in {geschweiften Klammern} stehen.'; if (!v.de.trim()) return 'Der deutsche Satz darf nicht leer sein.'; return Object.assign({ de: v.de.trim() }, g); } },
+  v: { L: V, kind: 'v', view: vView, render: () => renderVerb(),
+    fields: [
+      { k: 'de', label: 'DEUTSCH' }, { k: 'sv', label: 'SCHWEDISCH (INFINITIV)' },
+      { k: 'pres', label: 'PRÄSENS (OHNE „JAG“)' }, { k: 'pret', label: 'PRÄTERITUM' }, { k: 'perf', label: 'PERFEKT (MIT „HAR“)' },
+      { k: 'imp', label: 'IMPERATIV', hint: 'Ein Strich (–), wenn es keinen gibt.' }, { k: 'part', label: 'PARTIZIP' }
+    ],
+    get: c => ({ de: c.de, sv: c.sv, pres: c.pres, pret: c.pret, perf: c.perf, imp: c.imp, part: c.part }),
+    put: v => { const o = {}; for (const f of ['de', 'sv', 'pres', 'pret', 'perf', 'imp', 'part']) { o[f] = v[f].trim() || '–'; } if (o.de === '–' || o.sv === '–') return 'Deutsch und Schwedisch dürfen nicht leer sein.'; return o; } },
+  w: { L: W, kind: 'w', view: wView, render: () => renderWork(),
+    fields: [
+      { k: 'de', label: 'DEUTSCHER SATZ', multi: true },
+      { k: 'sv', label: 'SCHWEDISCHER SATZ MIT LÜCKE', multi: true, hint: GAP_HINT }
+    ],
+    get: t => ({ de: t.de, sv: joinGap(t) }),
+    put: v => { const g = parseGap(v.sv.trim()); if (!g) return 'Im schwedischen Satz muss genau eine Lösung in {geschweiften Klammern} stehen.'; if (!v.de.trim()) return 'Der deutsche Satz darf nicht leer sein.'; return Object.assign({ de: v.de.trim() }, g); } }
+};
+function openEdit(kind) {
+  const ed = EDITORS[kind]; if (!ed.L.queue.length) return;
+  const i = ed.L.queue[0], key = ed.L.keys[i], val = ed.get(ed.view(i));
+  eCtx = { ed, key };
+  const box = $('eFields'); box.textContent = '';
+  ed.fields.forEach(f => {
+    const lab = document.createElement('label'); lab.textContent = f.label; lab.htmlFor = 'ef_' + f.k;
+    const inp = document.createElement(f.multi ? 'textarea' : 'input'); inp.id = 'ef_' + f.k; inp.value = val[f.k] == null ? '' : val[f.k];
+    inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false;
+    box.append(lab, inp);
+    if (f.hint) { const h = document.createElement('div'); h.className = 'ehint'; h.textContent = f.hint; box.appendChild(h); }
+  });
+  $('eMsg').textContent = '';
+  $('eRestore').classList.toggle('hidden', !EDITS[kind][key]);
+  $('editScreen').style.display = 'block'; $('editScreen').scrollTop = 0;
+}
+function closeEdit() { $('editScreen').style.display = 'none'; eCtx = null; }
+$('eCancel').addEventListener('click', closeEdit);
+$('eSave').addEventListener('click', () => {
+  if (!eCtx) return; const { ed, key } = eCtx, v = {};
+  ed.fields.forEach(f => { v[f.k] = $('ef_' + f.k).value; });
+  const res = ed.put(v); if (typeof res === 'string') { $('eMsg').textContent = res; return; }
+  EDITS[ed.kind][key] = res;
+  if (!saveEdits()) { $('eMsg').textContent = 'Die Änderung konnte nicht gespeichert werden.'; delete EDITS[ed.kind][key]; return; }
+  closeEdit(); ed.render();
+});
+$('eRestore').addEventListener('click', () => {
+  if (!eCtx) return; const { ed, key } = eCtx;
+  delete EDITS[ed.kind][key]; saveEdits(); closeEdit(); ed.render();
+});
+['F', 'S', 'V', 'W'].forEach(m => $('edit' + m).addEventListener('click', () => openEdit(m.toLowerCase())));
 
 // ---------- Verwaltung (für beide Module) ----------
 let mCtx = null, mFilter = 'mastered', mQuery = '';
@@ -1794,7 +1909,7 @@ $('backV').addEventListener('click', () => showView('home'));
 $('goWork').addEventListener('click', () => showView('work'));
 $('backW').addEventListener('click', () => showView('home'));
 document.addEventListener('keydown', e => {
-  if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block' || $('goalScreen').style.display === 'flex' || $('praiseScreen').style.display === 'flex') return;
+  if (importEl.style.display === 'flex' || $('editScreen').style.display === 'block' || $('manageScreen').style.display === 'block' || $('goalScreen').style.display === 'flex' || $('praiseScreen').style.display === 'flex') return;
   const typing = e.target && e.target.tagName === 'INPUT', v = activeView();
   if (v === 'flash') {
     if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) { track('f', -1); renderFlash(); } }
