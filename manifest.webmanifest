@@ -1,14 +1,14 @@
 {
-  "name": "Schwedisch – Präpositionen",
+  "name": "Schwedisch",
   "short_name": "Schwedisch",
-  "description": "Flashcards zu den Präpositionen aus der Prepositionsboken",
+  "description": "Schwedisch lernen: Präpositionen und starke Verben",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "lang": "de",
-  "background_color": "#0a1f33",
-  "theme_color": "#0a1f33",
+  "background_color": "#F2F5F8",
+  "theme_color": "#F2F5F8",
   "icons": [
     {
       "src": "icon-192.png",
