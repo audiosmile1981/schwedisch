@@ -319,6 +319,7 @@
   <div class="grow"><span>Präpositionen üben</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Flashcards starke Verben</span><span class="step"><button id="gVm" aria-label="weniger">−</button><b id="gVv">15</b><button id="gVp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Starke Verben üben</span><span class="step"><button id="gWm" aria-label="weniger">−</button><b id="gWv">10</b><button id="gWp" aria-label="mehr">+</button></span></div>
+  <div class="grow"><span>Töne (Wischen und Tagesziel)</span><button id="soundToggle" style="width:auto;padding:8px 14px;font-size:.95rem" aria-pressed="true">An</button></div>
   <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der vier Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
@@ -532,6 +533,61 @@
 <script>
 const $ = id => document.getElementById(id);
 const LS_EDITS = 'schwedisch-app-edits-v1';
+const LS_SOUND = 'schwedisch-app-sound-v1';
+// ---------- Wischtöne ----------
+let soundOn = true;
+try { soundOn = localStorage.getItem(LS_SOUND) !== 'off'; } catch (e) {}
+let actx = null, aout = null, noiseBuf = null;
+function audio() {
+  if (!actx) {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    actx = new AC(); aout = actx.createGain(); aout.gain.value = 0.55; aout.connect(actx.destination);
+    const n = Math.floor(actx.sampleRate * 0.3); noiseBuf = actx.createBuffer(1, n, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+  }
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function sNoise(t, dur, f0, f1, vol) {
+  const s = actx.createBufferSource(); s.buffer = noiseBuf;
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2; bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  const g = actx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + dur * 0.35); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+  s.connect(bp); bp.connect(g); g.connect(aout); s.start(t); s.stop(t + dur);
+}
+function sTone(t, f, dur, vol, type, glideTo) {
+  const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+  if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t + dur);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+  o.connect(g); g.connect(aout); o.start(t); o.stop(t + dur + 0.05);
+}
+function playSwipe(kind) {
+  if (!soundOn) return;
+  try {
+    if (!audio()) return; const t = actx.currentTime + 0.02;
+    if (kind === 'known') { sNoise(t, 0.22, 700, 3200, 0.35); sTone(t + 0.12, 784, 0.35, 0.12, 'sine'); sTone(t + 0.2, 1175, 0.5, 0.1, 'sine'); }
+    else { sNoise(t, 0.22, 2400, 600, 0.3); sTone(t + 0.1, 330, 0.32, 0.14, 'triangle', 247); }
+  } catch (e) {}
+}
+function sBrass(t, f, dur, vol) {
+  const g = actx.createGain(), lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2;
+  lp.frequency.setValueAtTime(f * 1.5, t); lp.frequency.linearRampToValueAtTime(f * 6, t + 0.06); lp.frequency.exponentialRampToValueAtTime(f * 2.5, t + dur);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.03); g.gain.setValueAtTime(vol, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0008, t + dur + 0.25);
+  lp.connect(g); g.connect(aout);
+  [-6, 6].forEach(cent => { const o = actx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = cent; o.connect(lp); o.start(t); o.stop(t + dur + 0.3); });
+}
+function playFanfare() {
+  if (!soundOn) return;
+  try {
+    if (!audio()) return; const t = actx.currentTime + 0.4, s = 0.13;
+    sBrass(t, 392, s, 0.07); sBrass(t + s, 523.25, s, 0.07); sBrass(t + 2 * s, 659.25, s, 0.07); sBrass(t + 3 * s, 783.99, 0.32, 0.08);
+    const c = t + 3 * s + 0.36;
+    [523.25, 659.25, 783.99, 1046.5].forEach(f => sBrass(c, f, 1.1, 0.045));
+    sNoise(c, 0.3, 6000, 9000, 0.06);
+    sTone(c + 0.05, 2093, 1.2, 0.025, 'sine');
+  } catch (e) {}
+}
+// iOS gibt Audio erst nach einer Berührung frei
+['touchstart', 'mousedown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (soundOn) audio(); }, { passive: true, once: true }));
 let EDITS = { f: {}, s: {}, v: {}, w: {} };
 try { const d = JSON.parse(localStorage.getItem(LS_EDITS)); if (d && typeof d === 'object') ['f', 's', 'v', 'w'].forEach(k => { if (d[k] && typeof d[k] === 'object') EDITS[k] = d[k]; }); } catch (e) {}
 function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
@@ -704,6 +760,7 @@ function showPraise(kind, count, info, other) {
   else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
   $('pText').textContent = txt;
   $('praiseScreen').style.display = 'flex';
+  playFanfare();
 }
 $('pContinue').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; });
 $('pHome').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; showView('home'); });
@@ -732,7 +789,8 @@ function renderHome() {
   $('homeVSub').textContent = 'Heute ' + v.v + ' von ' + v.gv + (v.v >= v.gv ? ' ✓' : '') + ' · ' + V.queue.length + ' offen';
   $('homeWSub').textContent = 'Heute ' + v.w + ' von ' + v.gw + (v.w >= v.gw ? ' ✓' : '') + ' · ' + W.queue.length + ' offen';
 }
-function renderGoalModal() { $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
+function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
+function renderGoalModal() { renderSoundToggle(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -741,6 +799,7 @@ function changeGoal(kind, delta) {
 $('gFm').addEventListener('click', () => changeGoal('f', -5)); $('gFp').addEventListener('click', () => changeGoal('f', 5));
 $('gSm').addEventListener('click', () => changeGoal('s', -5)); $('gSp').addEventListener('click', () => changeGoal('s', 5));
 $('gVm').addEventListener('click', () => changeGoal('v', -5)); $('gVp').addEventListener('click', () => changeGoal('v', 5));
+$('soundToggle').addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem(LS_SOUND, soundOn ? 'on' : 'off'); } catch (e) {} renderSoundToggle(); if (soundOn) playSwipe('known'); });
 $('gWm').addEventListener('click', () => changeGoal('w', -5)); $('gWp').addEventListener('click', () => changeGoal('w', 5));
 $('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
 $('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
@@ -851,7 +910,7 @@ function renderFlash() {
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
   hasCard: () => F.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
-  onCommit: kind => { F.rate(kind); track('f', 1); renderFlash(); }
+  onCommit: kind => { playSwipe(kind); F.rate(kind); track('f', 1); renderFlash(); }
 });
 function flipCard() { if (!F.queue.length) return; flipped = !flipped; cardEl.classList.toggle('flipped', flipped); }
 cardEl.addEventListener('click', () => { if (!swipeF.suppressed()) flipCard(); });
@@ -970,7 +1029,7 @@ function hintSent() {
 const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
   hasCard: () => S.queue.length > 0, canSwipe: () => sState.resolved !== null,
   onBlocked: () => { shakeCard(); setFeed('Erst die Präposition eingeben, oder „Lösung" tippen.'); },
-  onCommit: kind => { S.rate(kind); track('s', 1); renderSent(); }
+  onCommit: kind => { playSwipe(kind); S.rate(kind); track('s', 1); renderSent(); }
 });
 $('sCheckBtn').addEventListener('click', checkSent);
 $('sRevealBtn').addEventListener('click', revealSent);
@@ -1161,7 +1220,7 @@ function renderVerb() {
 }
 const swipeV = bindSwipe($('vStage'), $('vBadgeRight'), $('vBadgeLeft'), {
   hasCard: () => V.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
-  onCommit: kind => { V.rate(kind); track('v', 1); renderVerb(); }
+  onCommit: kind => { playSwipe(kind); V.rate(kind); track('v', 1); renderVerb(); }
 });
 function flipVerb() { if (!V.queue.length) return; vFlipped = !vFlipped; vCard.classList.toggle('flipped', vFlipped); }
 vCard.addEventListener('click', () => { if (!swipeV.suppressed()) flipVerb(); });
@@ -1753,7 +1812,7 @@ function hintWork() {
 const swipeW = bindSwipe($('wStage'), $('wBadgeRight'), $('wBadgeLeft'), {
   hasCard: () => W.queue.length > 0, canSwipe: () => wState.resolved !== null,
   onBlocked: () => { wShake(); wSetFeed('Erst die Verbform eingeben, oder „Lösung" tippen.'); },
-  onCommit: kind => { W.rate(kind); track('w', 1); renderWork(); }
+  onCommit: kind => { playSwipe(kind); W.rate(kind); track('w', 1); renderWork(); }
 });
 $('wCheckBtn').addEventListener('click', checkWork);
 $('wRevealBtn').addEventListener('click', revealWork);
