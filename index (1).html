@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schwedisch</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Schwedisch">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0a1f33">
+<style>
+  :root {
+    --blue-0: #0a1f33; --blue-1: #0f2a47; --blue-2: #163a5c; --blue-3: #1f4c73;
+    --line: #6fa8cf; --line-dim: rgba(191,227,245,0.28); --ink: #eaf4fb; --ink-dim: #8fb4d1;
+    --amber: #f2b705; --amber-dim: rgba(242,183,5,0.16);
+    --mono: ui-monospace, 'SF Mono', Menlo, 'Courier New', monospace;
+    --sans: system-ui, -apple-system, 'Helvetica Neue', -apple-system, sans-serif;
+  }
+  :root:not([data-theme="light"]) { --blue-0:#0a1f33; --blue-1:#0f2a47; --blue-2:#163a5c; --ink:#eaf4fb; --ink-dim:#8fb4d1; --amber:#f2b705; --line:#6fa8cf; --line-dim:rgba(191,227,245,0.28); }
+  :root[data-theme="dark"] { --blue-0:#0a1f33; --blue-1:#0f2a47; --blue-2:#163a5c; --ink:#eaf4fb; --ink-dim:#8fb4d1; --amber:#f2b705; --line:#6fa8cf; --line-dim:rgba(191,227,245,0.28); }
+
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--blue-0);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrap { max-width: 640px; width: 100%; margin: 0 auto; padding: 28px 0 50px; }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 4px;
+  }
+  .sub {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+    margin-bottom: 22px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--blue-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill { height: 100%; background: var(--amber); transition: width 0.25s; }
+  .counter { text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--line); margin-bottom: 20px; }
+
+  .card-stage { perspective: 1600px; position: relative; touch-action: pan-y; transition: transform .22s ease, opacity .22s ease; will-change: transform; -webkit-user-select: none; user-select: none; }
+  .card-stage.dragging { transition: none; }
+  .swipe-badge { position: absolute; top: 14px; z-index: 5; padding: 6px 12px; font-weight: 600; font-size: .95rem; border: 2px solid; border-radius: 6px; opacity: 0; pointer-events: none; background: rgba(10,31,51,.85); }
+  .swipe-badge.right { left: 14px; color: #7ee2a4; border-color: #7ee2a4; transform: rotate(-8deg); }
+  .swipe-badge.left { right: 14px; color: var(--amber); border-color: var(--amber); transform: rotate(8deg); }
+  button.known { border-color: #7ee2a4; color: #7ee2a4; }
+  button.again { border-color: var(--amber); color: var(--amber); }
+  #doneScreen { display: none; text-align: center; padding: 36px 12px; border: 1px dashed var(--line); margin-top: 18px; }
+  #doneScreen p { line-height: 1.6; opacity: .9; }
+  .card {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1), height 0.2s ease;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border: 1.5px solid var(--line);
+    background: var(--blue-1);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .face.back { transform: rotateY(180deg); }
+
+  .face::before {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--line);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .face.front::before { content: "FRAGE"; }
+  .face.back::before { content: "ANTWORT"; color: var(--amber); }
+
+  .question-text {
+    font-size: 1.18rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-bottom: auto;
+  }
+  .examples-de {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line-dim);
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+  .examples-de .lbl {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--line);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .answer-word {
+    font-family: var(--mono);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  .rule-text {
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .gloss { font-size: 0.8em; font-weight: 400; opacity: 0.75; margin-top: 8px; }
+  .examples-sv {
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    border-top: 1px dashed rgba(242,183,5,0.3);
+    padding-top: 14px;
+    margin-top: auto;
+  }
+  .examples-sv .lbl {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .examples-sv .sv-line { color: var(--ink); }
+  .examples-sv .de-line { color: var(--ink-dim); font-size: 0.8rem; }
+  .examples-sv .pair { margin-bottom: 8px; }
+  .page-ref {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--line);
+    margin-top: 10px;
+  }
+
+  .flip-hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--line);
+    margin-top: 14px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  button {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  button:hover { background: var(--blue-2); }
+  button:disabled { opacity: 0.35; cursor: default; }
+  button.primary { border-color: var(--amber); color: var(--amber); }
+
+  .shuffle-row { text-align: center; margin-top: 14px; }
+  .save-note { font-size: 0.72rem; opacity: 0.7; margin-top: 8px; min-height: 1em; }
+  .shuffle-row button { font-size: 0.75rem; padding: 6px 12px; }
+  body { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); -webkit-text-size-adjust: 100%; }
+  #importScreen { position: fixed; inset: 0; z-index: 50; background: var(--blue-0); color: var(--ink); display: none; align-items: center; justify-content: center; padding: 24px; padding-top: calc(24px + env(safe-area-inset-top, 0px)); text-align: center; }
+  #importScreen .box { max-width: 420px; }
+  #importScreen h2 { margin: 0 0 12px; }
+  #importScreen p { line-height: 1.5; opacity: .9; }
+  #importScreen .pick { display: inline-block; margin-top: 14px; padding: 12px 20px; border-radius: 10px; background: var(--amber); color: var(--blue-0); font-weight: 600; cursor: pointer; }
+  #importScreen .msg { margin-top: 12px; color: #ffb4a8; min-height: 1.2em; font-size: .9rem; }
+  #fileInput { display: none; }
+  #manageScreen { position: fixed; inset: 0; z-index: 40; background: var(--blue-0); color: var(--ink); display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  #manageScreen .mbox { max-width: 720px; margin: 0 auto; }
+  #manageScreen .mhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  #manageScreen h2 { margin: 0; font-size: 1.15rem; }
+  .mfilters { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .mfilters button { font-size: .78rem; padding: 6px 10px; }
+  .mfilters button.on { border-color: var(--amber); color: var(--amber); }
+  #mSearch { width: 100%; padding: 10px; background: var(--blue-1); color: var(--ink); border: 1px solid var(--line); font: inherit; font-size: 16px; }
+  .mcount { font-size: .75rem; opacity: .7; margin: 8px 0; }
+  .mrow { border: 1px solid var(--line); padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+  .mrow .mt { font-size: .9rem; line-height: 1.35; } .mrow .mg { font-size: .75rem; opacity: .7; } .mrow .mm { font-size: .72rem; color: var(--amber); margin-top: 3px; }
+  .mrow button { font-size: .75rem; padding: 6px 10px; flex-shrink: 0; }
+
+  .bigbtn { display: block; width: 100%; text-align: left; padding: 20px 18px; margin: 12px 0; background: var(--blue-1); border: 1px solid var(--line); }
+  .bigbtn:hover { background: var(--blue-2); }
+  .bigbtn .bt { display: block; font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .bigbtn .bs { display: block; margin-top: 6px; font-size: .82rem; color: var(--amber); }
+  .streakbox { border: 1px solid var(--line); background: var(--blue-1); padding: 16px; margin: 14px 0 18px; text-align: center; }
+  .streakmain { font-size: 1.35rem; font-weight: 600; }
+  .streakbest { font-size: .78rem; opacity: .7; margin-top: 2px; min-height: 1em; }
+  .dots { display: flex; justify-content: center; gap: 10px; margin: 14px 0 6px; }
+  .dayc { text-align: center; } .dl { font-size: .66rem; opacity: .65; margin-top: 4px; }
+  .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); margin: 0 auto; }
+  .dot.on { background: var(--amber); border-color: var(--amber); }
+  .dot.today { box-shadow: 0 0 0 2px var(--blue-1), 0 0 0 4px var(--line); }
+  .dot.on.today { box-shadow: 0 0 0 2px var(--blue-1), 0 0 0 4px var(--amber); }
+  .streaknote { font-size: .82rem; opacity: .85; margin-top: 8px; }
+  .topbar { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; }
+  .topbar .ttl { font-size: 1.1rem; font-weight: 600; }
+  .goalline { font-size: .74rem; opacity: .85; margin: 4px 0 2px; }
+  .gprog { height: 4px; background: var(--blue-2); margin-bottom: 12px; }
+  .gfill { height: 100%; background: #7ee2a4; width: 0; transition: width .25s; }
+  #goalScreen, #praiseScreen { position: fixed; inset: 0; z-index: 60; background: rgba(5,16,28,.82); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .gbox, .pbox { background: var(--blue-1); border: 1px solid var(--line); padding: 22px 20px; max-width: 380px; width: 100%; text-align: center; }
+  .gbox h2, .pbox h2 { margin: 0 0 10px; }
+  .grow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 14px 0; }
+  .grow .step { display: flex; align-items: center; gap: 12px; } .grow b { min-width: 2.5ch; font-size: 1.1rem; }
+  .grow button { width: 40px; padding: 8px 0; font-size: 1.1rem; }
+  .gnote { font-size: .78rem; opacity: .75; line-height: 1.5; }
+  .pemoji { font-size: 3rem; animation: pop .5s ease-out; }
+  .pbox p { line-height: 1.55; } .prow { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .pemoji { animation: none; } .gfill { transition: none; } }
+
+  .tabs { display: flex; gap: 8px; margin: 10px 0 16px; }
+  .tabs button { flex: 1; padding: 11px 8px; }
+  .tabs button.on { border-color: var(--amber); color: var(--amber); background: var(--blue-1); }
+  .scard { background: var(--blue-1); border: 1px solid var(--line); padding: 18px 16px; position: relative; }
+  .scard.ok { border-color: #7ee2a4; }
+  .scard.bad { border-color: #ff8a7a; }
+  .scard .slabel { font-size: .66rem; letter-spacing: .14em; opacity: .65; margin: 0 0 6px; }
+  .scard .slabel.sv { margin-top: 18px; }
+  .scard .sde { font-size: 1.08rem; line-height: 1.5; }
+  .scard .ssv { font-size: 1.12rem; line-height: 2.1; }
+  .scard input.blank { font: inherit; font-size: 16px; color: var(--amber); background: var(--blue-0); border: 0; border-bottom: 2px solid var(--amber); border-radius: 0; text-align: center; width: 9ch; padding: 2px 4px; margin: 0 4px; -webkit-appearance: none; appearance: none; }
+  .scard input.blank.wide { width: 14ch; }
+  .scard input.blank:focus { outline: none; background: var(--blue-2); }
+  .scard input.blank:disabled { opacity: 1; -webkit-text-fill-color: currentColor; }
+  .scard.ok input.blank { color: #7ee2a4; border-color: #7ee2a4; }
+  .scard.bad input.blank { color: #ff8a7a; border-color: #ff8a7a; }
+  .sfeed { margin-top: 14px; min-height: 1.4em; font-size: .92rem; }
+  .sfeed.ok { color: #7ee2a4; } .sfeed.bad { color: #ff8a7a; }
+  .sinfo { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: .82rem; line-height: 1.5; opacity: .85; }
+  .sinfo:empty { display: none; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 15% { transform: translateX(-10px); } 30% { transform: translateX(9px); } 45% { transform: translateX(-7px); } 60% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+  .shake { animation: shake .45s; }
+  .chars { text-align: center; margin-top: 10px; }
+  .chars button { font-size: .85rem; padding: 6px 14px; margin: 0 3px; }
+  button.rec { box-shadow: 0 0 0 2px var(--amber); }
+  .hidden { display: none !important; }
+  #vCard { height: 320px; }
+  .face.vf { justify-content: center; align-items: center; text-align: center; }
+  .face.vf::before { position: absolute; top: 26px; left: 24px; }
+  .vde { font-size: 1.6rem; font-weight: 600; line-height: 1.25; }
+  .vsv { font-family: var(--mono); font-size: 1.15rem; color: var(--amber); margin-top: 10px; }
+  .vgroup { position: absolute; left: 24px; right: 24px; bottom: 18px; font-family: var(--mono); font-size: .7rem; color: var(--line); }
+  .vhead { font-size: 1rem; color: var(--ink-dim); margin-bottom: 16px; }
+  .vhead b { font-family: var(--mono); color: var(--amber); font-weight: 600; }
+  .vforms { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 16px; row-gap: 11px; align-items: baseline; }
+  .vforms dt { font-family: var(--mono); font-size: .72rem; color: var(--line); }
+  .vforms dd { margin: 0; font-size: 1.12rem; color: var(--ink); }
+  .vfilter { width: 100%; margin-bottom: 12px; padding: 10px; background: var(--blue-1); color: var(--ink); border: 1px solid var(--line); font-family: var(--mono); font-size: 16px; border-radius: 0; }
+  .donebox { text-align: center; padding: 36px 12px; border: 1px dashed var(--line); margin-top: 18px; }
+  .donebox p { line-height: 1.6; opacity: .9; }
+</style>
+</head>
+<body>
+<div id="importScreen">
+  <div class="box">
+    <h2>Karten laden</h2>
+    <p>Beim ersten Start fehlen noch die Karten. Wähle die Datei <b>karten.json</b> aus, zum Beispiel aus der Dateien-App. Das ist nur einmal nötig, danach funktioniert alles ohne Internet.</p>
+    <label class="pick" for="fileInput">Datei auswählen</label>
+    <div class="msg" id="importMsg" role="status"></div>
+  </div>
+</div>
+<div id="goalScreen" role="dialog" aria-modal="true" aria-label="Tagesziele"><div class="gbox"><h2>Tagesziele</h2>
+  <div class="grow"><span>Flashcards Präpositionen</span><span class="step"><button id="gFm" aria-label="weniger">−</button><b id="gFv">20</b><button id="gFp" aria-label="mehr">+</button></span></div>
+  <div class="grow"><span>Präpositionen üben</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
+  <div class="grow"><span>Flashcards starke Verben</span><span class="step"><button id="gVm" aria-label="weniger">−</button><b id="gVv">15</b><button id="gVp" aria-label="mehr">+</button></span></div>
+  <div class="grow"><span>Starke Verben üben</span><span class="step"><button id="gWm" aria-label="weniger">−</button><b id="gWv">10</b><button id="gWp" aria-label="mehr">+</button></span></div>
+  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der vier Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <button class="primary" id="goalClose">Fertig</button></div></div>
+<div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
+<input type="file" id="fileInput" accept=".json,application/json">
+<div id="manageScreen">
+  <div class="mbox">
+    <div class="mhead"><h2>Karten verwalten</h2><button id="manageClose">Schließen</button></div>
+    <div class="mfilters" id="mFilters"></div>
+    <input type="search" id="mSearch" placeholder="Suchen (Überschrift, Kapitel)" autocomplete="off">
+    <div class="mcount" id="mCount"></div>
+    <div id="mList"></div>
+  </div>
+</div>
+<div class="wrap">
+  <div id="viewHome">
+    <h1>Schwedisch</h1>
+    <div class="streakbox">
+      <div class="streakmain" id="streakMain"></div>
+      <div class="streakbest" id="streakBest"></div>
+      <div class="dots" id="weekDots" role="img" aria-label="Die letzten sieben Tage"></div>
+      <div class="streaknote" id="streakNote"></div>
+    </div>
+    <button class="bigbtn" id="goFlash"><span class="bt">Flashcards Präpositionen</span><span class="bs" id="homeFSub"></span></button>
+    <button class="bigbtn" id="goSent"><span class="bt">Präpositionen üben</span><span class="bs" id="homeSSub"></span></button>
+    <button class="bigbtn" id="goVerb"><span class="bt">Flashcards starke Verben</span><span class="bs" id="homeVSub"></span></button>
+    <button class="bigbtn" id="goWork"><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span></button>
+    <div class="shuffle-row"><button id="goalsBtn">🎯 Tagesziele</button> <button id="loadBtn">⇪ Karten laden</button><div class="save-note" id="saveNote" aria-live="polite"></div></div>
+  </div>
+
+  <div id="viewFlash" class="hidden">
+    <div class="topbar"><button id="backF">‹ Start</button><span class="ttl">Flashcards Präpositionen</span></div>
+    <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="counter" id="counter"></div>
+    <div class="goalline" id="fGoal"></div><div class="gprog"><div class="gfill" id="fGFill"></div></div>
+
+    <div id="studyArea">
+    <div class="card-stage" id="stage">
+      <div class="swipe-badge right" id="badgeRight">✓ Gewusst</div>
+      <div class="swipe-badge left" id="badgeLeft">↺ Nochmal</div>
+      <div class="card" id="card">
+      <div class="face front">
+        <div class="question-text" id="qText"></div>
+        <div class="examples-de">
+          <span class="lbl">BEISPIELE (DEUTSCH)</span>
+          <div id="deExamples"></div>
+        </div>
+      </div>
+      <div class="face back">
+        <div class="answer-word" id="answerWord"></div>
+        <div class="rule-text" id="ruleText"></div>
+        <div class="examples-sv">
+          <span class="lbl">BEISPIELE (SCHWEDISCH)</span>
+          <div id="svExamples"></div>
+          <div class="page-ref" id="pageRef"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="flip-hint">antippen zum Umdrehen · wischen zum Bewerten</div>
+    <div class="controls">
+      <button class="again" id="againBtn">↺ Nochmal</button>
+      <button class="primary" id="flipBtn">Umdrehen</button>
+      <button class="known" id="knownBtn">Gewusst ✓</button>
+    </div>
+    </div>
+
+    <div id="doneScreen"><h2>Für heute geschafft 🎉</h2><p id="doneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="undoBtn">↶ Rückgängig</button> <button id="skipBtn">⏭ Später</button> <button id="shuffleBtn">🔀 Mischen</button><br>
+      <button id="manageBtn">🗂 Karten verwalten</button> <button id="resetBtn">⚙ Zurücksetzen</button>
+    </div>
+  </div>
+
+  <div id="viewSent" class="hidden">
+    <div class="topbar"><button id="backS">‹ Start</button><span class="ttl">Präpositionen üben</span></div>
+    <div class="sub">Setze die fehlende Präposition ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
+    <div class="progress-bar"><div class="progress-fill" id="sProgress"></div></div>
+    <div class="counter" id="sCounter"></div>
+    <div class="goalline" id="sGoal"></div><div class="gprog"><div class="gfill" id="sGFill"></div></div>
+
+    <div id="sStudy">
+      <div class="card-stage" id="sStage">
+        <div class="swipe-badge right" id="sBadgeRight">✓ Gewusst</div>
+        <div class="swipe-badge left" id="sBadgeLeft">↺ Nochmal</div>
+        <div class="scard" id="sCard">
+          <div class="slabel">DEUTSCH</div>
+          <div class="sde" id="sDe"></div>
+          <div class="slabel sv">SCHWEDISCH</div>
+          <div class="ssv" id="sSv"><span id="sPre"></span><input class="blank" id="sInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Fehlende Präposition"><span id="sPost"></span></div>
+          <div class="sfeed" id="sFeed" aria-live="polite"></div>
+          <div class="sinfo" id="sInfo"></div>
+        </div>
+      </div>
+      <div class="chars" id="sChars"><button type="button" data-ch="å">å</button><button type="button" data-ch="ö">ö</button><button type="button" data-ch="ä">ä</button></div>
+      <div class="controls" id="sOpenRow">
+        <button id="sHintBtn">💡 Hinweis</button>
+        <button class="primary" id="sCheckBtn">Prüfen</button>
+        <button id="sRevealBtn">Lösung</button>
+      </div>
+      <div class="controls hidden" id="sDoneRow">
+        <button class="again" id="sAgainBtn">↺ Morgen nochmal</button>
+        <button class="known" id="sKnownBtn">Gewusst ✓</button>
+      </div>
+    </div>
+
+    <div id="sDone" class="hidden donebox"><h2>Für heute geschafft 🎉</h2><p id="sDoneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="sUndoBtn">↶ Rückgängig</button> <button id="sSkipBtn">⏭ Später</button> <button id="sShuffleBtn">🔀 Mischen</button><br>
+      <button id="sManageBtn">🗂 Sätze verwalten</button> <button id="sResetBtn">⚙ Zurücksetzen</button>
+    </div>
+  </div>
+
+  <div id="viewVerb" class="hidden">
+    <div class="topbar"><button id="backV">‹ Start</button><span class="ttl">Flashcards starke Verben</span></div>
+    <div class="sub">Vorne Deutsch, hinten alle Formen. Nach rechts wischen: gewusst, kommt nach 3, 7 und 10 Tagen wieder. Nach links wischen: nochmal, morgen wieder.</div>
+    <select class="vfilter" id="vFilter" aria-label="Gruppe wählen"></select>
+    <div class="progress-bar"><div class="progress-fill" id="vProgress"></div></div>
+    <div class="counter" id="vCounter"></div>
+    <div class="goalline" id="vGoal"></div><div class="gprog"><div class="gfill" id="vGFill"></div></div>
+
+    <div id="vStudy">
+      <div class="card-stage" id="vStage">
+        <div class="swipe-badge right" id="vBadgeRight">✓ Gewusst</div>
+        <div class="swipe-badge left" id="vBadgeLeft">↺ Nochmal</div>
+        <div class="card" id="vCard">
+          <div class="face front vf">
+            <div><div class="vde" id="vDe"></div><div class="vsv" id="vSv"></div></div>
+            <div class="vgroup" id="vGroupLbl"></div>
+          </div>
+          <div class="face back">
+            <div class="vhead" id="vHead"></div>
+            <dl class="vforms" id="vForms"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="flip-hint">antippen zum Umdrehen · wischen zum Bewerten</div>
+      <div class="controls">
+        <button class="again" id="vAgainBtn">↺ Nochmal</button>
+        <button class="primary" id="vFlipBtn">Umdrehen</button>
+        <button class="known" id="vKnownBtn">Gewusst ✓</button>
+      </div>
+    </div>
+
+    <div id="vDone" class="hidden donebox"><h2>Für heute geschafft 🎉</h2><p id="vDoneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="vUndoBtn">↶ Rückgängig</button> <button id="vSkipBtn">⏭ Später</button> <button id="vShuffleBtn">🔀 Mischen</button><br>
+      <button id="vManageBtn">🗂 Verben verwalten</button> <button id="vResetBtn">⚙ Zurücksetzen</button>
+    </div>
+  </div>
+
+  <div id="viewWork" class="hidden">
+    <div class="topbar"><button id="backW">‹ Start</button><span class="ttl">Starke Verben üben</span></div>
+    <div class="sub">Setze die richtige Verbform ein. Du hast zwei Versuche, danach kommt die Lösung. Nach rechts wischen: gewusst (kommt nach 3, 7 und 10 Tagen wieder). Nach links wischen: nochmal, morgen wieder.</div>
+    <select class="vfilter" id="wFilter" aria-label="Verbform wählen"></select>
+    <div class="progress-bar"><div class="progress-fill" id="wProgress"></div></div>
+    <div class="counter" id="wCounter"></div>
+    <div class="goalline" id="wGoal"></div><div class="gprog"><div class="gfill" id="wGFill"></div></div>
+
+    <div id="wStudy">
+      <div class="card-stage" id="wStage">
+        <div class="swipe-badge right" id="wBadgeRight">✓ Gewusst</div>
+        <div class="swipe-badge left" id="wBadgeLeft">↺ Nochmal</div>
+        <div class="scard" id="wCard">
+          <div class="slabel">DEUTSCH</div>
+          <div class="sde" id="wDe"></div>
+          <div class="slabel sv">SCHWEDISCH · <span id="wForm"></span></div>
+          <div class="ssv"><span id="wPre"></span><input class="blank" id="wInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Fehlende Verbform"><span id="wPost"></span></div>
+          <div class="sfeed" id="wFeed" aria-live="polite"></div>
+          <div class="sinfo" id="wInfo"></div>
+        </div>
+      </div>
+      <div class="chars" id="wChars"><button type="button" data-ch="å">å</button><button type="button" data-ch="ö">ö</button><button type="button" data-ch="ä">ä</button></div>
+      <div class="controls" id="wOpenRow">
+        <button id="wHintBtn">💡 Hinweis</button>
+        <button class="primary" id="wCheckBtn">Prüfen</button>
+        <button id="wRevealBtn">Lösung</button>
+      </div>
+      <div class="controls hidden" id="wDoneRow">
+        <button class="again" id="wAgainBtn">↺ Morgen nochmal</button>
+        <button class="known" id="wKnownBtn">Gewusst ✓</button>
+      </div>
+    </div>
+
+    <div id="wDone" class="hidden donebox"><h2>Für heute geschafft 🎉</h2><p id="wDoneText"></p></div>
+
+    <div class="shuffle-row">
+      <button id="wUndoBtn">↶ Rückgängig</button> <button id="wSkipBtn">⏭ Später</button> <button id="wShuffleBtn">🔀 Mischen</button><br>
+      <button id="wManageBtn">🗂 Sätze verwalten</button> <button id="wResetBtn">⚙ Zurücksetzen</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const INTERVALS = [3, 7, 10];
+const LS_CARDS = 'schwedisch-app-cards-v1';
+const LS_FLASH = 'schwedisch-app-learn-v2';
+const LS_SENT = 'schwedisch-app-sent-v1';
+const LS_STREAK = 'schwedisch-app-streak-v1';
+const LS_VERB = 'schwedisch-app-verb-v1';
+const LS_VFILTER = 'schwedisch-app-verb-filter-v1';
+const LS_WORK = 'schwedisch-app-verbsatz-v1';
+const LS_WFILTER = 'schwedisch-app-verbsatz-filter-v1';
+const saveNote = $('saveNote'), importEl = $('importScreen'), importMsg = $('importMsg');
+function note(t) { saveNote.textContent = t; }
+
+// ---------- Hilfsfunktionen ----------
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function today() { return ymd(new Date()); }
+function addDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
+function addDaysFrom(s, n) { const [y, m, d] = s.split('-').map(Number); const x = new Date(y, m - 1, d); x.setDate(x.getDate() + n); return ymd(x); }
+function niceDate(s) {
+  if (s === addDays(1)) return 'morgen';
+  const [y, m, d] = s.split('-').map(Number); return 'am ' + new Date(y, m - 1, d).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function hashStr(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); }
+function hashCard(c) { return hashStr(c.part + '|' + c.q); }
+function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function validCards(a) { return Array.isArray(a) && a.length > 0 && a.every(c => c && typeof c.q === 'string' && typeof c.answer === 'string' && Array.isArray(c.sv)); }
+function nextStatus(prev, kind) {
+  if (kind === 'again') return { s: 'again', stage: 0, due: addDays(1), at: today() };
+  const stage = (prev && prev.s === 'review' ? prev.stage : 0) + 1;
+  if (stage > INTERVALS.length) return { s: 'mastered', stage: stage, at: today() };
+  return { s: 'review', stage: stage, due: addDays(INTERVALS[stage - 1]), at: today() };
+}
+
+// ---------- Lernstand (für Karten und Sätze gleich) ----------
+class Learner {
+  constructor(lsKey) { this.lsKey = lsKey; this.items = []; this.keys = []; this.status = {}; this.order = []; this.queue = []; this.history = []; this.builtOn = ''; }
+  init(items, keys, shuffleNew) {
+    this.items = items; this.keys = keys; this.history = []; this.status = {}; this.order = [];
+    const idxByKey = {}; keys.forEach((k, i) => { if (!(k in idxByKey)) idxByKey[k] = i; });
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(this.lsKey)); } catch (e) {}
+    if (saved && saved.status && typeof saved.status === 'object') {
+      Object.keys(saved.status).forEach(k => {
+        if (!(k in idxByKey)) return;
+        let st = saved.status[k]; if (!st || typeof st !== 'object') return;
+        if (st.s === 'known') st = { s: 'review', stage: 1, due: addDaysFrom(st.at || today(), INTERVALS[0]), at: st.at || today() };
+        if (st.s === 'again') st = { s: 'again', stage: 0, due: st.due || addDays(1), at: st.at };
+        if (st.s === 'review' || st.s === 'again' || st.s === 'mastered') this.status[k] = st;
+      });
+    }
+    const seen = new Set();
+    if (saved && Array.isArray(saved.order)) saved.order.forEach(k => { if (k in idxByKey && !seen.has(k)) { seen.add(k); this.order.push(idxByKey[k]); } });
+    const rest = []; items.forEach((_, i) => { if (!seen.has(keys[i]) && idxByKey[keys[i]] === i) { seen.add(keys[i]); rest.push(i); } });
+    if (shuffleNew) shuffleArray(rest);
+    this.order = this.order.concat(rest);
+    this.buildQueue();
+  }
+  save() {
+    try { localStorage.setItem(this.lsKey, JSON.stringify({ v: 2, order: this.order.map(i => this.keys[i]), status: this.status, savedAt: Date.now() })); note('Gespeichert.'); }
+    catch (e) { note('Speichern auf diesem Gerät nicht möglich.'); }
+  }
+  buildQueue() {
+    const t = today(), due = [], fresh = []; this.builtOn = t;
+    const pos = {}; this.order.forEach((i, p) => { pos[i] = p; });
+    this.order.forEach(i => { const st = this.status[this.keys[i]]; if (!st) fresh.push(i); else if ((st.s === 'again' || st.s === 'review') && st.due <= t) due.push(i); });
+    const dueOf = i => this.status[this.keys[i]].due;
+    due.sort((a, b) => (dueOf(a) < dueOf(b) ? -1 : dueOf(a) > dueOf(b) ? 1 : pos[a] - pos[b]));
+    this.queue = due.concat(fresh);
+  }
+  stats() {
+    const t = today(); let mastered = 0, review = 0, again = 0, next = null;
+    this.keys.forEach(k => {
+      const st = this.status[k]; if (!st) return;
+      if (st.s === 'mastered') mastered++;
+      else { if (st.s === 'review') review++; else again++; if (st.due > t && (!next || st.due < next)) next = st.due; }
+    });
+    return { mastered, review, again, next, fresh: this.items.length - mastered - review - again };
+  }
+  stateOf(i) { const st = this.status[this.keys[i]]; return st ? st.s : 'fresh'; }
+  tag(i) { const st = this.status[this.keys[i]]; return !st ? '' : st.s === 'review' ? 'Wiederholung ' + st.stage + '/' + INTERVALS.length + ' · ' : 'Nochmal · '; }
+  rate(kind) {
+    if (!this.queue.length) return;
+    const i = this.queue[0], k = this.keys[i];
+    this.history.push({ i, prev: this.status[k] ? Object.assign({}, this.status[k]) : null }); if (this.history.length > 40) this.history.shift();
+    this.status[k] = nextStatus(this.status[k], kind);
+    this.queue.shift(); this.save();
+  }
+  undo() {
+    const h = this.history.pop(); if (!h) return false;
+    if (h.prev) this.status[this.keys[h.i]] = h.prev; else delete this.status[this.keys[h.i]];
+    this.queue = this.queue.filter(x => x !== h.i); this.queue.unshift(h.i); this.save(); return true;
+  }
+  skip() { if (this.queue.length > 1) { this.queue.push(this.queue.shift()); return true; } return false; }
+  shuffle() { shuffleArray(this.order); this.buildQueue(); this.save(); }
+  resetAll() { this.status = {}; this.history = []; this.order = this.items.map((_, i) => i); this.buildQueue(); this.save(); }
+  reactivate(i) { this.status[this.keys[i]] = { s: 'again', stage: 0, due: today(), at: today() }; this.afterManage(); }
+  practiceToday(i) { const st = this.status[this.keys[i]]; if (st) st.due = today(); this.afterManage(); }
+  moveFront(i) { this.order = [i].concat(this.order.filter(x => x !== i)); this.afterManage(); }
+  afterManage() { this.history = []; this.buildQueue(); this.save(); }
+  doneText() {
+    const st = this.stats(); let txt = 'Gemeistert: ' + st.mastered + ' · In Wiederholung: ' + st.review + ' · Nochmal: ' + st.again + ' · Neu: ' + st.fresh + ' (von ' + this.items.length + ').';
+    if (st.next) txt += ' Nächste Wiederholung ' + niceDate(st.next) + '.';
+    if (st.mastered === this.items.length && this.items.length) txt += ' Alles gemeistert.';
+    return txt;
+  }
+}
+const F = new Learner(LS_FLASH);   // Flashcards
+const S = new Learner(LS_SENT);    // Sätze
+const V = new Learner(LS_VERB);    // Starke Verben
+const W = new Learner(LS_WORK);    // Starke Verben üben
+let cards = [], tasks = [];
+
+// ---------- Tagesziele und Streak ----------
+let streak = { goalF: 20, goalS: 10, goalV: 15, goalW: 10, daily: {}, praised: {} };
+const MILESTONES = { 3: 'Drei Tage am Stück – der Anfang einer Gewohnheit.', 7: 'Eine ganze Woche in Folge!', 14: 'Zwei Wochen am Stück, das ist richtig stark.', 30: 'Dreißig Tage in Folge – das ist echte Ausdauer.', 50: 'Fünfzig Tage! Das Wissen sitzt.', 100: 'Hundert Tage in Folge. Respekt!', 365: 'Ein ganzes Jahr, du bist eine Legende.' };
+const PRAISE = [['Bra jobbat!', 'Gut gemacht!'], ['Snyggt!', 'Stark!'], ['Grymt!', 'Richtig gut!'], ['Fantastiskt!', 'Fantastisch!'], ['Det sitter!', 'Das sitzt!'], ['Stark insats!', 'Starke Leistung!']];
+function loadStreak() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(LS_STREAK)); } catch (e) {}
+  if (d && typeof d === 'object') {
+    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), goalW: Math.min(200, Math.max(5, Number(d.goalW) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
+  }
+  const cut = addDays(-400); Object.keys(streak.daily).forEach(k => { if (k < cut) delete streak.daily[k]; });
+  const cutP = addDays(-10); Object.keys(streak.praised).forEach(k => { if (k < cutP) delete streak.praised[k]; });
+}
+function saveStreak() { try { localStorage.setItem(LS_STREAK, JSON.stringify(streak)); } catch (e) {} }
+function peekDay(d) { return streak.daily[d] || null; }
+function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; if (typeof e.w !== 'number') e.w = 0; if (typeof e.gw !== 'number') e.gw = streak.goalW; return e; }
+function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv) || (e.gw > 0 && (e.w || 0) >= e.gw)); }
+function streakInfo() {
+  const t = today(); let cur = 0, d = t;
+  if (!qualifies(peekDay(t))) d = addDaysFrom(t, -1);
+  while (qualifies(peekDay(d))) { cur++; d = addDaysFrom(d, -1); }
+  const days = Object.keys(streak.daily).filter(k => qualifies(streak.daily[k])).sort();
+  let best = 0, run = 0, prev = null;
+  days.forEach(k => { run = prev && addDaysFrom(prev, 1) === k ? run + 1 : 1; if (run > best) best = run; prev = k; });
+  return { cur, best, todayDone: qualifies(peekDay(t)) };
+}
+function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW }; }
+function track(kind, delta) {
+  const e = dayEntry(today());
+  e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
+  saveStreak();
+  if (delta > 0) maybePraise(kind);
+  updateGoalLines();
+}
+function maybePraise(kind) {
+  const t = today(), e = dayEntry(t), goal = e['g' + kind];
+  if (!(goal > 0) || e[kind] !== goal) return;
+  const pr = streak.praised[t] || (streak.praised[t] = {});
+  if (pr[kind]) return; pr[kind] = true; saveStreak();
+  const other = ['f', 's', 'v', 'w'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
+  const info = streakInfo();
+  setTimeout(() => showPraise(kind, e[kind], info, other), 350);
+}
+function showPraise(kind, count, info, other) {
+  const p = PRAISE[Math.floor(Math.random() * PRAISE.length)];
+  $('pEmoji').textContent = '🎉';
+  $('pTitle').textContent = p[0] + ' (' + p[1] + ')';
+  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Präpositions-Flashcards', s: ' Präpositionssätze', v: ' Verb-Flashcards', w: ' Verbsätze' })[kind] + ' heute geübt. ';
+  if (other) txt += 'Dein Streak-Tag stand schon, und jetzt hast du auch dieses Ziel geschafft.';
+  else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
+  $('pText').textContent = txt;
+  $('praiseScreen').style.display = 'flex';
+}
+$('pContinue').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; });
+$('pHome').addEventListener('click', () => { $('praiseScreen').style.display = 'none'; showView('home'); });
+function goalLine(textEl, fillEl, count, goal) {
+  const done = goal > 0 && count >= goal;
+  textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
+  fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
+}
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); }
+function renderHome() {
+  const info = streakInfo(), v = dayView();
+  $('streakMain').textContent = info.cur > 0 ? '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
+  $('streakBest').textContent = info.best > 0 ? 'Rekord: ' + info.best + (info.best === 1 ? ' Tag' : ' Tage') : '';
+  if (info.todayDone) $('streakNote').textContent = 'Heute geschafft ✓ Dein Streak lebt.';
+  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Präpositions-Flashcards, ' + Math.max(0, v.gs - v.s) + ' Präpositionssätze, ' + Math.max(0, v.gv - v.v) + ' Verb-Flashcards oder ' + Math.max(0, v.gw - v.w) + ' Verbsätze.';
+  const dots = $('weekDots'); dots.textContent = '';
+  for (let k = 6; k >= 0; k--) {
+    const d = addDays(-k), [y, m, dd] = d.split('-').map(Number), wrap = document.createElement('div'); wrap.className = 'dayc';
+    const dot = document.createElement('div'); dot.className = 'dot' + (qualifies(peekDay(d)) ? ' on' : '') + (k === 0 ? ' today' : '');
+    dot.setAttribute('aria-label', new Date(y, m - 1, dd).toLocaleDateString('de-DE', { weekday: 'long' }) + (qualifies(peekDay(d)) ? ': Ziel erreicht' : ': kein Ziel erreicht'));
+    const lab = document.createElement('div'); lab.className = 'dl'; lab.textContent = new Date(y, m - 1, dd).toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '');
+    wrap.append(dot, lab); dots.appendChild(wrap);
+  }
+  $('homeFSub').textContent = 'Heute ' + v.f + ' von ' + v.gf + (v.f >= v.gf ? ' ✓' : '') + ' · ' + F.queue.length + ' offen';
+  $('homeSSub').textContent = 'Heute ' + v.s + ' von ' + v.gs + (v.s >= v.gs ? ' ✓' : '') + ' · ' + S.queue.length + ' offen';
+  $('homeVSub').textContent = 'Heute ' + v.v + ' von ' + v.gv + (v.v >= v.gv ? ' ✓' : '') + ' · ' + V.queue.length + ' offen';
+  $('homeWSub').textContent = 'Heute ' + v.w + ' von ' + v.gw + (v.w >= v.gw ? ' ✓' : '') + ' · ' + W.queue.length + ' offen';
+}
+function renderGoalModal() { $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
+function changeGoal(kind, delta) {
+  const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
+  const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
+  saveStreak(); renderGoalModal();
+}
+$('gFm').addEventListener('click', () => changeGoal('f', -5)); $('gFp').addEventListener('click', () => changeGoal('f', 5));
+$('gSm').addEventListener('click', () => changeGoal('s', -5)); $('gSp').addEventListener('click', () => changeGoal('s', 5));
+$('gVm').addEventListener('click', () => changeGoal('v', -5)); $('gVp').addEventListener('click', () => changeGoal('v', 5));
+$('gWm').addEventListener('click', () => changeGoal('w', -5)); $('gWp').addEventListener('click', () => changeGoal('w', 5));
+$('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
+$('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
+
+// ---------- Wischen (gemeinsam) ----------
+function bindSwipe(stageEl, badgeR, badgeL, o) {
+  let drag = null, suppress = false;
+  const th = () => Math.max(80, stageEl.offsetWidth * 0.25);
+  function reset() { stageEl.style.transform = ''; stageEl.style.opacity = ''; badgeR.style.opacity = 0; badgeL.style.opacity = 0; }
+  function commit(kind) {
+    if (!o.hasCard() || stageEl.dataset.busy) return;
+    if (!o.canSwipe()) { reset(); o.onBlocked(); return; }
+    stageEl.dataset.busy = '1';
+    const dir = kind === 'known' ? 1 : -1;
+    badgeR.style.opacity = kind === 'known' ? 1 : 0; badgeL.style.opacity = kind === 'again' ? 1 : 0;
+    stageEl.style.transform = 'translateX(' + (dir * Math.max(window.innerWidth, 500)) + 'px) rotate(' + (dir * 18) + 'deg)'; stageEl.style.opacity = '0';
+    setTimeout(() => {
+      stageEl.style.transition = 'none'; reset();
+      o.onCommit(kind);
+      requestAnimationFrame(() => { stageEl.style.transition = ''; delete stageEl.dataset.busy; });
+    }, 230);
+  }
+  function end(cancel) {
+    if (!drag) return; const d = drag; drag = null;
+    if (!d.active) return;
+    suppress = true; setTimeout(() => { suppress = false; }, 60);
+    stageEl.classList.remove('dragging');
+    if (!cancel && d.dx > th()) commit('known'); else if (!cancel && d.dx < -th()) commit('again'); else reset();
+  }
+  stageEl.addEventListener('pointerdown', e => {
+    if (!o.hasCard() || stageEl.dataset.busy || (e.button && e.button > 0)) return;
+    if (e.target && e.target.closest && e.target.closest('input,button,textarea')) return;
+    drag = { x: e.clientX, y: e.clientY, dx: 0, active: false };
+  });
+  stageEl.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.active) {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) { drag.active = true; stageEl.classList.add('dragging'); try { stageEl.setPointerCapture(e.pointerId); } catch (x) {} }
+      else { if (Math.abs(dy) > 12) drag = null; return; }
+    }
+    drag.dx = dx;
+    const p = Math.min(1, Math.abs(dx) / th());
+    stageEl.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 25) + 'deg)';
+    badgeR.style.opacity = dx > 0 ? p : 0; badgeL.style.opacity = dx < 0 ? p : 0;
+  });
+  stageEl.addEventListener('pointerup', () => end(false));
+  stageEl.addEventListener('pointercancel', () => end(true));
+  return { commit, suppressed: () => suppress };
+}
+
+// ---------- Modul 1: Flashcards ----------
+const cardEl = $('card'), qText = $('qText'), deExamples = $('deExamples'), answerWord = $('answerWord'), ruleText = $('ruleText'), svExamples = $('svExamples'), pageRef = $('pageRef');
+const counter = $('counter'), progressFill = $('progressFill');
+let flipped = false;
+function fitCardHeight() {
+  // Temporarily reveal both faces at natural size to measure content height
+  const frontFace = cardEl.querySelector('.face.front');
+  const backFace = cardEl.querySelector('.face.back');
+  const prevFrontOverflow = frontFace.style.overflowY;
+  const prevBackOverflow = backFace.style.overflowY;
+  frontFace.style.position = 'relative';
+  frontFace.style.transform = 'none';
+  backFace.style.position = 'relative';
+  backFace.style.transform = 'none';
+  backFace.style.display = 'flex';
+
+  const frontHeight = frontFace.scrollHeight;
+  const backHeight = backFace.scrollHeight;
+
+  frontFace.style.position = '';
+  frontFace.style.transform = '';
+  backFace.style.position = '';
+  backFace.style.transform = '';
+  backFace.style.display = '';
+  frontFace.style.overflowY = prevFrontOverflow;
+  backFace.style.overflowY = prevBackOverflow;
+
+  const tallest = Math.max(frontHeight, backHeight, 300);
+  cardEl.style.height = (tallest + 4) + 'px';
+}
+
+
+
+function renderFlash() {
+  updateGoalLines();
+  const st = F.stats();
+  progressFill.style.width = (F.items.length ? ((st.mastered + st.review) / F.items.length) * 100 : 0) + '%';
+  const done = F.queue.length === 0;
+  $('studyArea').style.display = done ? 'none' : '';
+  $('doneScreen').style.display = done ? 'block' : 'none';
+  $('undoBtn').disabled = F.history.length === 0;
+  $('skipBtn').disabled = F.queue.length < 2;
+  if (done) { $('doneText').textContent = F.doneText(); counter.textContent = 'Heute ist nichts mehr offen'; return; }
+  const c = cards[F.queue[0]];
+  flipped = false; cardEl.classList.remove('flipped');
+  qText.textContent = '';
+  { const ps = c.q.split('\n'); const a = document.createElement('div'); a.textContent = ps[0]; qText.appendChild(a); if (ps[1]) { const g = document.createElement('div'); g.className = 'gloss'; g.textContent = ps[1]; qText.appendChild(g); } }
+  deExamples.innerHTML = (c.de || c.sv.map(p => p[1])).filter(Boolean).map(s => '<div>' + s + '</div>').join('');
+  answerWord.textContent = c.answer;
+  ruleText.textContent = c.rule;
+  svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de]) => '<div class="pair"><div class="sv-line">' + sv + '</div><div class="de-line">' + de + '</div></div>').join('') : '<div class="pair"><div class="sv-line">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</div></div>';
+  pageRef.textContent = 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
+  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + c.part;
+  requestAnimationFrame(fitCardHeight);
+}
+const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
+  hasCard: () => F.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
+  onCommit: kind => { F.rate(kind); track('f', 1); renderFlash(); }
+});
+function flipCard() { if (!F.queue.length) return; flipped = !flipped; cardEl.classList.toggle('flipped', flipped); }
+cardEl.addEventListener('click', () => { if (!swipeF.suppressed()) flipCard(); });
+$('flipBtn').addEventListener('click', flipCard);
+$('knownBtn').addEventListener('click', () => swipeF.commit('known'));
+$('againBtn').addEventListener('click', () => swipeF.commit('again'));
+$('undoBtn').addEventListener('click', () => { if (F.undo()) { track('f', -1); renderFlash(); } });
+$('skipBtn').addEventListener('click', () => { if (F.skip()) renderFlash(); });
+$('shuffleBtn').addEventListener('click', () => { F.shuffle(); renderFlash(); });
+function armReset(btn, label, fn) {
+  let armed = null;
+  btn.addEventListener('click', () => {
+    if (armed === null) { btn.textContent = 'Wirklich? Alles löschen'; armed = setTimeout(() => { armed = null; btn.textContent = label; }, 5000); return; }
+    clearTimeout(armed); armed = null; btn.textContent = label; fn();
+  });
+}
+armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); renderFlash(); });
+
+// ---------- Modul 2: Sätze üben ----------
+const PREPS = new Set(['på','i','hos','ovanpå','utanpå','innanför','utanför','inuti','inom','över','ovanför','under','nedanför','framför','bakom','före','efter','bredvid','intill','mittemot','bland','mellan','mot','till','om','runt','runtom','kring','omkring','längs','utmed','utefter','från','ur','åt','genom','förbi','via','uppför','nerför','med','utom','enligt','vid','för','sedan','per','inför','utan','av','framemot','ungefär','cirka','medelst','gällande','beträffande','angående','rörande','avseende','emot']);
+const COMPOUNDS = ['på grund av', 'tack vare', 'med anledning av', 'till följd av', 'i stället för', 'med hjälp av', 'när det gäller', 'i fråga om', 'vad gäller', 'vad beträffar', 'från och med', 'till och med'];
+const ALT = {
+  'ÖVER/OVANFÖR': ['över', 'ovanför'], 'RUNT(OM)/KRING/OMKRING': ['runt', 'runtom', 'kring', 'omkring'], 'MOT/FRAMEMOT': ['mot', 'framemot', 'emot'],
+  'GÄLLANDE/BETRÄFFANDE/ANGÅENDE/RÖRANDE/AVSEENDE': ['gällande', 'beträffande', 'angående', 'rörande', 'avseende'],
+  'GENOM/VIA': ['genom', 'via'], 'OMKRING/UNGEFÄR/CIRKA': ['omkring', 'ungefär', 'cirka'], 'FÖR/ÖVER': ['för', 'över']
+};
+function tokensPos(s) { const out = [], re = /\p{L}+/gu; let m; while ((m = re.exec(s))) out.push({ t: m[0].toLowerCase(), i: m.index, l: m[0].length }); return out; }
+function targetsOf(answer) {
+  let a = answer.toLowerCase(); const comps = [];
+  COMPOUNDS.forEach(c => { if (a.includes(c)) { comps.push(c); a = a.split(c).join(' '); } });
+  return { comps, singles: new Set(tokensPos(a).map(x => x.t).filter(t => PREPS.has(t))) };
+}
+function buildTasks(list) {
+  const out = [], seen = new Set();
+  list.forEach((c, ci) => {
+    const T = targetsOf(c.answer); const group = ALT[c.answer.toUpperCase().replace(/\s+/g, '')] || null;
+    c.sv.forEach(pair => {
+      const s = String(pair[0]).trim(); if (!/[.!?]$/.test(s) || /[\/()…=:—–"„“]/.test(s)) return;
+      const wc = s.split(/\s+/).length; if (wc < 3 || wc > 22) return;
+      const occ = []; let mask = s.toLowerCase();
+      T.comps.forEach(cp => { let from = 0, k; while ((k = mask.indexOf(cp, from)) >= 0) { occ.push({ i: k, l: cp.length, t: cp }); mask = mask.slice(0, k) + ' '.repeat(cp.length) + mask.slice(k + cp.length); from = k + cp.length; } });
+      tokensPos(mask).forEach(x => { if (T.singles.has(x.t)) occ.push({ i: x.i, l: x.l, t: x.t }); });
+      if (occ.length !== 1 || seen.has(s)) return; seen.add(s);
+      const o = occ[0];
+      out.push({ ci, key: hashStr(s), sv: s, de: String(pair[1]), pre: s.slice(0, o.i), ans: s.slice(o.i, o.i + o.l), post: s.slice(o.i + o.l), alt: group && group.includes(o.t) ? group.filter(x => x !== o.t) : [] });
+    });
+  });
+  return out;
+}
+const norm = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
+const strip = s => norm(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function judge(input, t) {
+  const v = norm(input), opts = [t.ans].concat(t.alt).map(norm);
+  if (opts.includes(v)) return 'exact';
+  const sv = strip(input); if (opts.map(strip).includes(sv)) return 'accent';
+  return 'wrong';
+}
+
+const sCard = $('sCard'), sInput = $('sInput'), sFeed = $('sFeed'), sInfo = $('sInfo');
+let sState = { attempts: 0, resolved: null };
+function setFeed(text, cls) { sFeed.textContent = text; sFeed.className = 'sfeed' + (cls ? ' ' + cls : ''); }
+function shakeCard() { sCard.classList.remove('shake'); void sCard.offsetWidth; sCard.classList.add('shake'); }
+function renderSent() {
+  updateGoalLines();
+  const st = S.stats();
+  $('sProgress').style.width = (S.items.length ? ((st.mastered + st.review) / S.items.length) * 100 : 0) + '%';
+  $('sUndoBtn').disabled = S.history.length === 0;
+  $('sSkipBtn').disabled = S.queue.length < 2;
+  const none = S.items.length === 0, done = S.queue.length === 0;
+  $('sStudy').classList.toggle('hidden', done); $('sDone').classList.toggle('hidden', !done);
+  if (done) { $('sDoneText').textContent = none ? 'In den geladenen Karten wurden keine passenden Sätze gefunden.' : S.doneText(); $('sCounter').textContent = none ? '' : 'Heute ist nichts mehr offen'; return; }
+  const t = S.items[S.queue[0]];
+  sState = { attempts: 0, resolved: null };
+  $('sCounter').textContent = 'Heute noch ' + S.queue.length + ' · ' + S.tag(S.queue[0]).replace(/ · $/, '');
+  $('sDe').textContent = t.de; $('sPre').textContent = t.pre; $('sPost').textContent = t.post;
+  sInput.value = ''; sInput.disabled = false; sInput.className = 'blank' + (t.ans.includes(' ') ? ' wide' : '');
+  sCard.className = 'scard'; setFeed(''); sInfo.textContent = '';
+  $('sOpenRow').classList.remove('hidden'); $('sDoneRow').classList.add('hidden');
+  $('sAgainBtn').classList.remove('rec'); $('sKnownBtn').classList.remove('rec');
+}
+function showInfo(t) {
+  const c = cards[t.ci]; const head = c.q.split('\n'); sInfo.textContent = '';
+  const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.sv;
+  const b = document.createElement('div'); b.style.marginTop = '6px'; b.textContent = 'Karte: ' + head[0] + (head[1] ? ' (' + head[1] + ')' : '') + ' · ' + c.part + ', S. ' + c.page;
+  const r = document.createElement('div'); r.style.marginTop = '6px'; r.textContent = 'Regel: ' + c.rule;
+  sInfo.append(a, b, r);
+}
+function resolveSent(kind, extra) {
+  const t = S.items[S.queue[0]]; sState.resolved = kind;
+  sInput.value = t.ans; sInput.disabled = true;
+  sCard.classList.add(kind === 'correct' ? 'ok' : 'bad');
+  if (kind === 'correct') setFeed('Richtig ✓' + (sState.attempts === 1 ? ' (beim zweiten Versuch)' : '') + (extra ? ' · ' + extra : '') + ' – jetzt nach rechts wischen.', 'ok');
+  else setFeed('Leider falsch. Die Lösung steht oben – nach links wischen, dann kommt der Satz morgen wieder.', 'bad');
+  showInfo(t);
+  $('sOpenRow').classList.add('hidden'); $('sDoneRow').classList.remove('hidden');
+  $('sAgainBtn').classList.toggle('rec', kind === 'failed'); $('sKnownBtn').classList.toggle('rec', kind === 'correct');
+  if (kind === 'failed') shakeCard();
+}
+function checkSent() {
+  if (sState.resolved || !S.queue.length) return;
+  const t = S.items[S.queue[0]], v = sInput.value;
+  if (!v.trim()) { setFeed('Gib zuerst eine Präposition ein.'); sInput.focus(); return; }
+  const verdict = judge(v, t);
+  if (verdict !== 'wrong') { resolveSent('correct', verdict === 'accent' ? 'Achte auf die Akzente: ' + t.ans : ''); return; }
+  sState.attempts++;
+  if (sState.attempts >= 2) { resolveSent('failed'); return; }
+  shakeCard(); setFeed('Nicht ganz. Versuch es noch einmal.', 'bad'); sInput.focus(); sInput.select();
+}
+function revealSent() { if (sState.resolved || !S.queue.length) return; sState.attempts = 2; resolveSent('failed'); }
+function hintSent() {
+  if (sState.resolved || !S.queue.length) return;
+  const c = cards[S.items[S.queue[0]].ci], ps = c.q.split('\n');
+  setFeed('Hinweis: ' + ps[0] + (ps[1] ? ' (' + ps[1] + ')' : ''));
+}
+const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
+  hasCard: () => S.queue.length > 0, canSwipe: () => sState.resolved !== null,
+  onBlocked: () => { shakeCard(); setFeed('Erst die Präposition eingeben, oder „Lösung" tippen.'); },
+  onCommit: kind => { S.rate(kind); track('s', 1); renderSent(); }
+});
+$('sCheckBtn').addEventListener('click', checkSent);
+$('sRevealBtn').addEventListener('click', revealSent);
+$('sHintBtn').addEventListener('click', hintSent);
+$('sKnownBtn').addEventListener('click', () => swipeS.commit('known'));
+$('sAgainBtn').addEventListener('click', () => swipeS.commit('again'));
+sInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkSent(); } });
+$('sUndoBtn').addEventListener('click', () => { if (S.undo()) { track('s', -1); renderSent(); } });
+$('sSkipBtn').addEventListener('click', () => { if (S.skip()) renderSent(); });
+$('sShuffleBtn').addEventListener('click', () => { S.shuffle(); renderSent(); });
+armReset($('sResetBtn'), '⚙ Zurücksetzen', () => { S.resetAll(); renderSent(); });
+document.querySelectorAll('#sChars button').forEach(b => {
+  b.addEventListener('mousedown', e => e.preventDefault());
+  b.addEventListener('click', () => { if (sInput.disabled) return; sInput.setRangeText(b.dataset.ch, sInput.selectionStart, sInput.selectionEnd, 'end'); sInput.focus(); });
+});
+
+// ---------- Modul 3: Starke Verben ----------
+const VGROUPS = {
+  r1:"Reihe 1: i – e – i",
+  r2:"Reihe 2: i – a – u",
+  r3:"Reihe 3: y/ju/u – ö – u",
+  r4:"Reihe 4: a – o – a",
+  r5:"Reihe 5: ä – a – u",
+  eig:"Eigenes Muster",
+  sch:"Unregelmäßig schwach",
+  mod:"Hilfs- und Modalverben"
+};
+// [Gruppe, Deutsch, Schwedisch, Präsens, Präteritum, Perfekt, Imperativ, Partizip]
+const VERBS = [
+["r1","beißen","bita","biter","bet","har bitit","bit!","biten / bitet / bitna"],
+["r1","werden","bli","blir","blev","har blivit","bli!","bliven / blivet / blivna"],
+["r1","treiben","driva","driver","drev","har drivit","driv!","driven / drivet / drivna"],
+["r1","gleiten","glida","glider","gled","har glidit","glid!","–"],
+["r1","reiben","gnida","gnider","gned","har gnidit","gnid!","gniden / gnidet / gnidna"],
+["r1","greifen, festnehmen","gripa","griper","grep","har gripit","grip!","gripen / gripet / gripna"],
+["r1","steigen, schreiten","kliva","kliver","klev","har klivit","kliv!","–"],
+["r1","kneifen","knipa","kniper","knep","har knipit","knip!","knipen / knipet / knipna"],
+["r1","wimmern","kvida","kvider","kved","har kvidit","kvid!","–"],
+["r1","leiden","lida","lider","led","har lidit","lid!","liden / lidet / lidna"],
+["r1","knicksen","niga","niger","neg","har nigit","nig!","–"],
+["r1","piepen","pipa","piper","pep","har pipit","pip!","–"],
+["r1","reiten","rida","rider","red","har ridit","rid!","riden / ridet / ridna"],
+["r1","reißen, abreißen","riva","river","rev","har rivit","riv!","riven / rivet / rivna"],
+["r1","scheinen","skina","skiner","sken","har skinit","skin!","–"],
+["r1","schreiten","skrida","skrider","skred","har skridit","skrid!","–"],
+["r1","schreien","skrika","skriker","skrek","har skrikit","skrik!","–"],
+["r1","schreiben","skriva","skriver","skrev","har skrivit","skriv!","skriven / skrivet / skrivna"],
+["r1","reißen, schuften","slita","sliter","slet","har slitit","slit!","sliten / slitet / slitna"],
+["r1","sich davonstehlen","smita","smiter","smet","har smitit","smit!","–"],
+["r1","verbreiten","sprida","sprider","spred (spridde)","har spritt (spridit)","sprid!","spridd / spritt / spridda"],
+["r1","steigen","stiga","stiger","steg","har stigit","stig!","–"],
+["r1","kämpfen, streiten","strida","strider","stred","har stridit","strid!","–"],
+["r1","brennen, Schmerz","svida","svider","sved","har svidit","–","–"],
+["r1","im Stich lassen, verraten","svika","sviker","svek","har svikit","svik!","sviken / sviket / svikna"],
+["r1","schweigen","tiga","tiger","teg","har tigit","tig!","–"],
+["r1","falten, weichen","vika","viker","vek","har vikit","vik!","viken / viket / vikna"],
+["r1","heulen, pfeifen, Wind","vina","viner","ven","har vinit","–","–"],
+["r1","drehen","vrida","vrider","vred","har vridit","vrid!","vriden / vridet / vridna"],
+["r2","binden","binda","binder","band","har bundit","bind!","bunden / bundet / bundna"],
+["r2","brennen","brinna","brinner","brann","har brunnit","brinn!","brunnen / brunnet / brunna"],
+["r2","bersten, platzen","brista","brister","brast","har brustit","–","brusten / brustet / brustna"],
+["r2","trinken","dricka","dricker","drack","har druckit","drick!","drucken / drucket / druckna"],
+["r2","finden","finna","finner","fann","har funnit","finn!","funnen / funnet / funna"],
+["r2","vorhanden sein, es gibt","finnas","finns","fanns","har funnits","–","–"],
+["r2","verschwinden","försvinna","försvinner","försvann","har försvunnit","försvinn!","försvunnen / försvunnet / försvunna"],
+["r2","schaffen, Zeit haben","hinna","hinner","hann","har hunnit","hinn!","–"],
+["r2","rinnen, fließen","rinna","rinner","rann","har runnit","rinn!","–"],
+["r2","sitzen","sitta","sitter","satt","har suttit","sitt!","–"],
+["r2","schlüpfen","slinka","slinker","slank","har slunkit","slink!","–"],
+["r2","nicht müssen, verschont bleiben","slippa","slipper","slapp","har sluppit","slipp!","–"],
+["r2","spinnen, schnurren","spinna","spinner","spann","har spunnit","spinn!","spunnen / spunnet / spunna"],
+["r2","platzen, reißen","spricka","spricker","sprack","har spruckit","–","sprucken / sprucket / spruckna"],
+["r2","laufen, rennen","springa","springer","sprang","har sprungit","spring!","–"],
+["r2","stechen; abhauen","sticka","sticker","stack","har stuckit","stick!","stucken / stucket / stuckna"],
+["r2","stinken","stinka","stinker","stank","har stunkit","–","–"],
+["r2","gewinnen","vinna","vinner","vann","har vunnit","vinn!","vunnen / vunnet / vunna"],
+["r3","einladen, anbieten","bjuda","bjuder","bjöd","har bjudit","bjud!","bjuden / bjudet / bjudna"],
+["r3","brechen","bryta","bryter","bröt","har brutit","bryt!","bruten / brutet / brutna"],
+["r3","taugen","duga","duger","dög (dugde)","har dugt","–","–"],
+["r3","tauchen","dyka","dyker","dök","har dykt (dykit)","dyk!","–"],
+["r3","fliegen","flyga","flyger","flög","har flugit","flyg!","–"],
+["r3","treiben, fließen","flyta","flyter","flöt","har flutit","flyt!","–"],
+["r3","schnauben","fnysa","fnyser","fnös (fnyste)","har fnyst","fnys!","–"],
+["r3","frieren, gefrieren","frysa","fryser","frös","har frusit","frys!","frusen / fruset / frusna"],
+["r3","gießen, Metall/Beton","gjuta","gjuter","göt","har gjutit","gjut!","gjuten / gjutet / gjutna"],
+["r3","hauen, hacken","hugga","hugger","högg","har huggit","hugg!","huggen / hugget / huggna"],
+["r3","spalten","klyva","klyver","klöv","har kluvit","klyv!","kluven / kluvet / kluvna"],
+["r3","knoten, binden","knyta","knyter","knöt","har knutit","knyt!","knuten / knutet / knutna"],
+["r3","kriechen","krypa","kryper","kröp","har krupit","kryp!","–"],
+["r3","erklingen","ljuda","ljuder","ljöd","har ljudit","–","–"],
+["r3","lügen","ljuga","ljuger","ljög","har ljugit","ljug!","ljugen / ljuget / ljugna"],
+["r3","genießen","njuta","njuter","njöt","har njutit","njut!","njuten / njutet / njutna"],
+["r3","kneifen, zwicken","nypa","nyper","nöp","har nupit","nyp!","–"],
+["r3","niesen","nysa","nyser","nös (nyste)","har nyst","nys!","–"],
+["r3","qualmen, rauchen","ryka","ryker","rök","har rukit","–","–"],
+["r3","brüllen","ryta","ryter","röt","har rutit","ryt!","–"],
+["r3","sieden, köcheln","sjuda","sjuder","sjöd","har sjudit","sjud!","–"],
+["r3","singen","sjunga","sjunger","sjöng","har sjungit","sjung!","sjungen / sjunget / sjungna"],
+["r3","sinken","sjunka","sjunker","sjönk","har sjunkit","sjunk!","sjunken / sjunket / sjunkna"],
+["r3","schießen; schieben","skjuta","skjuter","sköt","har skjutit","skjut!","skjuten / skjutet / skjutna"],
+["r3","prahlen","skryta","skryter","skröt","har skrutit","skryt!","–"],
+["r3","schleichen","smyga","smyger","smög","har smugit","smyg!","–"],
+["r3","sich schnäuzen","snyta","snyter","snöt","har snutit","snyt!","–"],
+["r3","streichen; bügeln","stryka","stryker","strök","har strukit","stryk!","struken / struket / strukna"],
+["r3","saugen","suga","suger","sög","har sugit","sug!","sugen / suget / sugna"],
+["r3","saufen","supa","super","söp","har supit","sup!","–"],
+["r3","heulen","tjuta","tjuter","tjöt","har tjutit","tjut!","–"],
+["r3","zur Neige gehen","tryta","tryter","tröt","har trutit","–","–"],
+["r4","ziehen","dra, draga","drar","drog","har dragit","dra!","dragen / draget / dragna"],
+["r4","fahren, reisen","fara","far","for","har farit","far!","–"],
+["r4","krähen","gala","gal","gol","har galit","gal!","–"],
+["r4","schlagen","slå","slår","slog","har slagit","slå!","slagen / slaget / slagna"],
+["r4","nehmen","ta, taga","tar","tog","har tagit","ta!","tagen / taget / tagna"],
+["r5","tragen","bära","bär","bar","har burit","bär!","buren / buret / burna"],
+["r5","schneiden","skära","skär","skar","har skurit","skär!","skuren / skuret / skurna"],
+["r5","schmelzen, intransitiv","smälta","smälter","smalt (smälte)","har smultit (smält)","–","smält / smält / smälta"],
+["r5","stehlen","stjäla","stjäl","stal","har stulit","stjäl!","stulen / stulet / stulna"],
+["r5","hungern","svälta","svälter","svalt","har svultit","–","svulten / svultet / svultna"],
+["r5","schwören; fluchen","svära","svär","svor","har svurit","svär!","svuren / svuret / svurna"],
+["eig","bitten, beten","be","ber","bad","har bett","be!","bedd / bett / bedda"],
+["eig","sterben","dö","dör","dog","har dött","dö!","–"],
+["eig","fallen","falla","faller","föll","har fallit","fall!","fallen / fallet / fallna"],
+["eig","bekommen; dürfen","få","får","fick","har fått","–","fådd / fått / fådda"],
+["eig","geben","ge, giva","ger","gav","har gett (givit)","ge!","given / givet / givna"],
+["eig","weinen","gråta","gråter","grät","har gråtit","gråt!","–"],
+["eig","gehen","gå","går","gick","har gått","gå!","gången / gånget / gångna"],
+["eig","halten","hålla","håller","höll","har hållit","håll!","hållen / hållet / hållna"],
+["eig","kommen","komma","kommer","kom","har kommit","kom!","kommen / kommet / komna"],
+["eig","lächeln","le","ler","log","har lett","le!","–"],
+["eig","liegen","ligga","ligger","låg","har legat","ligg!","–"],
+["eig","lassen; klingen","låta","låter","lät","har låtit","låt!","–"],
+["eig","sehen","se","ser","såg","har sett","se!","sedd / sett / sedda"],
+["eig","schlafen","sova","sover","sov","har sovit","sov!","–"],
+["eig","stehen","stå","står","stod","har stått","stå!","–"],
+["eig","sein","vara","är","var","har varit","var!","–"],
+["eig","essen","äta","äter","åt","har ätit","ät!","äten / ätet / ätna"],
+["sch","verbergen","dölja","döljer","dolde","har dolt","dölj!","dold / dolt / dolda"],
+["sch","erfreuen","glädja","gläder","gladde","har glatt","–","–"],
+["sch","machen, tun","göra","gör","gjorde","har gjort","gör!","gjord / gjort / gjorda"],
+["sch","haben","ha","har","hade","har haft","ha!","–"],
+["sch","heißen","heta","heter","hette","har hetat","–","–"],
+["sch","legen","lägga","lägger","la (lade)","har lagt","lägg!","lagd / lagt / lagda"],
+["sch","schmieren, salben","smörja","smörjer","smorde","har smort","smörj!","smord / smort / smorda"],
+["sch","schlucken","svälja","sväljer","svalde","har svalt","svälj!","svald / svalt / svalda"],
+["sch","sagen","säga","säger","sa (sade)","har sagt","säg!","sagd / sagt / sagda"],
+["sch","verkaufen","sälja","säljer","sålde","har sålt","sälj!","såld / sålt / sålda"],
+["sch","setzen","sätta","sätter","satte","har satt","sätt!","satt / satt / satta"],
+["sch","sich trauen","töras","törs","tordes","har torts","–","–"],
+["sch","wissen","veta","vet","visste","har vetat","vet!","–"],
+["sch","wählen","välja","väljer","valde","har valt","välj!","vald / valt / valda"],
+["sch","gewöhnen","vänja","vänjer","vande","har vant","vänj!","vand / vant / vanda"],
+["mod","sollen, Empfehlung","böra","bör","borde","har bort","–","–"],
+["mod","können","kunna","kan","kunde","har kunnat","–","–"],
+["mod","mögen, Wunsch; sich fühlen","må","må","måtte","–","–","–"],
+["mod","müssen","måste","måste","måste","har måst","–","–"],
+["mod","sollen; werden, Zukunft","ska, skola","ska (skall)","skulle","har skolat","–","–"],
+["mod","wollen","vilja","vill","ville","har velat","–","–"]
+].map(r => ({ g: r[0], de: r[1], sv: r[2], pres: r[3], pret: r[4], perf: r[5], imp: r[6], part: r[7] }));
+let vGroup = 'all';
+try { const g = localStorage.getItem(LS_VFILTER); if (g && (g === 'all' || g in VGROUPS)) vGroup = g; } catch (e) {}
+const vFilter = $('vFilter');
+vFilter.innerHTML = '<option value="all">Alle Verben (' + VERBS.length + ')</option>' + Object.keys(VGROUPS).map(k => '<option value="' + k + '">' + VGROUPS[k] + ' (' + VERBS.filter(x => x.g === k).length + ')</option>').join('');
+vFilter.value = vGroup;
+function applyVerbFilter() { V.buildQueue(); if (vGroup !== 'all') V.queue = V.queue.filter(i => VERBS[i].g === vGroup); }
+vFilter.addEventListener('change', () => { vGroup = vFilter.value; try { localStorage.setItem(LS_VFILTER, vGroup); } catch (e) {} V.history = []; applyVerbFilter(); renderVerb(); });
+const vCard = $('vCard'); let vFlipped = false;
+const jag = x => x === '–' ? '–' : 'jag ' + x;
+function renderVerb() {
+  updateGoalLines();
+  const pool = VERBS.map((_, i) => i).filter(i => vGroup === 'all' || VERBS[i].g === vGroup);
+  const learned = pool.filter(i => { const s = V.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
+  $('vProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
+  $('vUndoBtn').disabled = V.history.length === 0;
+  $('vSkipBtn').disabled = V.queue.length < 2;
+  const done = V.queue.length === 0;
+  $('vStudy').classList.toggle('hidden', done); $('vDone').classList.toggle('hidden', !done);
+  if (done) { $('vDoneText').textContent = vGroup === 'all' ? V.doneText() : 'In dieser Gruppe ist heute nichts mehr offen. Wähle oben eine andere Gruppe oder „Alle Verben“.'; $('vCounter').textContent = 'Heute ist nichts mehr offen'; return; }
+  const i = V.queue[0], c = VERBS[i];
+  vFlipped = false; vCard.classList.remove('flipped');
+  $('vDe').textContent = c.de; $('vSv').textContent = '(' + c.sv + ')'; $('vGroupLbl').textContent = VGROUPS[c.g];
+  const head = $('vHead'); head.textContent = c.de + ' '; const b = document.createElement('b'); b.textContent = '(' + c.sv + ')'; head.appendChild(b);
+  const dl = $('vForms'); dl.textContent = '';
+  [['Präsens', jag(c.pres)], ['Präteritum', jag(c.pret)], ['Perfekt', jag(c.perf)], ['Imperativ', c.imp], ['Partizip', c.part]].forEach(([l, v]) => {
+    const dt = document.createElement('dt'); dt.textContent = l; const dd = document.createElement('dd'); dd.textContent = v; dl.append(dt, dd);
+  });
+  $('vCounter').textContent = 'Heute noch ' + V.queue.length + ' · ' + V.tag(i) + VGROUPS[c.g];
+}
+const swipeV = bindSwipe($('vStage'), $('vBadgeRight'), $('vBadgeLeft'), {
+  hasCard: () => V.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
+  onCommit: kind => { V.rate(kind); track('v', 1); renderVerb(); }
+});
+function flipVerb() { if (!V.queue.length) return; vFlipped = !vFlipped; vCard.classList.toggle('flipped', vFlipped); }
+vCard.addEventListener('click', () => { if (!swipeV.suppressed()) flipVerb(); });
+$('vFlipBtn').addEventListener('click', flipVerb);
+$('vKnownBtn').addEventListener('click', () => swipeV.commit('known'));
+$('vAgainBtn').addEventListener('click', () => swipeV.commit('again'));
+$('vUndoBtn').addEventListener('click', () => { if (V.undo()) { track('v', -1); renderVerb(); } });
+$('vSkipBtn').addEventListener('click', () => { if (V.skip()) renderVerb(); });
+$('vShuffleBtn').addEventListener('click', () => { V.shuffle(); applyVerbFilter(); renderVerb(); });
+armReset($('vResetBtn'), '⚙ Zurücksetzen', () => { V.resetAll(); applyVerbFilter(); renderVerb(); });
+
+// ---------- Modul 4: Starke Verben üben ----------
+const WFORMS = { p: 'Präsens', t: 'Präteritum', f: 'Perfekt', i: 'Imperativ', z: 'Partizip' };
+// [Verb (Infinitiv wie in VERBS), Form, Deutsch, Schwedisch mit {Lösung|Variante}]
+const VSENT = [["bita", "p", "Der Hund beißt nie.", "Hunden {biter} aldrig."],
+["bita", "t", "Die Mücke stach mich in den Arm.", "Myggan {bet} mig i armen."],
+["bita", "f", "Hat dich die Schlange gebissen?", "Har ormen {bitit} dig?"],
+["bita", "i", "Kau nicht an den Nägeln!", "{Bit} inte på naglarna!"],
+["bita", "z", "Er ist von einer Zecke gebissen worden.", "Han är {biten} av en fästing."],
+["bli", "p", "Heute Abend wird es kalt.", "Det {blir} kallt i kväll."],
+["bli", "t", "Sie wurde 2010 Ärztin.", "Hon {blev} läkare 2010."],
+["bli", "f", "Es ist spät geworden.", "Det har {blivit} sent."],
+["bli", "i", "Werd jetzt nicht wütend!", "{Bli} inte arg nu!"],
+["driva", "p", "Sie führt ein eigenes Unternehmen.", "Hon {driver} ett eget företag."],
+["driva", "t", "Das Boot trieb aufs Land zu.", "Båten {drev} mot land."],
+["driva", "f", "Er hat die Frage jahrelang vorangetrieben.", "Han har {drivit} frågan i flera år."],
+["driva", "i", "Mach dich nicht über mich lustig!", "{Driv} inte med mig!"],
+["driva", "z", "Das Unternehmen ist gut geführt.", "Företaget är väl {drivet}."],
+["glida", "p", "Das Eis ist glatt, das Auto rutscht.", "Isen är hal, bilen {glider}."],
+["glida", "t", "Er rutschte den Hang hinunter.", "Han {gled} nerför backen."],
+["glida", "f", "Die Diskussion ist vom Thema abgeglitten.", "Diskussionen har {glidit} ifrån ämnet."],
+["gnida", "p", "Sie reibt sich die Augen.", "Hon {gnider} sig i ögonen."],
+["gnida", "t", "Er rieb die Hände aneinander.", "Han {gned} händerna mot varandra."],
+["gnida", "f", "Die Katze hat sich an meinem Bein gerieben.", "Katten har {gnidit} sig mot mitt ben."],
+["gripa", "p", "Die Polizei nimmt den Dieb fest.", "Polisen {griper} tjuven."],
+["gripa", "t", "Sie griff nach meiner Hand.", "Hon {grep} tag i min hand."],
+["gripa", "f", "Die Polizei hat zwei Männer festgenommen.", "Polisen har {gripit} två män."],
+["gripa", "i", "Greif nach dem Seil!", "{Grip} tag i repet!"],
+["gripa", "z", "Der Mann wurde heute Nacht festgenommen.", "Mannen blev {gripen} i natt."],
+["kliva", "p", "Er steigt ins Auto.", "Han {kliver} in i bilen."],
+["kliva", "t", "Sie stieg auf den Stuhl.", "Hon {klev} upp på stolen."],
+["kliva", "f", "Wir sind aus dem Bus gestiegen.", "Vi har {klivit} av bussen."],
+["kliva", "i", "Steig ein!", "{Kliv} in!"],
+["knipa", "p", "Die Schuhe drücken an den Zehen.", "Skorna {kniper} om tårna."],
+["knipa", "t", "Er kniff mich in den Arm.", "Han {knep} mig i armen."],
+["knipa", "f", "Sie hat die Lippen zusammengekniffen.", "Hon har {knipit} ihop läpparna."],
+["kvida", "p", "Der Hund winselt an der Tür.", "Hunden {kvider} vid dörren."],
+["kvida", "t", "Das Kind wimmerte im Schlaf.", "Barnet {kved} i sömnen."],
+["kvida", "f", "Der Welpe hat die ganze Nacht gewinselt.", "Valpen har {kvidit} hela natten."],
+["lida", "p", "Viele leiden unter Stress.", "Många {lider} av stress."],
+["lida", "t", "Sie litt den ganzen Tag unter Kopfschmerzen.", "Hon {led} av huvudvärk hela dagen."],
+["lida", "f", "Er hat viel gelitten.", "Han har {lidit} mycket."],
+["niga", "p", "Das Mädchen knickst vor der Königin.", "Flickan {niger} för drottningen."],
+["niga", "t", "Sie knickste höflich.", "Hon {neg} artigt."],
+["niga", "f", "Hast du jemals geknickst?", "Har du någonsin {nigit}?"],
+["pipa", "p", "Die Vögel piepen in den Bäumen.", "Fåglarna {piper} i träden."],
+["pipa", "t", "Der Rauchmelder piepte die ganze Nacht.", "Brandvarnaren {pep} hela natten."],
+["pipa", "f", "Das Telefon hat dreimal gepiepst.", "Telefonen har {pipit} tre gånger."],
+["rida", "p", "Sie reitet jeden Samstag.", "Hon {rider} varje lördag."],
+["rida", "t", "Wir ritten durch den Wald.", "Vi {red} genom skogen."],
+["rida", "f", "Bist du schon auf einem Islandpferd geritten?", "Har du {ridit} på en islandshäst?"],
+["rida", "i", "Reite vorsichtig!", "{Rid} försiktigt!"],
+["riva", "p", "Die Katze kratzt am Sofa.", "Katten {river} i soffan."],
+["riva", "t", "Sie rissen das alte Haus ab.", "De {rev} det gamla huset."],
+["riva", "f", "Jemand hat das Plakat zerrissen.", "Någon har {rivit} sönder affischen."],
+["riva", "i", "Zerreiß den Brief nicht!", "{Riv} inte sönder brevet!"],
+["riva", "z", "Das Haus ist abgerissen.", "Huset är {rivet}."],
+["skina", "p", "Heute scheint die Sonne.", "Solen {skiner} i dag."],
+["skina", "t", "Der Mond schien über dem See.", "Månen {sken} över sjön."],
+["skina", "f", "Die Sonne hat die ganze Woche geschienen.", "Solen har {skinit} hela veckan."],
+["skrida", "p", "Die Arbeit schreitet voran.", "Arbetet {skrider} framåt."],
+["skrida", "t", "Die Braut schritt zum Altar.", "Bruden {skred} fram till altaret."],
+["skrida", "f", "Das Projekt ist gut vorangeschritten.", "Projektet har {skridit} fram bra."],
+["skrika", "p", "Das Kind schreit vor Freude.", "Barnet {skriker} av glädje."],
+["skrika", "t", "Sie schrie um Hilfe.", "Hon {skrek} på hjälp."],
+["skrika", "f", "Er hat sich heiser geschrien.", "Han har {skrikit} sig hes."],
+["skrika", "i", "Schrei nicht so laut!", "{Skrik} inte så högt!"],
+["skriva", "p", "Ich schreibe der Chefin eine Mail.", "Jag {skriver} ett mejl till chefen."],
+["skriva", "t", "Sie schrieb ein Buch über Stockholm.", "Hon {skrev} en bok om Stockholm."],
+["skriva", "f", "Hast du den Vertrag unterschrieben?", "Har du {skrivit} under avtalet?"],
+["skriva", "i", "Schreib deinen Namen hierhin!", "{Skriv} ditt namn här!"],
+["skriva", "z", "Das Buch ist auf Schwedisch geschrieben.", "Boken är {skriven} på svenska."],
+["slita", "p", "Er schuftet hart bei der Arbeit.", "Han {sliter} hårt på jobbet."],
+["slita", "t", "Sie riss sich die Jacke vom Leib.", "Hon {slet} av sig jackan."],
+["slita", "f", "Wir haben den ganzen Sommer geschuftet.", "Vi har {slitit} hela sommaren."],
+["slita", "i", "Reiß nicht am Kabel!", "{Slit} inte i sladden!"],
+["slita", "z", "Der Teppich ist abgenutzt.", "Mattan är {sliten}."],
+["smita", "p", "Er drückt sich immer vor dem Abwasch.", "Han {smiter} alltid från disken."],
+["smita", "t", "Der Dieb schlich sich durch die Hintertür davon.", "Tjuven {smet} ut genom bakdörren."],
+["smita", "f", "Der Fahrer hat Fahrerflucht begangen.", "Föraren har {smitit} från olycksplatsen."],
+["sprida", "p", "Die Nachricht verbreitet sich schnell.", "Nyheten {sprider} sig snabbt."],
+["sprida", "t", "Das Virus verbreitete sich über die ganze Welt.", "Viruset {spred|spridde} sig över hela världen."],
+["sprida", "f", "Das Gerücht hat sich verbreitet.", "Ryktet har {spritt|spridit} sig."],
+["sprida", "i", "Verteil den Sand gleichmäßig!", "{Sprid} ut sanden jämnt!"],
+["sprida", "z", "Die Krankheit ist weit verbreitet.", "Sjukdomen är vida {spridd}."],
+["stiga", "p", "Die Preise steigen jedes Jahr.", "Priserna {stiger} varje år."],
+["stiga", "t", "Er stand früh auf.", "Han {steg} upp tidigt."],
+["stiga", "f", "Die Temperatur ist auf 30 Grad gestiegen.", "Temperaturen har {stigit} till 30 grader."],
+["stiga", "i", "Komm herein!", "{Stig} på!"],
+["strida", "p", "Das verstößt gegen die Regeln.", "Det {strider} mot reglerna."],
+["strida", "t", "Die Soldaten kämpften drei Tage lang.", "Soldaterna {stred} i tre dagar."],
+["strida", "f", "Sie haben für ihre Rechte gekämpft.", "De har {stridit} för sina rättigheter."],
+["svida", "p", "Es brennt in den Augen.", "Det {svider} i ögonen."],
+["svida", "t", "Die Wunde brannte die ganze Nacht.", "Såret {sved} hela natten."],
+["svida", "f", "Die Niederlage hat lange geschmerzt.", "Förlusten har {svidit} länge."],
+["svika", "p", "Er lässt seine Freunde nie im Stich.", "Han {sviker} aldrig sina vänner."],
+["svika", "t", "Das Gedächtnis ließ sie im Stich.", "Minnet {svek} henne."],
+["svika", "f", "Du hast mein Vertrauen missbraucht.", "Du har {svikit} mitt förtroende."],
+["svika", "i", "Lass das Team jetzt nicht im Stich!", "{Svik} inte laget nu!"],
+["svika", "z", "Sie fühlte sich verraten.", "Hon kände sig {sviken}."],
+["tiga", "p", "Er schweigt über die Sache.", "Han {tiger} om saken."],
+["tiga", "t", "Alle schwiegen, als sie hereinkam.", "Alla {teg} när hon kom in."],
+["tiga", "f", "Sie hat lange genug geschwiegen.", "Hon har {tigit} länge nog."],
+["tiga", "i", "Schweig!", "{Tig}!"],
+["vika", "p", "Sie faltet die Wäsche.", "Hon {viker} tvätten."],
+["vika", "t", "Er faltete die Karte zusammen.", "Han {vek} ihop kartan."],
+["vika", "f", "Ich habe die Servietten gefaltet.", "Jag har {vikit} servetterna."],
+["vika", "i", "Bieg an der Kirche rechts ab!", "{Vik} av till höger vid kyrkan!"],
+["vina", "p", "Der Wind pfeift ums Haus.", "Vinden {viner} runt huset."],
+["vina", "t", "Die Kugeln pfiffen über unsere Köpfe.", "Kulorna {ven} över våra huvuden."],
+["vina", "f", "Der Sturm hat die ganze Nacht geheult.", "Stormen har {vinit} hela natten."],
+["vrida", "p", "Sie dreht den Schlüssel um.", "Hon {vrider} om nyckeln."],
+["vrida", "t", "Er drehte den Kopf.", "Han {vred} på huvudet."],
+["vrida", "f", "Ich habe die Heizung aufgedreht.", "Jag har {vridit} upp värmen."],
+["vrida", "i", "Dreh die Lautstärke runter!", "{Vrid} ner volymen!"],
+["binda", "p", "Sie bindet einen Kranz.", "Hon {binder} en krans."],
+["binda", "t", "Er band das Boot fest.", "Han {band} fast båten."],
+["binda", "f", "Wir haben uns an den Vertrag gebunden.", "Vi har {bundit} oss vid avtalet."],
+["binda", "i", "Binde den Hund fest!", "{Bind} fast hunden!"],
+["binda", "z", "Das Geld ist in Aktien gebunden.", "Pengarna är {bundna} i aktier."],
+["brinna", "p", "Es brennt!", "Det {brinner}!"],
+["brinna", "t", "Das Haus brannte heute Nacht nieder.", "Huset {brann} ner i natt."],
+["brinna", "f", "Die Kerze ist heruntergebrannt.", "Ljuset har {brunnit} ner."],
+["brista", "p", "Das Eis bricht bald.", "Isen {brister} snart."],
+["brista", "t", "Sie brach in Tränen aus.", "Hon {brast} i gråt."],
+["brista", "f", "Der Damm ist gebrochen.", "Dammen har {brustit}."],
+["brista", "z", "Sie hat ein gebrochenes Herz.", "Hon har ett {brustet} hjärta."],
+["dricka", "p", "Ich trinke jeden Morgen Kaffee.", "Jag {dricker} kaffe varje morgon."],
+["dricka", "t", "Wir tranken Wein zum Essen.", "Vi {drack} vin till maten."],
+["dricka", "f", "Hast du die Milch ausgetrunken?", "Har du {druckit} upp mjölken?"],
+["dricka", "i", "Trink viel Wasser!", "{Drick} mycket vatten!"],
+["finna", "p", "Er findet sich damit nicht ab.", "Han {finner} sig inte i det."],
+["finna", "t", "Sie fand die Lösung.", "Hon {fann} lösningen."],
+["finna", "f", "Wir haben eine neue Wohnung gefunden.", "Vi har {funnit} en ny lägenhet."],
+["finna", "i", "Finde fünf Fehler!", "{Finn} fem fel!"],
+["finnas", "p", "Im Kühlschrank ist Milch.", "Det {finns} mjölk i kylen."],
+["finnas", "t", "Es gab keine Karten mehr.", "Det {fanns} inga biljetter kvar."],
+["finnas", "f", "Diesen Laden gibt es schon lange.", "Den här affären har {funnits} länge."],
+["försvinna", "p", "Das Problem verschwindet nicht von selbst.", "Problemet {försvinner} inte av sig självt."],
+["försvinna", "t", "Die Katze verschwand gestern.", "Katten {försvann} i går."],
+["försvinna", "f", "Meine Schlüssel sind verschwunden.", "Mina nycklar har {försvunnit}."],
+["försvinna", "i", "Verschwinde!", "{Försvinn}!"],
+["försvinna", "z", "Das verschwundene Mädchen ist gefunden worden.", "Den {försvunna} flickan har hittats."],
+["hinna", "p", "Schaffst du es, Mittag zu essen?", "{Hinner} du äta lunch?"],
+["hinna", "t", "Wir erwischten den Zug gerade noch.", "Vi {hann} precis med tåget."],
+["hinna", "f", "Ich habe es nicht geschafft, das Buch zu lesen.", "Jag har inte {hunnit} läsa boken."],
+["rinna", "p", "Das Wasser läuft aus dem Hahn.", "Vattnet {rinner} ur kranen."],
+["rinna", "t", "Die Tränen liefen über ihre Wangen.", "Tårarna {rann} nerför hennes kinder."],
+["rinna", "f", "Die Zeit ist verronnen.", "Tiden har {runnit} iväg."],
+["sitta", "p", "Sie sitzt in einer Besprechung.", "Hon {sitter} i möte."],
+["sitta", "t", "Wir saßen den ganzen Abend draußen.", "Vi {satt} ute hela kvällen."],
+["sitta", "f", "Ich habe den ganzen Tag am Computer gesessen.", "Jag har {suttit} vid datorn hela dagen."],
+["sitta", "i", "Sitz still!", "{Sitt} still!"],
+["slinka", "p", "Die Katze schlüpft durch die Tür.", "Katten {slinker} in genom dörren."],
+["slinka", "t", "Ein Fehler rutschte durch.", "Ett fel {slank} igenom."],
+["slinka", "f", "Er hat sich auf die Party geschlichen.", "Han har {slunkit} in på festen."],
+["slippa", "p", "Du musst heute nicht abwaschen.", "Du {slipper} diska i dag."],
+["slippa", "t", "Wir mussten keinen Eintritt zahlen.", "Vi {slapp} betala inträde."],
+["slippa", "f", "Ich musste am Wochenende nicht arbeiten.", "Jag har {sluppit} jobba i helgen."],
+["spinna", "p", "Die Katze schnurrt auf meinem Schoß.", "Katten {spinner} i mitt knä."],
+["spinna", "t", "Sie spann Wolle.", "Hon {spann} ull."],
+["spinna", "f", "Die Spinne hat ein Netz gesponnen.", "Spindeln har {spunnit} ett nät."],
+["spricka", "p", "Das Eis bricht in der Sonne.", "Isen {spricker} i solen."],
+["spricka", "t", "Das Glas sprang in der Spülmaschine.", "Glaset {sprack} i diskmaskinen."],
+["spricka", "f", "Der Luftballon ist geplatzt.", "Ballongen har {spruckit}."],
+["spricka", "z", "Er hat eine aufgeplatzte Lippe.", "Han har en {sprucken} läpp."],
+["springa", "p", "Sie läuft jeden Morgen.", "Hon {springer} varje morgon."],
+["springa", "t", "Die Kinder rannten auf den Hof.", "Barnen {sprang} ut på gården."],
+["springa", "f", "Ich bin einen Marathon gelaufen.", "Jag har {sprungit} ett maraton."],
+["springa", "i", "Lauf!", "{Spring}!"],
+["sticka", "p", "Ich hau jetzt ab.", "Jag {sticker} nu."],
+["sticka", "t", "Sie stach sich an einer Nadel.", "Hon {stack} sig på en nål."],
+["sticka", "f", "Eine Biene hat mich gestochen.", "Ett bi har {stuckit} mig."],
+["sticka", "i", "Hau ab!", "{Stick} härifrån!"],
+["sticka", "z", "Er wurde von einer Wespe gestochen.", "Han blev {stucken} av en geting."],
+["stinka", "p", "Der Müll stinkt.", "Soporna {stinker}."],
+["stinka", "t", "Im ganzen Haus stank es nach Rauch.", "Det {stank} rök i hela huset."],
+["stinka", "f", "Der Kühlschrank hat eine Woche lang gestunken.", "Kylen har {stunkit} i en vecka."],
+["vinna", "p", "Wer gewinnt das Spiel?", "Vem {vinner} matchen?"],
+["vinna", "t", "Schweden gewann mit zwei zu eins.", "Sverige {vann} med två–ett."],
+["vinna", "f", "Sie hat im Lotto gewonnen.", "Hon har {vunnit} på lotto."],
+["vinna", "i", "Gewinne eine Reise nach Rom!", "{Vinn} en resa till Rom!"],
+["vinna", "z", "Es war ein leicht errungener Sieg.", "Det var en lätt {vunnen} seger."],
+["bjuda", "p", "Ich lade dich zum Kaffee ein.", "Jag {bjuder} på kaffe."],
+["bjuda", "t", "Sie luden uns zum Abendessen ein.", "De {bjöd} oss på middag."],
+["bjuda", "f", "Hast du die Nachbarn eingeladen?", "Har du {bjudit} in grannarna?"],
+["bjuda", "i", "Lade deine Freunde ein!", "{Bjud} hit dina vänner!"],
+["bjuda", "z", "Wir sind zu einer Hochzeit eingeladen.", "Vi är {bjudna} på bröllop."],
+["bryta", "p", "Er verstößt immer gegen die Regeln.", "Han {bryter} alltid mot reglerna."],
+["bryta", "t", "Sie brach sich letztes Jahr das Bein.", "Hon {bröt} benet i fjol."],
+["bryta", "f", "Die Firma hat den Vertrag gebrochen.", "Firman har {brutit} avtalet."],
+["bryta", "i", "Brich dein Versprechen nicht!", "{Bryt} inte ditt löfte!"],
+["bryta", "z", "Der Arm ist gebrochen.", "Armen är {bruten}."],
+["duga", "p", "Das taugt nichts.", "Det här {duger} inte."],
+["duga", "t", "Der alte Computer tat es durchaus.", "Den gamla datorn {dög|dugde} gott."],
+["duga", "f", "Das Auto hat zwanzig Jahre lang seinen Dienst getan.", "Bilen har {dugt} i tjugo år."],
+["dyka", "p", "Er taucht nach Muscheln.", "Han {dyker} efter musslor."],
+["dyka", "t", "Der Wal tauchte in die Tiefe.", "Valen {dök} ner i djupet."],
+["dyka", "f", "Wir sind im Roten Meer getaucht.", "Vi har {dykt|dykit} i Röda havet."],
+["dyka", "i", "Spring nicht kopfüber ins flache Wasser!", "{Dyk} inte på grunt vatten!"],
+["flyga", "p", "Wir fliegen morgen nach Stockholm.", "Vi {flyger} till Stockholm i morgon."],
+["flyga", "t", "Der Vogel flog davon.", "Fågeln {flög} sin väg."],
+["flyga", "f", "Bist du schon mit SAS geflogen?", "Har du {flugit} med SAS?"],
+["flyga", "i", "Flieg, kleiner Vogel!", "{Flyg}, lilla fågel!"],
+["flyta", "p", "Holz schwimmt auf dem Wasser.", "Trä {flyter} på vatten."],
+["flyta", "t", "Das Gespräch lief gut.", "Samtalet {flöt} på bra."],
+["flyta", "f", "Seitdem ist viel Wasser den Bach hinuntergeflossen.", "Mycket vatten har {flutit} under broarna sedan dess."],
+["fnysa", "p", "Sie schnaubt über den Vorschlag.", "Hon {fnyser} åt förslaget."],
+["fnysa", "t", "Das Pferd schnaubte ungeduldig.", "Hästen {fnös|fnyste} otåligt."],
+["fnysa", "f", "Er hat über die Idee nur die Nase gerümpft.", "Han har {fnyst} åt idén."],
+["frysa", "p", "Mir frieren die Hände.", "Jag {fryser} om händerna."],
+["frysa", "t", "Der See fror heute Nacht zu.", "Sjön {frös} till i natt."],
+["frysa", "f", "Wir haben das Fleisch eingefroren.", "Vi har {frusit} in köttet."],
+["frysa", "i", "Frier den Rest ein!", "{Frys} in resten!"],
+["frysa", "z", "Die Beeren sind gefroren.", "Bären är {frusna}."],
+["gjuta", "p", "Die Arbeiter gießen heute das Fundament.", "Arbetarna {gjuter} grunden i dag."],
+["gjuta", "t", "Er goss Kerzen aus altem Stearin.", "Han {göt} ljus av gammalt stearin."],
+["gjuta", "f", "Sie haben eine neue Brücke gegossen.", "De har {gjutit} en ny bro."],
+["gjuta", "z", "Die Platte ist aus Beton gegossen.", "Plattan är {gjuten} i betong."],
+["hugga", "p", "Er hackt jeden Herbst Holz.", "Han {hugger} ved varje höst."],
+["hugga", "t", "Sie fällten den alten Baum.", "De {högg} ner det gamla trädet."],
+["hugga", "f", "Hast du Holz gehackt?", "Har du {huggit} ved?"],
+["hugga", "i", "Pack jetzt mit an!", "{Hugg} i nu!"],
+["hugga", "z", "Das Holz ist gehackt.", "Veden är {huggen}."],
+["klyva", "p", "Er spaltet die Holzscheite mit der Axt.", "Han {klyver} vedträna med yxan."],
+["klyva", "t", "Der Blitz spaltete den Baum.", "Blixten {klöv} trädet."],
+["klyva", "f", "Die Frage hat die Partei gespalten.", "Frågan har {kluvit} partiet."],
+["klyva", "z", "Ich bin hin- und hergerissen.", "Jag känner mig {kluven}."],
+["knyta", "p", "Sie bindet sich die Schuhe zu.", "Hon {knyter} skorna."],
+["knyta", "t", "Er band die Krawatte.", "Han {knöt} slipsen."],
+["knyta", "f", "Wir haben neue Kontakte geknüpft.", "Vi har {knutit} nya kontakter."],
+["knyta", "i", "Bind dir die Schuhe zu!", "{Knyt} skorna!"],
+["knyta", "z", "Der Sack ist fest zugebunden.", "Säcken är hårt {knuten}."],
+["krypa", "p", "Das Baby krabbelt auf dem Boden.", "Bebisen {kryper} på golvet."],
+["krypa", "t", "Eine Spinne kroch über den Tisch.", "En spindel {kröp} över bordet."],
+["krypa", "f", "Die Katze ist unter das Bett gekrochen.", "Katten har {krupit} under sängen."],
+["krypa", "i", "Kriech unter die Decke!", "{Kryp} ner under täcket!"],
+["ljuda", "p", "Die Glocken erklingen über der Stadt.", "Klockorna {ljuder} över staden."],
+["ljuda", "t", "Ein Schuss hallte durch die Nacht.", "Ett skott {ljöd} i natten."],
+["ljuda", "f", "Die Musik hat den ganzen Abend geklungen.", "Musiken har {ljudit} hela kvällen."],
+["ljuga", "p", "Er lügt die ganze Zeit.", "Han {ljuger} hela tiden."],
+["ljuga", "t", "Sie log die Polizei an.", "Hon {ljög} för polisen."],
+["ljuga", "f", "Hast du mich angelogen?", "Har du {ljugit} för mig?"],
+["ljuga", "i", "Lüg mich nicht an!", "{Ljug} inte för mig!"],
+["njuta", "p", "Wir genießen die Sonne.", "Vi {njuter} av solen."],
+["njuta", "t", "Sie genoss die Stille.", "Hon {njöt} av tystnaden."],
+["njuta", "f", "Ich habe den Urlaub genossen.", "Jag har {njutit} av semestern."],
+["njuta", "i", "Genieß den Abend!", "{Njut} av kvällen!"],
+["nypa", "p", "Er kneift sie in die Wange.", "Han {nyper} henne i kinden."],
+["nypa", "t", "Die Kälte zwickte in die Wangen.", "Kylan {nöp} i kinderna."],
+["nypa", "f", "Der Krebs hat mich in den Zeh gezwickt.", "Krabban har {nupit} mig i tån."],
+["nysa", "p", "Ich niese ständig.", "Jag {nyser} hela tiden."],
+["nysa", "t", "Sie nieste dreimal.", "Hon {nös|nyste} tre gånger."],
+["nysa", "f", "Er hat den ganzen Morgen geniest.", "Han har {nyst} hela morgonen."],
+["ryka", "p", "Aus dem Schornstein raucht es.", "Det {ryker} ur skorstenen."],
+["ryka", "t", "Die Suppe dampfte auf dem Tisch.", "Soppan {rök} på bordet."],
+["ryka", "f", "Die ganze Urlaubskasse ist draufgegangen.", "Hela semesterkassan har {rukit}."],
+["ryta", "p", "Der Löwe brüllt.", "Lejonet {ryter}."],
+["ryta", "t", "Der Chef brüllte uns an.", "Chefen {röt} åt oss."],
+["ryta", "f", "Er hat die Kinder angebrüllt.", "Han har {rutit} åt barnen."],
+["sjuda", "p", "Die Suppe köchelt auf dem Herd.", "Soppan {sjuder} på spisen."],
+["sjuda", "t", "Das ganze Land kochte vor Wut.", "Hela landet {sjöd} av ilska."],
+["sjuda", "f", "Der Eintopf hat zwei Stunden geköchelt.", "Grytan har {sjudit} i två timmar."],
+["sjunga", "p", "Sie singt in einem Chor.", "Hon {sjunger} i en kör."],
+["sjunga", "t", "Wir sangen auf dem Fest.", "Vi {sjöng} på festen."],
+["sjunga", "f", "Hast du dieses Lied schon gesungen?", "Har du {sjungit} den här sången?"],
+["sjunga", "i", "Sing mit!", "{Sjung} med!"],
+["sjunka", "p", "Die Preise sinken.", "Priserna {sjunker}."],
+["sjunka", "t", "Das Schiff sank 1628.", "Skeppet {sjönk} 1628."],
+["sjunka", "f", "Das Fieber ist gesunken.", "Febern har {sjunkit}."],
+["sjunka", "z", "Die Vasa ist ein gesunkenes Schiff.", "Vasa är ett {sjunket} skepp."],
+["skjuta", "p", "Er verschiebt das Treffen.", "Han {skjuter} upp mötet."],
+["skjuta", "t", "Der Jäger schoss einen Elch.", "Jägaren {sköt} en älg."],
+["skjuta", "f", "Wir haben die Reise verschoben.", "Vi har {skjutit} på resan."],
+["skjuta", "i", "Nicht schießen!", "{Skjut} inte!"],
+["skjuta", "z", "Der Elch wurde erschossen.", "Älgen blev {skjuten}."],
+["skryta", "p", "Er prahlt mit seinem Auto.", "Han {skryter} om sin bil."],
+["skryta", "t", "Sie prahlte mit ihren Noten.", "Hon {skröt} om sina betyg."],
+["skryta", "f", "Er hat den ganzen Abend geprahlt.", "Han har {skrutit} hela kvällen."],
+["skryta", "i", "Gib nicht so an!", "{Skryt} inte!"],
+["smyga", "p", "Die Katze schleicht durchs Gras.", "Katten {smyger} genom gräset."],
+["smyga", "t", "Er schlich aus dem Zimmer.", "Han {smög} ut ur rummet."],
+["smyga", "f", "Ein Fehler hat sich eingeschlichen.", "Ett fel har {smugit} sig in."],
+["smyga", "i", "Schleich dich leise hinein!", "{Smyg} in tyst!"],
+["snyta", "p", "Sie putzt sich die Nase.", "Hon {snyter} sig."],
+["snyta", "t", "Er schnäuzte sich laut.", "Han {snöt} sig högljutt."],
+["snyta", "f", "Hast du dir die Nase geputzt?", "Har du {snutit} dig?"],
+["snyta", "i", "Putz dir die Nase!", "{Snyt} dig!"],
+["stryka", "p", "Sie bügelt die Hemden.", "Hon {stryker} skjortorna."],
+["stryka", "t", "Die Lehrerin unterstrich die Fehler.", "Läraren {strök} under felen."],
+["stryka", "f", "Ich habe den Satz gestrichen.", "Jag har {strukit} meningen."],
+["stryka", "i", "Streich Butter aufs Brot!", "{Stryk} smör på brödet!"],
+["stryka", "z", "Das Hemd ist gebügelt.", "Skjortan är {struken}."],
+["suga", "p", "Das Kind lutscht am Daumen.", "Barnet {suger} på tummen."],
+["suga", "t", "Sie lutschte ein Bonbon.", "Hon {sög} på en karamell."],
+["suga", "f", "Der Schwamm hat das Wasser aufgesogen.", "Svampen har {sugit} upp vattnet."],
+["suga", "i", "Lutsch nicht am Stift!", "{Sug} inte på pennan!"],
+["supa", "p", "Er säuft zu viel.", "Han {super} för mycket."],
+["supa", "t", "Sie soffen die ganze Nacht.", "De {söp} hela natten."],
+["supa", "f", "Er hat seinen Lohn versoffen.", "Han har {supit} upp lönen."],
+["tjuta", "p", "Die Sirenen heulen.", "Sirenerna {tjuter}."],
+["tjuta", "t", "Der Hund heulte die ganze Nacht.", "Hunden {tjöt} hela natten."],
+["tjuta", "f", "Das Kind hat eine Stunde lang geheult.", "Barnet har {tjutit} i en timme."],
+["tjuta", "i", "Heul nicht!", "{Tjut} inte!"],
+["tryta", "p", "Die Geduld geht zu Ende.", "Tålamodet {tryter}."],
+["tryta", "t", "Das Geld ging am Monatsende aus.", "Pengarna {tröt} i slutet av månaden."],
+["tryta", "f", "Die Vorräte sind zur Neige gegangen.", "Förråden har {trutit}."],
+["dra, draga", "p", "Es zieht vom Fenster.", "Det {drar} från fönstret."],
+["dra, draga", "t", "Er zog den Stecker.", "Han {drog} ur sladden."],
+["dra, draga", "f", "Wir haben das Projekt gestartet.", "Vi har {dragit} igång projektet."],
+["dra, draga", "i", "Zieh an der Schnur!", "{Dra} i snöret!"],
+["dra, draga", "z", "Er stand mit gezücktem Messer da.", "Han stod med {dragen} kniv."],
+["fara", "p", "Wir fahren am Wochenende aufs Land.", "Vi {far} till landet i helgen."],
+["fara", "t", "Sie fuhren früh nach Hause.", "De {for} hem tidigt."],
+["fara", "f", "Es ist ihr schlecht ergangen.", "Hon har {farit} illa."],
+["fara", "i", "Fahr vorsichtig!", "{Far} försiktigt!"],
+["gala", "p", "Der Hahn kräht jeden Morgen.", "Tuppen {gal} varje morgon."],
+["gala", "t", "Der Hahn krähte dreimal.", "Tuppen {gol} tre gånger."],
+["gala", "f", "Der Hahn hat schon gekräht.", "Tuppen har redan {galit}."],
+["slå", "p", "Das Herz schlägt schnell.", "Hjärtat {slår} snabbt."],
+["slå", "t", "Die Uhr schlug zwölf.", "Klockan {slog} tolv."],
+["slå", "f", "Hast du den Fernseher eingeschaltet?", "Har du {slagit} på tv:n?"],
+["slå", "i", "Schalte den Computer aus!", "{Slå} av datorn!"],
+["slå", "z", "Die Mannschaft war geschlagen.", "Laget var {slaget}."],
+["ta, taga", "p", "Ich nehme den Bus zur Arbeit.", "Jag {tar} bussen till jobbet."],
+["ta, taga", "t", "Sie machte ein Foto.", "Hon {tog} en bild."],
+["ta, taga", "f", "Wer hat meinen Stift genommen?", "Vem har {tagit} min penna?"],
+["ta, taga", "i", "Immer mit der Ruhe!", "{Ta} det lugnt!"],
+["ta, taga", "z", "Der Platz ist schon besetzt.", "Platsen är redan {tagen}."],
+["bära", "p", "Sie trägt eine Brille.", "Hon {bär} glasögon."],
+["bära", "t", "Er trug die Tüten hinein.", "Han {bar} in kassarna."],
+["bära", "f", "Wir haben das Sofa hinaufgetragen.", "Vi har {burit} upp soffan."],
+["bära", "i", "Trag diese Kiste!", "{Bär} den här lådan!"],
+["skära", "p", "Er schneidet das Brot.", "Han {skär} brödet."],
+["skära", "t", "Sie schnitt sich in den Finger.", "Hon {skar} sig i fingret."],
+["skära", "f", "Hast du die Zwiebel geschnitten?", "Har du {skurit} löken?"],
+["skära", "i", "Schneide die Tomaten in Stücke!", "{Skär} tomaterna i bitar!"],
+["skära", "z", "Die Zwiebel ist geschnitten.", "Löken är {skuren}."],
+["smälta", "p", "Der Schnee schmilzt in der Sonne.", "Snön {smälter} i solen."],
+["smälta", "t", "Das Eis schmolz in der Hitze.", "Glassen {smalt|smälte} i värmen."],
+["smälta", "f", "Das Eis ist geschmolzen.", "Isen har {smultit|smält}."],
+["smälta", "z", "Nimm einen Löffel geschmolzene Butter.", "Ta en sked {smält} smör."],
+["stjäla", "p", "Er stiehlt immer allen die Show.", "Han {stjäl} alltid showen."],
+["stjäla", "t", "Jemand stahl mein Fahrrad.", "Någon {stal} min cykel."],
+["stjäla", "f", "Der Dieb hat die Geldbörse gestohlen.", "Tjuven har {stulit} plånboken."],
+["stjäla", "i", "Stiehl nicht!", "{Stjäl} inte!"],
+["stjäla", "z", "Das Auto ist gestohlen.", "Bilen är {stulen}."],
+["svälta", "p", "Viele Menschen hungern.", "Många människor {svälter}."],
+["svälta", "t", "Der Hund verhungerte fast.", "Hunden {svalt} nästan ihjäl."],
+["svälta", "f", "Die Vögel haben diesen Winter gehungert.", "Fåglarna har {svultit} i vinter."],
+["svälta", "z", "Ich bin völlig ausgehungert!", "Jag är helt {svulten}!"],
+["svära", "p", "Er flucht viel zu viel.", "Han {svär} alldeles för mycket."],
+["svära", "t", "Sie schwor, die Wahrheit zu sagen.", "Hon {svor} att säga sanningen."],
+["svära", "f", "Hast du den Eid geschworen?", "Har du {svurit} eden?"],
+["svära", "i", "Fluch nicht vor den Kindern!", "{Svär} inte inför barnen!"],
+["svära", "z", "Sie sind geschworene Feinde.", "De är {svurna} fiender."],
+["be", "p", "Ich bitte um Entschuldigung.", "Jag {ber} om ursäkt."],
+["be", "t", "Sie bat mich zu warten.", "Hon {bad} mig vänta."],
+["be", "f", "Hast du um Hilfe gebeten?", "Har du {bett} om hjälp?"],
+["be", "i", "Bitte ihn anzurufen!", "{Be} honom ringa!"],
+["be", "z", "Er ist gebeten worden, früh zu kommen.", "Han är {bedd} att komma tidigt."],
+["dö", "p", "Die Pflanzen sterben ohne Wasser.", "Växterna {dör} utan vatten."],
+["dö", "t", "Er starb 1990.", "Han {dog} 1990."],
+["dö", "f", "Der Akku ist leer.", "Batteriet har {dött}."],
+["falla", "p", "Im Herbst fallen die Blätter.", "Löven {faller} på hösten."],
+["falla", "t", "Sie fiel hin und tat sich weh.", "Hon {föll} och slog sig."],
+["falla", "f", "Es ist viel Schnee gefallen.", "Det har {fallit} mycket snö."],
+["falla", "z", "Wir ehren die Gefallenen.", "Vi hedrar de {fallna}."],
+["få", "p", "Darf ich hereinkommen?", "{Får} jag komma in?"],
+["få", "t", "Sie bekam die Stelle.", "Hon {fick} jobbet."],
+["få", "f", "Ich habe einen Brief bekommen.", "Jag har {fått} ett brev."],
+["ge, giva", "p", "Er schenkt ihr Blumen.", "Han {ger} henne blommor."],
+["ge, giva", "t", "Wir gaben auf.", "Vi {gav} upp."],
+["ge, giva", "f", "Sie hat mir ein Geschenk gegeben.", "Hon har {gett|givit} mig en present."],
+["ge, giva", "i", "Gib mir bitte das Salz!", "{Ge} mig saltet, tack!"],
+["ge, giva", "z", "Das ist selbstverständlich.", "Det är en {given} sak."],
+["gråta", "p", "Das Kind weint.", "Barnet {gråter}."],
+["gråta", "t", "Sie weinte vor Freude.", "Hon {grät} av glädje."],
+["gråta", "f", "Hast du geweint?", "Har du {gråtit}?"],
+["gråta", "i", "Wein nicht!", "{Gråt} inte!"],
+["gå", "p", "Der Zug fährt um sieben.", "Tåget {går} klockan sju."],
+["gå", "t", "Wir gingen gestern ins Kino.", "Vi {gick} på bio i går."],
+["gå", "f", "Es ist gut gelaufen.", "Det har {gått} bra."],
+["gå", "i", "Geh geradeaus!", "{Gå} rakt fram!"],
+["gå", "z", "Das vergangene Jahr war schwer.", "Det {gångna} året var svårt."],
+["hålla", "p", "Sie hält eine Rede.", "Hon {håller} ett tal."],
+["hålla", "t", "Er hielt das Lenkrad fest.", "Han {höll} hårt i ratten."],
+["hålla", "f", "Wir haben den Kontakt gehalten.", "Vi har {hållit} kontakten."],
+["hålla", "i", "Halt dich fest!", "{Håll} i dig!"],
+["komma", "p", "Sie kommt aus Göteborg.", "Hon {kommer} från Göteborg."],
+["komma", "t", "Der Bus kam spät.", "Bussen {kom} sent."],
+["komma", "f", "Ist das Paket angekommen?", "Har paketet {kommit}?"],
+["komma", "i", "Komm her!", "{Kom} hit!"],
+["komma", "z", "Alle Gäste sind gekommen.", "Alla gäster är {komna}."],
+["le", "p", "Sie lächelt mich an.", "Hon {ler} mot mig."],
+["le", "t", "Er lächelte breit.", "Han {log} brett."],
+["le", "f", "Sie hat den ganzen Tag nicht gelächelt.", "Hon har inte {lett} på hela dagen."],
+["le", "i", "Lächle in die Kamera!", "{Le} mot kameran!"],
+["ligga", "p", "Das Buch liegt auf dem Tisch.", "Boken {ligger} på bordet."],
+["ligga", "t", "Wir lagen am Strand.", "Vi {låg} på stranden."],
+["ligga", "f", "Er hat eine Woche krank im Bett gelegen.", "Han har {legat} sjuk i en vecka."],
+["ligga", "i", "Lieg still!", "{Ligg} still!"],
+["låta", "p", "Das klingt gut!", "Det {låter} bra!"],
+["låta", "t", "Sie ließ die Kinder draußen spielen.", "Hon {lät} barnen leka ute."],
+["låta", "f", "Er hat es unterlassen zu antworten.", "Han har {låtit} bli att svara."],
+["låta", "i", "Lass mich dir helfen!", "{Låt} mig hjälpa dig!"],
+["se", "p", "Ich sehe dich morgen.", "Jag {ser} dig i morgon."],
+["se", "t", "Wir sahen einen Elch im Wald.", "Vi {såg} en älg i skogen."],
+["se", "f", "Hast du den Film gesehen?", "Har du {sett} filmen?"],
+["se", "i", "Pass auf!", "{Se} upp!"],
+["se", "z", "Er ist bei der Arbeit gern gesehen.", "Han är väl {sedd} på jobbet."],
+["sova", "p", "Die Kinder schlafen schon.", "Barnen {sover} redan."],
+["sova", "t", "Ich schlief heute Nacht schlecht.", "Jag {sov} dåligt i natt."],
+["sova", "f", "Hast du gut geschlafen?", "Har du {sovit} gott?"],
+["sova", "i", "Schlaf gut!", "{Sov} gott!"],
+["stå", "p", "Es steht in der Zeitung.", "Det {står} i tidningen."],
+["stå", "t", "Wir standen eine Stunde Schlange.", "Vi {stod} i kö i en timme."],
+["stå", "f", "Das Auto hat den ganzen Winter draußen gestanden.", "Bilen har {stått} ute hela vintern."],
+["stå", "i", "Steh still!", "{Stå} still!"],
+["vara", "p", "Sie ist heute müde.", "Hon {är} trött i dag."],
+["vara", "t", "Gestern war es kalt.", "Det {var} kallt i går."],
+["vara", "f", "Bist du schon in Kiruna gewesen?", "Har du {varit} i Kiruna?"],
+["vara", "i", "Sei vorsichtig!", "{Var} försiktig!"],
+["äta", "p", "Wir essen um sechs zu Abend.", "Vi {äter} middag klockan sex."],
+["äta", "t", "Sie aß eine Zimtschnecke.", "Hon {åt} en kanelbulle."],
+["äta", "f", "Hast du gefrühstückt?", "Har du {ätit} frukost?"],
+["äta", "i", "Iss dein Essen auf!", "{Ät} upp maten!"],
+["dölja", "p", "Er verbirgt etwas.", "Han {döljer} något."],
+["dölja", "t", "Sie verbarg das Gesicht in den Händen.", "Hon {dolde} ansiktet i händerna."],
+["dölja", "f", "Sie haben die Wahrheit verheimlicht.", "De har {dolt} sanningen."],
+["dölja", "i", "Verbirg deine Gefühle nicht!", "{Dölj} inte dina känslor!"],
+["dölja", "z", "Die Kamera war versteckt.", "Kameran var {dold}."],
+["glädja", "p", "Das freut mich zu hören.", "Det {gläder} mig att höra."],
+["glädja", "t", "Die Nachricht freute uns alle.", "Nyheten {gladde} oss alla."],
+["glädja", "f", "Dein Brief hat mich sehr gefreut.", "Ditt brev har {glatt} mig mycket."],
+["göra", "p", "Was machst du am Wochenende?", "Vad {gör} du i helgen?"],
+["göra", "t", "Wir machten einen Ausflug.", "Vi {gjorde} en utflykt."],
+["göra", "f", "Hast du die Hausaufgaben gemacht?", "Har du {gjort} läxorna?"],
+["göra", "i", "Mach es jetzt!", "{Gör} det nu!"],
+["göra", "z", "Es ist schon erledigt.", "Det är redan {gjort}."],
+["ha", "p", "Wir haben zwei Kinder.", "Vi {har} två barn."],
+["ha", "t", "Ich hatte keine Zeit.", "Jag {hade} ingen tid."],
+["ha", "f", "Wir haben Glück gehabt.", "Vi har {haft} tur."],
+["ha", "i", "Hab ein schönes Wochenende!", "{Ha} en trevlig helg!"],
+["heta", "p", "Wie heißt du?", "Vad {heter} du?"],
+["heta", "t", "Die Straße hieß früher anders.", "Gatan {hette} något annat förr."],
+["heta", "f", "Die Firma heißt schon seit 1990 so.", "Företaget har {hetat} så sedan 1990."],
+["lägga", "p", "Sie bringt die Kinder um sieben ins Bett.", "Hon {lägger} barnen klockan sju."],
+["lägga", "t", "Er legte die Schlüssel auf den Tisch.", "Han {la|lade} nycklarna på bordet."],
+["lägga", "f", "Wo hast du das Handy hingelegt?", "Var har du {lagt} mobilen?"],
+["lägga", "i", "Leg das Buch ins Regal!", "{Lägg} boken på hyllan!"],
+["lägga", "z", "Die Steine sind von Hand verlegt.", "Stenarna är {lagda} för hand."],
+["smörja", "p", "Er ölt die Fahrradkette.", "Han {smörjer} cykelkedjan."],
+["smörja", "t", "Sie cremte sich den Rücken mit Sonnencreme ein.", "Hon {smorde} in ryggen med solkräm."],
+["smörja", "f", "Hast du dich eingecremt?", "Har du {smort} in dig?"],
+["smörja", "i", "Creme dich ordentlich ein!", "{Smörj} in dig ordentligt!"],
+["smörja", "z", "Es läuft wie geschmiert.", "Det går som {smort}."],
+["svälja", "p", "Sie schluckt die Tablette mit Wasser.", "Hon {sväljer} tabletten med vatten."],
+["svälja", "t", "Er schluckte seinen Ärger hinunter.", "Han {svalde} förtreten."],
+["svälja", "f", "Das Kind hat eine Münze verschluckt.", "Barnet har {svalt} ett mynt."],
+["svälja", "i", "Schluck!", "{Svälj}!"],
+["säga", "p", "Was sagst du?", "Vad {säger} du?"],
+["säga", "t", "Sie sagte nichts.", "Hon {sa|sade} ingenting."],
+["säga", "f", "Das habe ich nie gesagt.", "Det har jag aldrig {sagt}."],
+["säga", "i", "Sag etwas!", "{Säg} något!"],
+["säga", "z", "Leichter gesagt als getan.", "Lättare {sagt} än gjort."],
+["sälja", "p", "Sie verkaufen das Haus.", "De {säljer} huset."],
+["sälja", "t", "Wir verkauften letztes Jahr das Auto.", "Vi {sålde} bilen i fjol."],
+["sälja", "f", "Habt ihr die Wohnung verkauft?", "Har ni {sålt} lägenheten?"],
+["sälja", "i", "Verkauf die Aktien jetzt!", "{Sälj} aktierna nu!"],
+["sälja", "z", "Das Haus ist schon verkauft.", "Huset är redan {sålt}."],
+["sätta", "p", "Sie setzt sich an den Tisch.", "Hon {sätter} sig vid bordet."],
+["sätta", "t", "Er setzte Kaffee auf.", "Han {satte} på kaffe."],
+["sätta", "f", "Ich habe das Geld eingezahlt.", "Jag har {satt} in pengarna."],
+["sätta", "i", "Setz dich hierhin!", "{Sätt} dig här!"],
+["töras", "p", "Ich traue mich nicht zu fragen.", "Jag {törs} inte fråga."],
+["töras", "t", "Sie traute sich nicht zu springen.", "Hon {tordes} inte hoppa."],
+["töras", "f", "Er hat sich nie getraut zu widersprechen.", "Han har aldrig {torts} säga emot."],
+["veta", "p", "Ich weiß es nicht.", "Jag {vet} inte."],
+["veta", "t", "Niemand wusste die Antwort.", "Ingen {visste} svaret."],
+["veta", "f", "Das habe ich immer gewusst.", "Det har jag alltid {vetat}."],
+["välja", "p", "Welchen wählst du?", "Vilken {väljer} du?"],
+["välja", "t", "Wir wählten das günstigste Hotel.", "Vi {valde} det billigaste hotellet."],
+["välja", "f", "Hast du richtig gewählt?", "Har du {valt} rätt?"],
+["välja", "i", "Wähle eine Farbe!", "{Välj} en färg!"],
+["välja", "z", "Sie wurde zur Vorsitzenden gewählt.", "Hon blev {vald} till ordförande."],
+["vänja", "p", "Man gewöhnt sich an alles.", "Man {vänjer} sig vid allt."],
+["vänja", "t", "Ich gewöhnte mich schnell an die Kälte.", "Jag {vande} mig snabbt vid kylan."],
+["vänja", "f", "Hast du dich an die Arbeit gewöhnt?", "Har du {vant} dig vid jobbet?"],
+["vänja", "i", "Gewöhn dich daran, früh aufzustehen!", "{Vänj} dig vid att gå upp tidigt!"],
+["böra", "p", "Du solltest dich ausruhen.", "Du {bör} vila."],
+["böra", "t", "Wir hätten anrufen sollen.", "Vi {borde} ha ringt."],
+["böra", "f", "Das hätte früher gemacht werden sollen.", "Det hade {bort} göras tidigare."],
+["kunna", "p", "Kannst du mir helfen?", "{Kan} du hjälpa mig?"],
+["kunna", "t", "Sie konnte nicht kommen.", "Hon {kunde} inte komma."],
+["kunna", "f", "Ich habe nicht schlafen können.", "Jag har inte {kunnat} sova."],
+["må", "p", "Er mag reich sein, aber er ist nicht glücklich.", "Han {må} vara rik, men han är inte lycklig."],
+["må", "t", "Ich hoffe, dass es gut gehen möge.", "Jag hoppas att det {måtte} gå bra."],
+["måste", "p", "Ich muss jetzt gehen.", "Jag {måste} gå nu."],
+["måste", "t", "Gestern mussten wir lange warten.", "I går {måste} vi vänta länge."],
+["måste", "f", "Er hat Überstunden machen müssen.", "Han har {måst} jobba över."],
+["ska, skola", "p", "Wir werden nach Schweden ziehen.", "Vi {ska} flytta till Sverige."],
+["ska, skola", "t", "Ich würde gern kommen.", "Jag {skulle} gärna komma."],
+["vilja", "p", "Ich will Schwedisch lernen.", "Jag {vill} lära mig svenska."],
+["vilja", "t", "Sie wollte nicht gehen.", "Hon {ville} inte gå."],
+["vilja", "f", "Ich wollte schon immer in Stockholm wohnen.", "Jag har alltid {velat} bo i Stockholm."]];
+const VERB_BY_SV = {}; VERBS.forEach(x => { VERB_BY_SV[x.sv] = x; });
+const WTASKS = VSENT.map(([vb, fm, de, sv]) => {
+  const a = sv.indexOf('{'), b = sv.indexOf('}'), opts = sv.slice(a + 1, b).split('|');
+  return { key: 'w:' + vb + ':' + fm, vb, fm, de, pre: sv.slice(0, a), ans: opts[0], alt: opts.slice(1), post: sv.slice(b + 1), full: sv.slice(0, a) + opts[0] + sv.slice(b + 1) };
+});
+let wForm = 'all';
+try { const g = localStorage.getItem(LS_WFILTER); if (g && (g === 'all' || g in WFORMS)) wForm = g; } catch (e) {}
+const wFilter = $('wFilter');
+wFilter.innerHTML = '<option value="all">Alle Formen (' + WTASKS.length + ')</option>' + Object.keys(WFORMS).map(k => '<option value="' + k + '">' + WFORMS[k] + ' (' + WTASKS.filter(t => t.fm === k).length + ')</option>').join('');
+wFilter.value = wForm;
+function applyWorkFilter() { W.buildQueue(); if (wForm !== 'all') W.queue = W.queue.filter(i => WTASKS[i].fm === wForm); }
+wFilter.addEventListener('change', () => { wForm = wFilter.value; try { localStorage.setItem(LS_WFILTER, wForm); } catch (e) {} W.history = []; applyWorkFilter(); renderWork(); });
+const wCard = $('wCard'), wInput = $('wInput'), wFeed = $('wFeed'), wInfo = $('wInfo');
+let wState = { attempts: 0, resolved: null };
+function wSetFeed(text, cls) { wFeed.textContent = text; wFeed.className = 'sfeed' + (cls ? ' ' + cls : ''); }
+function wShake() { wCard.classList.remove('shake'); void wCard.offsetWidth; wCard.classList.add('shake'); }
+function renderWork() {
+  updateGoalLines();
+  const pool = WTASKS.map((_, i) => i).filter(i => wForm === 'all' || WTASKS[i].fm === wForm);
+  const learned = pool.filter(i => { const s = W.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
+  $('wProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
+  $('wUndoBtn').disabled = W.history.length === 0;
+  $('wSkipBtn').disabled = W.queue.length < 2;
+  const done = W.queue.length === 0;
+  $('wStudy').classList.toggle('hidden', done); $('wDone').classList.toggle('hidden', !done);
+  if (done) { $('wDoneText').textContent = wForm === 'all' ? W.doneText() : 'Bei dieser Form ist heute nichts mehr offen. Wähle oben eine andere Form oder „Alle Formen“.'; $('wCounter').textContent = 'Heute ist nichts mehr offen'; return; }
+  const t = WTASKS[W.queue[0]];
+  wState = { attempts: 0, resolved: null };
+  $('wCounter').textContent = 'Heute noch ' + W.queue.length + ' · ' + W.tag(W.queue[0]) + WFORMS[t.fm];
+  $('wDe').textContent = t.de; $('wForm').textContent = WFORMS[t.fm].toUpperCase();
+  $('wPre').textContent = t.pre; $('wPost').textContent = t.post;
+  wInput.value = ''; wInput.disabled = false; wInput.className = 'blank' + (t.ans.length > 8 ? ' wide' : '');
+  wCard.className = 'scard'; wSetFeed(''); wInfo.textContent = '';
+  $('wOpenRow').classList.remove('hidden'); $('wDoneRow').classList.add('hidden');
+  $('wAgainBtn').classList.remove('rec'); $('wKnownBtn').classList.remove('rec');
+}
+function wShowInfo(t) {
+  const v = VERB_BY_SV[t.vb]; wInfo.textContent = '';
+  const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.full;
+  const b = document.createElement('div'); b.style.marginTop = '6px';
+  b.textContent = v.sv + ' (' + v.de + '): ' + v.pres + ' – ' + v.pret + ' – ' + v.perf + (v.imp !== '–' ? ' – ' + v.imp : '');
+  wInfo.append(a, b);
+  if (t.alt.length) { const c = document.createElement('div'); c.style.marginTop = '6px'; c.textContent = 'Auch richtig: ' + t.alt.join(', '); wInfo.appendChild(c); }
+}
+function resolveWork(kind) {
+  const t = WTASKS[W.queue[0]]; wState.resolved = kind;
+  wInput.value = t.ans; wInput.disabled = true;
+  wCard.classList.add(kind === 'correct' ? 'ok' : 'bad');
+  if (kind === 'correct') wSetFeed('Richtig ✓' + (wState.attempts === 1 ? ' (beim zweiten Versuch)' : '') + ' – jetzt nach rechts wischen.', 'ok');
+  else wSetFeed('Leider falsch. Die Lösung steht oben – nach links wischen, dann kommt der Satz morgen wieder.', 'bad');
+  wShowInfo(t);
+  $('wOpenRow').classList.add('hidden'); $('wDoneRow').classList.remove('hidden');
+  $('wAgainBtn').classList.toggle('rec', kind === 'failed'); $('wKnownBtn').classList.toggle('rec', kind === 'correct');
+  if (kind === 'failed') wShake();
+}
+function checkWork() {
+  if (wState.resolved || !W.queue.length) return;
+  const t = WTASKS[W.queue[0]], v = wInput.value;
+  if (!v.trim()) { wSetFeed('Gib zuerst eine Verbform ein.'); wInput.focus(); return; }
+  const verdict = judge(v, t);
+  if (verdict === 'exact') { resolveWork('correct'); return; }
+  wState.attempts++;
+  if (wState.attempts >= 2) { resolveWork('failed'); return; }
+  wShake(); wSetFeed(verdict === 'accent' ? 'Fast – achte auf å, ä und ö. Versuch es noch einmal.' : 'Nicht ganz. Versuch es noch einmal.', 'bad'); wInput.focus(); wInput.select();
+}
+function revealWork() { if (wState.resolved || !W.queue.length) return; wState.attempts = 2; resolveWork('failed'); }
+function hintWork() {
+  if (wState.resolved || !W.queue.length) return;
+  const t = WTASKS[W.queue[0]], v = VERB_BY_SV[t.vb];
+  wSetFeed('Hinweis: ' + v.sv + ' (' + v.de + ') · gesucht: ' + WFORMS[t.fm]);
+}
+const swipeW = bindSwipe($('wStage'), $('wBadgeRight'), $('wBadgeLeft'), {
+  hasCard: () => W.queue.length > 0, canSwipe: () => wState.resolved !== null,
+  onBlocked: () => { wShake(); wSetFeed('Erst die Verbform eingeben, oder „Lösung" tippen.'); },
+  onCommit: kind => { W.rate(kind); track('w', 1); renderWork(); }
+});
+$('wCheckBtn').addEventListener('click', checkWork);
+$('wRevealBtn').addEventListener('click', revealWork);
+$('wHintBtn').addEventListener('click', hintWork);
+$('wKnownBtn').addEventListener('click', () => swipeW.commit('known'));
+$('wAgainBtn').addEventListener('click', () => swipeW.commit('again'));
+wInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkWork(); } });
+$('wUndoBtn').addEventListener('click', () => { if (W.undo()) { track('w', -1); renderWork(); } });
+$('wSkipBtn').addEventListener('click', () => { if (W.skip()) renderWork(); });
+$('wShuffleBtn').addEventListener('click', () => { W.shuffle(); applyWorkFilter(); renderWork(); });
+armReset($('wResetBtn'), '⚙ Zurücksetzen', () => { W.resetAll(); applyWorkFilter(); renderWork(); });
+document.querySelectorAll('#wChars button').forEach(b => {
+  b.addEventListener('mousedown', e => e.preventDefault());
+  b.addEventListener('click', () => { if (wInput.disabled) return; wInput.setRangeText(b.dataset.ch, wInput.selectionStart, wInput.selectionEnd, 'end'); wInput.focus(); });
+});
+
+// ---------- Verwaltung (für beide Module) ----------
+let mCtx = null, mFilter = 'mastered', mQuery = '';
+const FILTERS = [['mastered', 'Gemeistert'], ['review', 'In Wiederholung'], ['again', 'Nochmal'], ['fresh', 'Neu'], ['all', 'Alle']];
+function stateText(L, i) {
+  const st = L.status[L.keys[i]];
+  if (!st) return 'Neu';
+  if (st.s === 'mastered') return 'Gemeistert';
+  const when = st.due <= today() ? 'heute' : niceDate(st.due);
+  return (st.s === 'review' ? 'Wiederholung ' + st.stage + '/' + INTERVALS.length : 'Nochmal') + ' · fällig ' + when;
+}
+function openManage(ctx) { mCtx = ctx; mFilter = 'mastered'; mQuery = ''; $('mSearch').value = ''; $('manageScreen').style.display = 'block'; renderManage(); }
+function renderManage() {
+  const L = mCtx.L; const f = $('mFilters'); f.textContent = '';
+  const counts = { all: L.items.length, mastered: 0, review: 0, again: 0, fresh: 0 };
+  L.items.forEach((_, i) => { counts[L.stateOf(i)]++; });
+  FILTERS.forEach(([k, label]) => {
+    const b = document.createElement('button'); b.textContent = label + ' (' + counts[k] + ')'; if (k === mFilter) b.className = 'on';
+    b.addEventListener('click', () => { mFilter = k; renderManage(); }); f.appendChild(b);
+  });
+  const q = mQuery.trim().toLowerCase(), rows = [];
+  L.items.forEach((_, i) => {
+    if (mFilter !== 'all' && L.stateOf(i) !== mFilter) return;
+    const [t1, t2] = mCtx.text(i); if (q && !(t1 + ' ' + t2).toLowerCase().includes(q)) return;
+    rows.push(i);
+  });
+  $('mCount').textContent = rows.length + ' Einträge' + (rows.length > 150 ? ' (die ersten 150 werden angezeigt, grenze mit der Suche ein)' : '');
+  const list = $('mList'); list.textContent = '';
+  rows.slice(0, 150).forEach(i => {
+    const [t1, t2] = mCtx.text(i), s = L.stateOf(i);
+    const row = document.createElement('div'); row.className = 'mrow';
+    const left = document.createElement('div');
+    const a = document.createElement('div'); a.className = 'mt'; a.textContent = t1;
+    const b = document.createElement('div'); b.className = 'mg'; b.textContent = t2;
+    const c = document.createElement('div'); c.className = 'mm'; c.textContent = stateText(L, i);
+    left.append(a, b, c);
+    const btn = document.createElement('button');
+    const after = () => { mCtx.after(); renderManage(); };
+    if (s === 'mastered') { btn.textContent = 'Wieder aktivieren'; btn.addEventListener('click', () => { L.reactivate(i); after(); }); }
+    else if (s === 'fresh') { btn.textContent = 'Als Nächstes'; btn.addEventListener('click', () => { L.moveFront(i); after(); }); }
+    else { btn.textContent = 'Heute üben'; btn.addEventListener('click', () => { L.practiceToday(i); after(); }); }
+    row.append(left, btn); list.appendChild(row);
+  });
+}
+$('manageBtn').addEventListener('click', () => openManage({ L: F, after: renderFlash, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
+$('sManageBtn').addEventListener('click', () => openManage({ L: S, after: renderSent, text: i => [tasks[i].pre + ' ___ ' + tasks[i].post, tasks[i].de] }));
+$('vManageBtn').addEventListener('click', () => openManage({ L: V, after: () => { applyVerbFilter(); renderVerb(); }, text: i => [VERBS[i].de + ' (' + VERBS[i].sv + ')', VGROUPS[VERBS[i].g]] }));
+$('wManageBtn').addEventListener('click', () => openManage({ L: W, after: () => { applyWorkFilter(); renderWork(); }, text: i => [WTASKS[i].pre + '___' + WTASKS[i].post, WTASKS[i].de + ' · ' + WFORMS[WTASKS[i].fm]] }));
+$('manageClose').addEventListener('click', () => { $('manageScreen').style.display = 'none'; });
+$('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderManage(); });
+
+// ---------- Navigation ----------
+function showView(v) {
+  ['home', 'flash', 'sent', 'verb', 'work'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome();
+  window.scrollTo(0, 0);
+}
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : 'home');
+$('goFlash').addEventListener('click', () => showView('flash'));
+$('goSent').addEventListener('click', () => showView('sent'));
+$('backF').addEventListener('click', () => showView('home'));
+$('backS').addEventListener('click', () => showView('home'));
+$('goVerb').addEventListener('click', () => showView('verb'));
+$('backV').addEventListener('click', () => showView('home'));
+$('goWork').addEventListener('click', () => showView('work'));
+$('backW').addEventListener('click', () => showView('home'));
+document.addEventListener('keydown', e => {
+  if (importEl.style.display === 'flex' || $('manageScreen').style.display === 'block' || $('goalScreen').style.display === 'flex' || $('praiseScreen').style.display === 'flex') return;
+  const typing = e.target && e.target.tagName === 'INPUT', v = activeView();
+  if (v === 'flash') {
+    if (e.key === 'ArrowRight') swipeF.commit('known'); else if (e.key === 'ArrowLeft') swipeF.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipCard(); } else if (e.key.toLowerCase() === 'z') { if (F.undo()) { track('f', -1); renderFlash(); } }
+  } else if (v === 'verb') {
+    if (e.key === 'ArrowRight') swipeV.commit('known'); else if (e.key === 'ArrowLeft') swipeV.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipVerb(); } else if (e.key.toLowerCase() === 'z') { if (V.undo()) { track('v', -1); renderVerb(); } }
+  } else if (v === 'sent' && !typing) {
+    if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
+  } else if (v === 'work' && !typing) {
+    if (e.key === 'ArrowRight') swipeW.commit('known'); else if (e.key === 'ArrowLeft') swipeW.commit('again');
+  }
+});
+
+// ---------- Start und Karten laden ----------
+function startWith(list) {
+  cards = list;
+  F.init(cards, cards.map(hashCard), false);
+  tasks = buildTasks(cards);
+  S.init(tasks, tasks.map(t => t.key), true);
+  V.init(VERBS, VERBS.map(x => 'v:' + x.sv), false); applyVerbFilter();
+  W.init(WTASKS, WTASKS.map(t => t.key), true); applyWorkFilter();
+  importEl.style.display = 'none';
+  loadStreak();
+  showView('home');
+  note('Fortschritt wird auf diesem Gerät gespeichert.');
+}
+function importFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const raw = JSON.parse(r.result); const list = Array.isArray(raw) ? raw : raw.cards;
+      if (!validCards(list)) throw new Error('format');
+      try { localStorage.setItem(LS_CARDS, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
+      importMsg.textContent = '';
+      startWith(list);
+    } catch (e) { importMsg.textContent = 'Die Datei konnte nicht gelesen werden. Ist es die Datei karten.json?'; importEl.style.display = 'flex'; }
+  };
+  r.onerror = () => { importMsg.textContent = 'Die Datei konnte nicht geöffnet werden.'; };
+  r.readAsText(file);
+}
+$('fileInput').addEventListener('change', e => { importFile(e.target.files[0]); e.target.value = ''; });
+$('loadBtn').addEventListener('click', () => $('fileInput').click());
+window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !cards.length) return;
+  if (F.builtOn !== today() || S.builtOn !== today() || V.builtOn !== today() || W.builtOn !== today()) { F.buildQueue(); S.buildQueue(); applyVerbFilter(); applyWorkFilter(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome(); }
+});
+(function boot() {
+  let list = null;
+  try { list = JSON.parse(localStorage.getItem(LS_CARDS)); } catch (e) {}
+  if (validCards(list)) startWith(list); else importEl.style.display = 'flex';
+})();
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
+
+</script>
+</body>
+</html>
