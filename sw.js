@@ -1,4 +1,4 @@
-const CACHE = 'schwedisch-app-v14';
+const CACHE = 'schwedisch-app-v15';
 const FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 // Beim Installieren immer frisch vom Server laden, nie aus dem Browser-Zwischenspeicher.
