@@ -587,7 +587,13 @@ function playFanfare() {
   } catch (e) {}
 }
 // iOS gibt Audio erst nach einer Berührung frei
-['touchstart', 'mousedown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (soundOn) audio(); }, { passive: true, once: true }));
+function unlockAudio() {
+  if (!soundOn) return;
+  const c = audio(); if (!c) return;
+  try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch (e) {}
+  if (c.state === 'running') ['touchend', 'click', 'keydown'].forEach(ev => document.removeEventListener(ev, unlockAudio, true));
+}
+['touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, true));
 let EDITS = { f: {}, s: {}, v: {}, w: {} };
 try { const d = JSON.parse(localStorage.getItem(LS_EDITS)); if (d && typeof d === 'object') ['f', 's', 'v', 'w'].forEach(k => { if (d[k] && typeof d[k] === 'object') EDITS[k] = d[k]; }); } catch (e) {}
 function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
@@ -799,7 +805,7 @@ function changeGoal(kind, delta) {
 $('gFm').addEventListener('click', () => changeGoal('f', -5)); $('gFp').addEventListener('click', () => changeGoal('f', 5));
 $('gSm').addEventListener('click', () => changeGoal('s', -5)); $('gSp').addEventListener('click', () => changeGoal('s', 5));
 $('gVm').addEventListener('click', () => changeGoal('v', -5)); $('gVp').addEventListener('click', () => changeGoal('v', 5));
-$('soundToggle').addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem(LS_SOUND, soundOn ? 'on' : 'off'); } catch (e) {} renderSoundToggle(); if (soundOn) playSwipe('known'); });
+$('soundToggle').addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem(LS_SOUND, soundOn ? 'on' : 'off'); } catch (e) {} renderSoundToggle(); if (soundOn) { unlockAudio(); playSwipe('known'); } });
 $('gWm').addEventListener('click', () => changeGoal('w', -5)); $('gWp').addEventListener('click', () => changeGoal('w', 5));
 $('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
 $('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
@@ -813,6 +819,7 @@ function bindSwipe(stageEl, badgeR, badgeL, o) {
     if (!o.hasCard() || stageEl.dataset.busy) return;
     if (!o.canSwipe()) { reset(); o.onBlocked(); return; }
     stageEl.dataset.busy = '1';
+    playSwipe(kind);
     const dir = kind === 'known' ? 1 : -1;
     badgeR.style.opacity = kind === 'known' ? 1 : 0; badgeL.style.opacity = kind === 'again' ? 1 : 0;
     stageEl.style.transform = 'translateX(' + (dir * Math.max(window.innerWidth, 500)) + 'px) rotate(' + (dir * 18) + 'deg)'; stageEl.style.opacity = '0';
@@ -910,7 +917,7 @@ function renderFlash() {
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
   hasCard: () => F.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
-  onCommit: kind => { playSwipe(kind); F.rate(kind); track('f', 1); renderFlash(); }
+  onCommit: kind => { F.rate(kind); track('f', 1); renderFlash(); }
 });
 function flipCard() { if (!F.queue.length) return; flipped = !flipped; cardEl.classList.toggle('flipped', flipped); }
 cardEl.addEventListener('click', () => { if (!swipeF.suppressed()) flipCard(); });
@@ -1029,7 +1036,7 @@ function hintSent() {
 const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
   hasCard: () => S.queue.length > 0, canSwipe: () => sState.resolved !== null,
   onBlocked: () => { shakeCard(); setFeed('Erst die Präposition eingeben, oder „Lösung" tippen.'); },
-  onCommit: kind => { playSwipe(kind); S.rate(kind); track('s', 1); renderSent(); }
+  onCommit: kind => { S.rate(kind); track('s', 1); renderSent(); }
 });
 $('sCheckBtn').addEventListener('click', checkSent);
 $('sRevealBtn').addEventListener('click', revealSent);
@@ -1220,7 +1227,7 @@ function renderVerb() {
 }
 const swipeV = bindSwipe($('vStage'), $('vBadgeRight'), $('vBadgeLeft'), {
   hasCard: () => V.queue.length > 0, canSwipe: () => true, onBlocked: () => {},
-  onCommit: kind => { playSwipe(kind); V.rate(kind); track('v', 1); renderVerb(); }
+  onCommit: kind => { V.rate(kind); track('v', 1); renderVerb(); }
 });
 function flipVerb() { if (!V.queue.length) return; vFlipped = !vFlipped; vCard.classList.toggle('flipped', vFlipped); }
 vCard.addEventListener('click', () => { if (!swipeV.suppressed()) flipVerb(); });
@@ -1812,7 +1819,7 @@ function hintWork() {
 const swipeW = bindSwipe($('wStage'), $('wBadgeRight'), $('wBadgeLeft'), {
   hasCard: () => W.queue.length > 0, canSwipe: () => wState.resolved !== null,
   onBlocked: () => { wShake(); wSetFeed('Erst die Verbform eingeben, oder „Lösung" tippen.'); },
-  onCommit: kind => { playSwipe(kind); W.rate(kind); track('w', 1); renderWork(); }
+  onCommit: kind => { W.rate(kind); track('w', 1); renderWork(); }
 });
 $('wCheckBtn').addEventListener('click', checkWork);
 $('wRevealBtn').addEventListener('click', revealWork);
