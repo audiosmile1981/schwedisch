@@ -205,6 +205,12 @@
   #editScreen input:focus, #editScreen textarea:focus { outline: 2px solid var(--yellow); outline-offset: 0; }
   #editScreen .emsg { color: var(--bad); font-size: .85rem; min-height: 1.2em; margin-top: 12px; }
   #editScreen .erow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  #editScreen select { width: 100%; background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); border-radius: 14px; padding: 11px 12px; font: inherit; font-size: 16px; }
+  button.danger { color: var(--bad); border-color: var(--bad); }
+  button.danger.armed { background: var(--bad); color: #FFFFFF; }
+  .chaprow { display: flex; gap: 8px; align-items: stretch; margin-bottom: 12px; }
+  .chaprow .vfilter { margin-bottom: 0; flex: 1; min-width: 0; }
+  .chaprow button { flex: none; border-radius: 14px; }
   #goalScreen, #praiseScreen, #dataScreen { position: fixed; inset: 0; z-index: 60; background: var(--overlay); display: none; align-items: center; justify-content: center; padding: 20px; }
   .gbox, .pbox { background: var(--surface); color: var(--ink); border-radius: 24px; box-shadow: var(--shadow); padding: 24px 20px; max-width: 400px; width: 100%; text-align: center; max-height: 90vh; overflow-y: auto; }
   .gbox h2, .pbox h2 { margin: 0 0 10px; font-weight: 800; }
@@ -244,6 +250,7 @@
   <div class="gsec">ANZEIGE UND TON</div>
   <div class="grow"><span>Englische Beispiele</span><button class="tgl" id="enToggle" aria-pressed="true">An</button></div>
   <div class="grow"><span>Töne (Wischen und Tagesziel)</span><button class="tgl" id="soundToggle" aria-pressed="true">An</button></div>
+  <div class="grow"><span>Gelöschte Karten</span><button class="tgl" id="undeleteBtn">Wiederherstellen</button></div>
   <div class="grow"><span>Darstellung</span><button class="tgl" id="modeToggle" aria-pressed="false">Daylight</button></div>
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
@@ -256,14 +263,15 @@
   <div class="prow"><button id="dataClose">Schließen</button></div></div></div>
 <div id="editScreen" role="dialog" aria-modal="true" aria-label="Karte bearbeiten">
   <div class="ebox">
-    <h2>Karte bearbeiten</h2>
-    <p class="enote">Änderungen gelten nur auf diesem Gerät. Dein Lernfortschritt für diese Karte bleibt erhalten.</p>
+    <h2 id="eTitle">Karte bearbeiten</h2>
+    <p class="enote" id="eNote">Änderungen gelten nur auf diesem Gerät. Dein Lernfortschritt für diese Karte bleibt erhalten.</p>
     <div id="eFields"></div>
     <div class="emsg" id="eMsg" role="status"></div>
     <div class="erow">
       <button class="primary" id="eSave">Speichern</button>
       <button id="eCancel">Abbrechen</button>
       <button id="eRestore">Original wiederherstellen</button>
+      <button id="eDelete" class="danger">Löschen</button>
     </div>
   </div>
 </div>
@@ -299,7 +307,7 @@
   <div id="viewFlash" class="hidden">
     <div class="topbar"><button id="backF" aria-label="Zurück zum Start">‹</button><span class="ttl" id="fTitle">Flashcards Präpositionen</span><button class="editbtn" id="editF" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
-    <select class="vfilter" id="fChap" aria-label="Kapitel wählen"></select>
+    <div class="chaprow"><select class="vfilter" id="fChap" aria-label="Kapitel wählen"></select><button id="fChapRen" aria-label="Kapitel umbenennen">✎</button></div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="counter" id="counter"></div>
     <div class="goalline" id="fGoal"></div><div class="gprog"><div class="gfill" id="fGFill"></div></div>
@@ -339,7 +347,7 @@
 
     <div class="shuffle-row">
       <button id="undoBtn">↶ Rückgängig</button> <button id="skipBtn">⏭ Später</button> <button id="shuffleBtn">🔀 Mischen</button><br>
-      <button id="manageBtn">🗂 Karten verwalten</button> <button id="resetBtn">⚙ Zurücksetzen</button>
+      <button id="newF">＋ Neue Karte</button> <button id="manageBtn">🗂 Karten verwalten</button> <button id="resetBtn">⚙ Zurücksetzen</button>
     </div>
   </div>
 
@@ -379,7 +387,7 @@
 
     <div class="shuffle-row">
       <button id="sUndoBtn">↶ Rückgängig</button> <button id="sSkipBtn">⏭ Später</button> <button id="sShuffleBtn">🔀 Mischen</button><br>
-      <button id="sManageBtn">🗂 Sätze verwalten</button> <button id="sResetBtn">⚙ Zurücksetzen</button>
+      <button id="newS">＋ Neue Übung</button> <button id="sManageBtn">🗂 Sätze verwalten</button> <button id="sResetBtn">⚙ Zurücksetzen</button>
     </div>
   </div>
 
@@ -418,7 +426,7 @@
 
     <div class="shuffle-row">
       <button id="vUndoBtn">↶ Rückgängig</button> <button id="vSkipBtn">⏭ Später</button> <button id="vShuffleBtn">🔀 Mischen</button><br>
-      <button id="vManageBtn">🗂 Verben verwalten</button> <button id="vResetBtn">⚙ Zurücksetzen</button>
+      <button id="newV">＋ Neues Verb</button> <button id="vManageBtn">🗂 Verben verwalten</button> <button id="vResetBtn">⚙ Zurücksetzen</button>
     </div>
   </div>
 
@@ -459,7 +467,7 @@
 
     <div class="shuffle-row">
       <button id="wUndoBtn">↶ Rückgängig</button> <button id="wSkipBtn">⏭ Später</button> <button id="wShuffleBtn">🔀 Mischen</button><br>
-      <button id="wManageBtn">🗂 Sätze verwalten</button> <button id="wResetBtn">⚙ Zurücksetzen</button>
+      <button id="newW">＋ Neue Übung</button> <button id="wManageBtn">🗂 Sätze verwalten</button> <button id="wResetBtn">⚙ Zurücksetzen</button>
     </div>
   </div>
 
@@ -547,6 +555,13 @@ function unlockAudio() {
 ['touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, true));
 let EDITS = { f: {}, s: {}, v: {}, w: {} };
 try { const d = JSON.parse(localStorage.getItem(LS_EDITS)); if (d && typeof d === 'object') ['f', 's', 'v', 'w'].forEach(k => { if (d[k] && typeof d[k] === 'object') EDITS[k] = d[k]; }); } catch (e) {}
+const LS_CUSTOM = 'schwedisch-app-custom-v1', LS_DELETED = 'schwedisch-app-deleted-v1', LS_CHAPNAMES = 'schwedisch-app-chapnames-v1';
+let CUSTOM = { f: [], s: [], v: [], w: [] }, DELETED = { f: [], s: [], v: [], w: [] }, CHAPNAMES = {};
+try { const d = JSON.parse(localStorage.getItem(LS_CUSTOM)); if (d) ['f', 's', 'v', 'w'].forEach(k => { if (Array.isArray(d[k])) CUSTOM[k] = d[k]; }); } catch (e) {}
+try { const d = JSON.parse(localStorage.getItem(LS_DELETED)); if (d) ['f', 's', 'v', 'w'].forEach(k => { if (Array.isArray(d[k])) DELETED[k] = d[k]; }); } catch (e) {}
+try { const d = JSON.parse(localStorage.getItem(LS_CHAPNAMES)); if (d && typeof d === 'object') CHAPNAMES = d; } catch (e) {}
+const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
 function parseGap(sv) {
@@ -579,6 +594,8 @@ function niceDate(s) {
 }
 function hashStr(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); }
 function hashCard(c) { return hashStr(c.part + '|' + c.q); }
+const fKey = c => c.id ? 'c:' + c.id : hashCard(c);
+const vKey = x => x.id ? 'cv:' + x.id : 'v:' + x.sv;
 function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function validCards(a) { return Array.isArray(a) && a.length > 0 && a.every(c => c && typeof c.q === 'string' && typeof c.answer === 'string' && Array.isArray(c.sv)); }
 function nextStatus(prev, kind) {
@@ -752,7 +769,7 @@ function renderHome() {
 }
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
-function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
+function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -825,11 +842,12 @@ function fChapOf(c) { const t = String(c.part || '').split(' · ').map(x => x.tr
 let fSet = 'RUM', fChapSel = {};
 try { const s = JSON.parse(localStorage.getItem(LS_FSET)); if (s && typeof s === 'object') { if (s.set in FSETS) fSet = s.set; if (s.chap && typeof s.chap === 'object') fChapSel = s.chap; } } catch (e) {}
 function saveFSet() { try { localStorage.setItem(LS_FSET, JSON.stringify({ set: fSet, chap: fChapSel })); } catch (e) {} }
+function chapName(set, ch) { return (CHAPNAMES[set] && CHAPNAMES[set][ch]) || ch; }
 function fChapters(set) {
   const order = [], by = {};
   cards.forEach(c => { if (fSetOf(c) !== set) return; const ch = fChapOf(c); if (!by[ch]) { by[ch] = { n: 0, preps: {} }; order.push(ch); } by[ch].n++;
     String(c.answer || '').split('/').map(x => x.trim().toLowerCase()).filter(x => x && x.indexOf('keine') !== 0).forEach(p => { by[ch].preps[p] = (by[ch].preps[p] || 0) + 1; }); });
-  return order.map(ch => { const ps = Object.keys(by[ch].preps).sort((a, b) => by[ch].preps[b] - by[ch].preps[a]); return { ch, n: by[ch].n, label: ch + ' – ' + ps.slice(0, 3).join(', ') + (ps.length > 3 ? ' …' : '') }; });
+  return order.map(ch => { const ps = Object.keys(by[ch].preps).sort((a, b) => by[ch].preps[b] - by[ch].preps[a]); const nm = chapName(set, ch); return { ch, n: by[ch].n, label: nm !== ch ? nm : ch + (ps.length ? ' – ' + ps.slice(0, 3).join(', ') + (ps.length > 3 ? ' …' : '') : '') }; });
 }
 function fInPool(i) { const c = cards[i]; if (!c || fSetOf(c) !== fSet) return false; const ch = fChapSel[fSet]; return !ch || fChapOf(c) === ch; }
 function applyFlashFilter() { F.buildQueue(); F.queue = F.queue.filter(fInPool); }
@@ -838,6 +856,7 @@ function renderFChap() {
   const total = cards.filter(c => fSetOf(c) === fSet).length;
   sel.innerHTML = '<option value="">Alle Kapitel (' + total + ')</option>' + chs.map(x => '<option value="' + esc(x.ch) + '">' + esc(x.label) + ' (' + x.n + ')</option>').join('');
   sel.value = chs.some(x => x.ch === cur) ? cur : '';
+  $('fChapRen').disabled = !sel.value;
   $('fTitle').textContent = 'Flashcards ' + FSETS[fSet];
 }
 function fSetStats(set) {
@@ -903,8 +922,8 @@ function renderFlash() {
   answerWord.textContent = c.answer;
   ruleText.textContent = c.rule;
   svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de, en]) => '<div class="ex"><div class="ln"><span class="tag sv">SV</span><span class="t s">' + esc(sv) + '</span></div>' + (de ? '<div class="ln"><span class="tag">DE</span><span class="t m">' + esc(de) + '</span></div>' : '') + (enOn && en ? '<div class="ln"><span class="tag en">EN</span><span class="t m">' + esc(en) + '</span></div>' : '') + '</div>').join('') : '<div class="ex"><div class="ln"><span class="t">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</span></div></div>';
-  pageRef.textContent = 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
-  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + fChapOf(c) + (EDITS.f[F.keys[F.queue[0]]] ? ' · ✎ bearbeitet' : '');
+  pageRef.textContent = c.id ? 'Eigene Karte · ' + chapName(fSetOf(c), fChapOf(c)) : 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
+  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + chapName(fSetOf(c), fChapOf(c)) + (EDITS.f[F.keys[F.queue[0]]] ? ' · ✎ bearbeitet' : '');
   requestAnimationFrame(fitCardHeight);
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
@@ -993,7 +1012,7 @@ function renderSent() {
   $('sAgainBtn').classList.remove('rec'); $('sKnownBtn').classList.remove('rec');
 }
 function showInfo(t) {
-  const c = cards[t.ci]; const head = c.q.split('\n'); sInfo.textContent = '';
+  const c = t.ci >= 0 ? cards[t.ci] : { q: 'Eigene Übung', part: 'eigene Übung', page: '–' }; const head = c.q.split('\n'); sInfo.textContent = '';
   const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.pre + t.ans + t.post;
   const b = document.createElement('div'); b.style.marginTop = '6px'; b.textContent = 'Karte: ' + head[0] + (head[1] ? ' (' + head[1] + ')' : '') + ' · ' + c.part + ', S. ' + c.page;
   const r = document.createElement('div'); r.style.marginTop = '6px'; r.textContent = 'Regel: ' + c.rule;
@@ -1048,6 +1067,7 @@ document.querySelectorAll('#sChars button').forEach(b => {
 
 // ---------- Modul 3: Starke Verben ----------
 const VGROUPS = {
+  own:"Eigene Verben",
   r1:"Reihe 1: i – e – i",
   r2:"Reihe 2: i – a – u",
   r3:"Reihe 3: y/ju/u – ö – u",
@@ -1189,18 +1209,19 @@ const VERBS = [
 ["mod","wollen","vilja","vill","ville","har velat","–","–"]
 ].map(r => ({ g: r[0], de: r[1], sv: r[2], pres: r[3], pret: r[4], perf: r[5], imp: r[6], part: r[7] }));
 let vGroup = 'all';
-function vView(i) { const e = EDITS.v[V.keys[i]]; return e ? Object.assign({}, VERBS[i], e) : VERBS[i]; }
+function vView(i) { const e = EDITS.v[V.keys[i]]; return e ? Object.assign({}, V.items[i], e) : V.items[i]; }
 try { const g = localStorage.getItem(LS_VFILTER); if (g && (g === 'all' || g in VGROUPS)) vGroup = g; } catch (e) {}
 const vFilter = $('vFilter');
-vFilter.innerHTML = '<option value="all">Alle Verben (' + VERBS.length + ')</option>' + Object.keys(VGROUPS).map(k => '<option value="' + k + '">' + VGROUPS[k] + ' (' + VERBS.filter(x => x.g === k).length + ')</option>').join('');
+function vFilterOpts() { const it = V.items, cnt = k => it.filter(x => x.g === k).length; vFilter.innerHTML = '<option value="all">Alle Verben (' + it.length + ')</option>' + Object.keys(VGROUPS).filter(k => k !== 'own' || cnt('own') > 0).map(k => '<option value="' + k + '">' + VGROUPS[k] + ' (' + cnt(k) + ')</option>').join(''); vFilter.value = vGroup; if (vFilter.value !== vGroup) { vGroup = 'all'; vFilter.value = 'all'; } }
 vFilter.value = vGroup;
-function applyVerbFilter() { V.buildQueue(); if (vGroup !== 'all') V.queue = V.queue.filter(i => VERBS[i].g === vGroup); }
+function applyVerbFilter() { V.buildQueue(); if (vGroup !== 'all') V.queue = V.queue.filter(i => V.items[i].g === vGroup); }
 vFilter.addEventListener('change', () => { vGroup = vFilter.value; try { localStorage.setItem(LS_VFILTER, vGroup); } catch (e) {} V.history = []; applyVerbFilter(); renderVerb(); });
 const vCard = $('vCard'); let vFlipped = false;
 const jag = x => x === '–' ? '–' : 'jag ' + x;
 function renderVerb() {
   updateGoalLines();
-  const pool = VERBS.map((_, i) => i).filter(i => vGroup === 'all' || VERBS[i].g === vGroup);
+  vFilterOpts();
+  const pool = V.items.map((_, i) => i).filter(i => vGroup === 'all' || V.items[i].g === vGroup);
   const learned = pool.filter(i => { const s = V.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
   $('vProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
   $('vUndoBtn').disabled = V.history.length === 0;
@@ -1743,12 +1764,12 @@ const WTASKS = VSENT.map(([vb, fm, de, sv, en]) => {
   return { key: 'w:' + vb + ':' + fm, vb, fm, de, en: en || '', pre: sv.slice(0, a), ans: opts[0], alt: opts.slice(1), post: sv.slice(b + 1), full: sv.slice(0, a) + opts[0] + sv.slice(b + 1) };
 });
 let wForm = 'all';
-function wView(i) { const e = EDITS.w[W.keys[i]]; if (!e) return WTASKS[i]; const t = Object.assign({}, WTASKS[i], e); t.full = t.pre + t.ans + t.post; return t; }
+function wView(i) { const e = EDITS.w[W.keys[i]]; if (!e) return W.items[i]; const t = Object.assign({}, W.items[i], e); t.full = t.pre + t.ans + t.post; return t; }
 try { const g = localStorage.getItem(LS_WFILTER); if (g && (g === 'all' || g in WFORMS)) wForm = g; } catch (e) {}
 const wFilter = $('wFilter');
-wFilter.innerHTML = '<option value="all">Alle Formen (' + WTASKS.length + ')</option>' + Object.keys(WFORMS).map(k => '<option value="' + k + '">' + WFORMS[k] + ' (' + WTASKS.filter(t => t.fm === k).length + ')</option>').join('');
+function wFilterOpts() { const it = W.items; wFilter.innerHTML = '<option value="all">Alle Formen (' + it.length + ')</option>' + Object.keys(WFORMS).map(k => '<option value="' + k + '">' + WFORMS[k] + ' (' + it.filter(t => t.fm === k).length + ')</option>').join(''); wFilter.value = wForm; }
 wFilter.value = wForm;
-function applyWorkFilter() { W.buildQueue(); if (wForm !== 'all') W.queue = W.queue.filter(i => WTASKS[i].fm === wForm); }
+function applyWorkFilter() { W.buildQueue(); if (wForm !== 'all') W.queue = W.queue.filter(i => W.items[i].fm === wForm); }
 wFilter.addEventListener('change', () => { wForm = wFilter.value; try { localStorage.setItem(LS_WFILTER, wForm); } catch (e) {} W.history = []; applyWorkFilter(); renderWork(); });
 const wCard = $('wCard'), wInput = $('wInput'), wFeed = $('wFeed'), wInfo = $('wInfo');
 let wState = { attempts: 0, resolved: null };
@@ -1756,7 +1777,8 @@ function wSetFeed(text, cls) { wFeed.textContent = text; wFeed.className = 'sfee
 function wShake() { wCard.classList.remove('shake'); void wCard.offsetWidth; wCard.classList.add('shake'); }
 function renderWork() {
   updateGoalLines();
-  const pool = WTASKS.map((_, i) => i).filter(i => wForm === 'all' || WTASKS[i].fm === wForm);
+  wFilterOpts();
+  const pool = W.items.map((_, i) => i).filter(i => wForm === 'all' || W.items[i].fm === wForm);
   const learned = pool.filter(i => { const s = W.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
   $('wProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
   $('wUndoBtn').disabled = W.history.length === 0;
@@ -1775,7 +1797,7 @@ function renderWork() {
   $('wAgainBtn').classList.remove('rec'); $('wKnownBtn').classList.remove('rec');
 }
 function wShowInfo(t) {
-  const v = VERB_BY_SV[t.vb]; wInfo.textContent = '';
+  const v = VERB_BY_SV[t.vb] || { sv: t.vb || '', de: '', pres: '', pret: '', perf: '', imp: '–' }; wInfo.textContent = '';
   const a = document.createElement('div'); a.textContent = 'Vollständiger Satz: ' + t.full;
   const b = document.createElement('div'); b.style.marginTop = '6px';
   b.textContent = v.sv + ' (' + v.de + '): ' + v.pres + ' – ' + v.pret + ' – ' + v.perf + (v.imp !== '–' ? ' – ' + v.imp : '');
@@ -1807,7 +1829,7 @@ function revealWork() { if (wState.resolved || !W.queue.length) return; wState.a
 function hintWork() {
   if (wState.resolved || !W.queue.length) return;
   const t = wView(W.queue[0]), v = VERB_BY_SV[t.vb];
-  wSetFeed('Hinweis: ' + v.sv + ' (' + v.de + ') · gesucht: ' + WFORMS[t.fm]);
+  wSetFeed('Hinweis: ' + (v ? v.sv + ' (' + v.de + ')' : (t.vb || 'Verb')) + ' · gesucht: ' + WFORMS[t.fm]);
 }
 const swipeW = bindSwipe($('wStage'), $('wBadgeRight'), $('wBadgeLeft'), {
   hasCard: () => W.queue.length > 0, canSwipe: () => wState.resolved !== null,
@@ -1830,7 +1852,6 @@ document.querySelectorAll('#wChars button').forEach(b => {
 });
 
 // ---------- Karten bearbeiten (alle Module) ----------
-let eCtx = null;
 const GAP_HINT = 'Die Lösung steht in geschweiften Klammern, z. B. Hon {skrev} ett brev. Weitere richtige Antworten mit | trennen: {sa|sade}.';
 const EDITORS = {
   f: { L: F, kind: 'f', view: fView, render: () => renderFlash(),
@@ -1874,37 +1895,104 @@ const EDITORS = {
     get: t => ({ de: t.de, en: t.en || '', sv: joinGap(t) }),
     put: v => { const g = parseGap(v.sv.trim()); if (!g) return 'Im schwedischen Satz muss genau eine Lösung in {geschweiften Klammern} stehen.'; if (!v.de.trim()) return 'Der deutsche Satz darf nicht leer sein.'; return Object.assign({ de: v.de.trim(), en: v.en.trim() }, g); } }
 };
-function openEdit(kind) {
-  const ed = EDITORS[kind]; if (!ed.L.queue.length) return;
-  const i = ed.L.queue[0], key = ed.L.keys[i], val = ed.get(ed.view(i));
-  eCtx = { ed, key };
+let formCtx = null;
+function openForm(cfg) {
+  formCtx = cfg; $('eTitle').textContent = cfg.title; $('eNote').textContent = cfg.note || '';
   const box = $('eFields'); box.textContent = '';
-  ed.fields.forEach(f => {
+  cfg.fields.forEach(f => {
     const lab = document.createElement('label'); lab.textContent = f.label; lab.htmlFor = 'ef_' + f.k;
-    const inp = document.createElement(f.multi ? 'textarea' : 'input'); inp.id = 'ef_' + f.k; inp.value = val[f.k] == null ? '' : val[f.k];
-    inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false;
+    let inp;
+    if (f.type === 'select') { inp = document.createElement('select'); (typeof f.options === 'function' ? f.options() : f.options).forEach(([val, txt]) => { const o = document.createElement('option'); o.value = val; o.textContent = txt; inp.appendChild(o); }); }
+    else { inp = document.createElement(f.multi ? 'textarea' : 'input'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false; }
+    inp.id = 'ef_' + f.k; const val = cfg.values[f.k]; inp.value = val == null ? '' : val;
+    if (f.list) { const dl = document.createElement('datalist'); dl.id = 'dl_' + f.k; f.list().forEach(x => { const o = document.createElement('option'); o.value = x; dl.appendChild(o); }); inp.setAttribute('list', dl.id); box.appendChild(dl); }
     box.append(lab, inp);
     if (f.hint) { const h = document.createElement('div'); h.className = 'ehint'; h.textContent = f.hint; box.appendChild(h); }
   });
   $('eMsg').textContent = '';
-  $('eRestore').classList.toggle('hidden', !EDITS[kind][key]);
+  $('eRestore').classList.toggle('hidden', !cfg.onRestore); $('eRestore').textContent = cfg.restoreLabel || 'Original wiederherstellen';
+  const del = $('eDelete'); del.classList.toggle('hidden', !cfg.onDelete); del.classList.remove('armed'); del.textContent = 'Löschen';
   $('editScreen').style.display = 'block'; $('editScreen').scrollTop = 0;
 }
-function closeEdit() { $('editScreen').style.display = 'none'; eCtx = null; }
+function closeEdit() { $('editScreen').style.display = 'none'; formCtx = null; }
 $('eCancel').addEventListener('click', closeEdit);
 $('eSave').addEventListener('click', () => {
-  if (!eCtx) return; const { ed, key } = eCtx, v = {};
-  ed.fields.forEach(f => { v[f.k] = $('ef_' + f.k).value; });
-  const res = ed.put(v); if (typeof res === 'string') { $('eMsg').textContent = res; return; }
-  EDITS[ed.kind][key] = res;
-  if (!saveEdits()) { $('eMsg').textContent = 'Die Änderung konnte nicht gespeichert werden.'; delete EDITS[ed.kind][key]; return; }
-  closeEdit(); ed.render();
+  if (!formCtx) return; const v = {};
+  formCtx.fields.forEach(f => { v[f.k] = $('ef_' + f.k).value; });
+  const res = formCtx.onSave(v); if (typeof res === 'string') { $('eMsg').textContent = res; return; }
+  closeEdit();
 });
-$('eRestore').addEventListener('click', () => {
-  if (!eCtx) return; const { ed, key } = eCtx;
-  delete EDITS[ed.kind][key]; saveEdits(); closeEdit(); ed.render();
+$('eRestore').addEventListener('click', () => { if (formCtx && formCtx.onRestore) { formCtx.onRestore(); closeEdit(); } });
+$('eDelete').addEventListener('click', () => {
+  const b = $('eDelete'); if (!formCtx || !formCtx.onDelete) return;
+  if (!b.classList.contains('armed')) { b.classList.add('armed'); b.textContent = 'Wirklich löschen?'; setTimeout(() => { b.classList.remove('armed'); b.textContent = 'Löschen'; }, 4000); return; }
+  formCtx.onDelete(); closeEdit();
 });
+function deleteItem(kind, key) {
+  const pre = { f: 'c:', s: 'cs:', v: 'cv:', w: 'cw:' }[kind];
+  if (key.indexOf(pre) === 0) { const id = key.slice(pre.length); CUSTOM[kind] = CUSTOM[kind].filter(x => x.id !== id); saveJSON(LS_CUSTOM, CUSTOM); }
+  else { if (DELETED[kind].indexOf(key) < 0) DELETED[kind].push(key); saveJSON(LS_DELETED, DELETED); }
+  delete EDITS[kind][key]; saveEdits();
+  buildAll(); rerender();
+}
+function openEdit(kind) {
+  const ed = EDITORS[kind]; if (!ed.L.queue.length) return;
+  const i = ed.L.queue[0], key = ed.L.keys[i];
+  openForm({ title: 'Karte bearbeiten', note: 'Änderungen gelten nur auf diesem Gerät. Dein Lernfortschritt für diese Karte bleibt erhalten.', fields: ed.fields, values: ed.get(ed.view(i)),
+    onSave: v => { const res = ed.put(v); if (typeof res === 'string') return res; EDITS[kind][key] = res; if (!saveEdits()) { delete EDITS[kind][key]; return 'Die Änderung konnte nicht gespeichert werden.'; } ed.render(); return true; },
+    onRestore: EDITS[kind][key] ? () => { delete EDITS[kind][key]; saveEdits(); ed.render(); } : null,
+    onDelete: () => deleteItem(kind, key) });
+}
 ['F', 'S', 'V', 'W'].forEach(m => $('edit' + m).addEventListener('click', () => openEdit(m.toLowerCase())));
+function addCustom(kind, obj, L) {
+  CUSTOM[kind].push(obj); if (!saveJSON(LS_CUSTOM, CUSTOM)) { CUSTOM[kind].pop(); return 'Speichern auf diesem Gerät nicht möglich.'; }
+  buildAll();
+  const key = { f: 'c:', s: 'cs:', v: 'cv:', w: 'cw:' }[kind] + obj.id, i = L.keys.indexOf(key);
+  if (i >= 0) { L.moveFront(i); if (kind === 'f') applyFlashFilter(); else if (kind === 'v') applyVerbFilter(); else if (kind === 'w') applyWorkFilter(); if (L.queue.indexOf(i) >= 0) L.queue = [i].concat(L.queue.filter(x => x !== i)); }
+  rerender(); return true;
+}
+const allChapters = () => { const s = new Set(); cards.forEach(c => s.add(chapName(fSetOf(c), fChapOf(c)))); return Array.from(s); };
+$('newF').addEventListener('click', () => {
+  const cur = fChapSel[fSet] ? chapName(fSet, fChapSel[fSet]) : '';
+  openForm({ title: 'Neue Flashcard', note: 'Die Karte erscheint im gewählten Set und Kapitel und kommt gleich als Nächstes dran.',
+    fields: [
+      { k: 'set', label: 'SET', type: 'select', options: [['RUM', 'Raum'], ['TID', 'Zeit'], ['OVR', 'Sonstiges']] },
+      { k: 'chap', label: 'KAPITEL', list: allChapters, hint: 'Ein bestehendes Kapitel übernehmen oder einen neuen Namen eingeben.' },
+      { k: 'q', label: 'VORDERSEITE', multi: true, hint: 'Erste Zeile: Überschrift, z. B. „___ en yta“. Zweite Zeile (optional): Erklärung.' },
+      { k: 'answer', label: 'PRÄPOSITION (RÜCKSEITE)' },
+      { k: 'rule', label: 'REGEL', multi: true },
+      { k: 'sv', label: 'BEISPIELE', multi: true, hint: 'Ein Beispiel pro Zeile: schwedischer Satz | deutscher Satz | englischer Satz' }
+    ], values: { set: fSet, chap: cur },
+    onSave: v => {
+      if (!v.q.trim() || !v.answer.trim()) return 'Vorderseite und Präposition dürfen nicht leer sein.';
+      let chap = v.chap.trim() || 'Eigene Karten';
+      Object.keys(CHAPNAMES[v.set] || {}).forEach(orig => { if (CHAPNAMES[v.set][orig] === chap) chap = orig; });
+      const sv = v.sv.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const p = l.split('|').map(x => x.trim()); const r = [p[0], p[1] || '']; if (p[2]) r.push(p.slice(2).join(' | ')); return r; });
+      if (v.set !== fSet) fSet = v.set; if (fChapSel[fSet] && fChapSel[fSet] !== chap) fChapSel[fSet] = chap; saveFSet();
+      return addCustom('f', { id: newId(), part: v.set + ' · ' + chap, page: '', q: v.q.replace(/\s+$/, ''), answer: v.answer.trim(), rule: v.rule.trim(), sv }, F);
+    } });
+});
+$('newS').addEventListener('click', () => openForm({ title: 'Neue Präpositionsübung', note: 'Die Übung kommt gleich als Nächstes dran.',
+  fields: EDITORS.s.fields, values: { de: '', en: '', sv: '' },
+  onSave: v => { const res = EDITORS.s.put(v); if (typeof res === 'string') return res; return addCustom('s', Object.assign({ id: newId() }, res), S); } }));
+$('newV').addEventListener('click', () => openForm({ title: 'Neues Verb', note: 'Das Verb erscheint in der Gruppe „Eigene Verben“ und kommt gleich als Nächstes dran.',
+  fields: EDITORS.v.fields, values: { imp: '', part: '' },
+  onSave: v => { const res = EDITORS.v.put(v); if (typeof res === 'string') return res; if (vGroup !== 'all' && vGroup !== 'own') { vGroup = 'own'; try { localStorage.setItem(LS_VFILTER, vGroup); } catch (e) {} } return addCustom('v', Object.assign({ id: newId(), g: 'own' }, res), V); } }));
+$('newW').addEventListener('click', () => openForm({ title: 'Neue Verbübung', note: 'Die Übung kommt gleich als Nächstes dran.',
+  fields: [
+    { k: 'vb', label: 'VERB', type: 'select', options: () => V.items.map(x => [x.sv, x.sv + ' (' + x.de + ')']).sort((a, b) => a[0].localeCompare(b[0], 'sv')) },
+    { k: 'fm', label: 'GESUCHTE FORM', type: 'select', options: Object.keys(WFORMS).map(k => [k, WFORMS[k]]) }
+  ].concat(EDITORS.w.fields), values: { fm: 't' },
+  onSave: v => { const res = EDITORS.w.put(v); if (typeof res === 'string') return res; if (wForm !== 'all' && wForm !== v.fm) { wForm = v.fm; try { localStorage.setItem(LS_WFILTER, wForm); } catch (e) {} } return addCustom('w', Object.assign({ id: newId(), vb: v.vb, fm: v.fm }, res), W); } }));
+$('fChapRen').addEventListener('click', () => {
+  const ch = fChapSel[fSet]; if (!ch) return;
+  openForm({ title: 'Kapitel umbenennen', note: 'Der neue Name gilt nur für die Anzeige. Karten und Lernfortschritt bleiben unverändert.',
+    fields: [{ k: 'name', label: 'NAME DES KAPITELS', hint: 'Original im Buch: ' + ch }], values: { name: chapName(fSet, ch) },
+    onSave: v => { const n = v.name.trim(); if (!n) return 'Der Name darf nicht leer sein.'; CHAPNAMES[fSet] = CHAPNAMES[fSet] || {}; if (n === ch) delete CHAPNAMES[fSet][ch]; else CHAPNAMES[fSet][ch] = n; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); return true; },
+    onRestore: CHAPNAMES[fSet] && CHAPNAMES[fSet][ch] ? () => { delete CHAPNAMES[fSet][ch]; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); } : null, restoreLabel: 'Originalnamen verwenden' });
+});
+function renderUndelete() { const n = DELETED.f.length + DELETED.s.length + DELETED.v.length + DELETED.w.length; const b = $('undeleteBtn'); b.textContent = n ? 'Wiederherstellen (' + n + ')' : 'Keine'; b.disabled = !n; }
+$('undeleteBtn').addEventListener('click', () => { DELETED = { f: [], s: [], v: [], w: [] }; saveJSON(LS_DELETED, DELETED); buildAll(); renderUndelete(); });
 
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
@@ -1993,8 +2081,8 @@ function renderManage() {
 }
 $('manageBtn').addEventListener('click', () => openManage({ L: F, after: () => { applyFlashFilter(); renderFlash(); }, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
 $('sManageBtn').addEventListener('click', () => openManage({ L: S, after: renderSent, text: i => [tasks[i].pre + ' ___ ' + tasks[i].post, tasks[i].de] }));
-$('vManageBtn').addEventListener('click', () => openManage({ L: V, after: () => { applyVerbFilter(); renderVerb(); }, text: i => [VERBS[i].de + ' (' + VERBS[i].sv + ')', VGROUPS[VERBS[i].g]] }));
-$('wManageBtn').addEventListener('click', () => openManage({ L: W, after: () => { applyWorkFilter(); renderWork(); }, text: i => [WTASKS[i].pre + '___' + WTASKS[i].post, WTASKS[i].de + ' · ' + WFORMS[WTASKS[i].fm]] }));
+$('vManageBtn').addEventListener('click', () => openManage({ L: V, after: () => { applyVerbFilter(); renderVerb(); }, text: i => [V.items[i].de + ' (' + V.items[i].sv + ')', VGROUPS[V.items[i].g]] }));
+$('wManageBtn').addEventListener('click', () => openManage({ L: W, after: () => { applyWorkFilter(); renderWork(); }, text: i => [W.items[i].pre + '___' + W.items[i].post, W.items[i].de + ' · ' + WFORMS[W.items[i].fm]] }));
 $('manageClose').addEventListener('click', () => { $('manageScreen').style.display = 'none'; });
 $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderManage(); });
 
@@ -2028,13 +2116,22 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- Start und Karten laden ----------
-function startWith(list) {
-  cards = list;
-  F.init(cards, cards.map(hashCard), false); applyFlashFilter();
-  tasks = buildTasks(cards);
+let bookCards = [];
+function buildAll() {
+  cards = bookCards.concat(CUSTOM.f.map(c => Object.assign({}, c))).filter(c => DELETED.f.indexOf(fKey(c)) < 0);
+  F.init(cards, cards.map(fKey), false); applyFlashFilter();
+  tasks = buildTasks(cards).concat(CUSTOM.s.map(t => Object.assign({ ci: -1, key: 'cs:' + t.id, sv: t.pre + t.ans + t.post, alt: [] }, t))).filter(t => DELETED.s.indexOf(t.key) < 0);
   S.init(tasks, tasks.map(t => t.key), true);
-  V.init(VERBS, VERBS.map(x => 'v:' + x.sv), false); applyVerbFilter();
-  W.init(WTASKS, WTASKS.map(t => t.key), true); applyWorkFilter();
+  const vit = VERBS.concat(CUSTOM.v).filter(x => DELETED.v.indexOf(vKey(x)) < 0);
+  Object.keys(VERB_BY_SV).forEach(k => delete VERB_BY_SV[k]); VERBS.concat(CUSTOM.v).forEach(x => { VERB_BY_SV[x.sv] = x; });
+  V.init(vit, vit.map(vKey), false); applyVerbFilter();
+  const wit = WTASKS.concat(CUSTOM.w.map(t => Object.assign({ key: 'cw:' + t.id, alt: [] }, t, { full: t.pre + t.ans + t.post }))).filter(t => DELETED.w.indexOf(t.key) < 0);
+  W.init(wit, wit.map(t => t.key), true); applyWorkFilter();
+}
+function rerender() { const v = activeView(); if (v === 'flash') renderFlash(); else if (v === 'sent') renderSent(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome(); }
+function startWith(list) {
+  bookCards = list;
+  buildAll();
   importEl.style.display = 'none';
   loadStreak();
   showView('home');
