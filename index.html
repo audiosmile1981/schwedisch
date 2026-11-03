@@ -847,7 +847,7 @@ function fChapters(set) {
   const order = [], by = {};
   cards.forEach(c => { if (fSetOf(c) !== set) return; const ch = fChapOf(c); if (!by[ch]) { by[ch] = { n: 0, preps: {} }; order.push(ch); } by[ch].n++;
     String(c.answer || '').split('/').map(x => x.trim().toLowerCase()).filter(x => x && x.indexOf('keine') !== 0).forEach(p => { by[ch].preps[p] = (by[ch].preps[p] || 0) + 1; }); });
-  return order.map(ch => { const ps = Object.keys(by[ch].preps).sort((a, b) => by[ch].preps[b] - by[ch].preps[a]); const nm = chapName(set, ch); return { ch, n: by[ch].n, label: nm !== ch ? nm : ch + (ps.length ? ' – ' + ps.slice(0, 3).join(', ') + (ps.length > 3 ? ' …' : '') : '') }; });
+  return order.map(ch => { const ps = Object.keys(by[ch].preps).sort((a, b) => by[ch].preps[b] - by[ch].preps[a]); const auto = ch + (ps.length ? ' – ' + ps.slice(0, 3).join(', ') + (ps.length > 3 ? ' …' : '') : ''); const nm = chapName(set, ch); return { ch, n: by[ch].n, auto, label: nm !== ch ? nm : auto }; });
 }
 function fInPool(i) { const c = cards[i]; if (!c || fSetOf(c) !== fSet) return false; const ch = fChapSel[fSet]; return !ch || fChapOf(c) === ch; }
 function applyFlashFilter() { F.buildQueue(); F.queue = F.queue.filter(fInPool); }
@@ -1985,10 +1985,10 @@ $('newW').addEventListener('click', () => openForm({ title: 'Neue Verbübung', n
   ].concat(EDITORS.w.fields), values: { fm: 't' },
   onSave: v => { const res = EDITORS.w.put(v); if (typeof res === 'string') return res; if (wForm !== 'all' && wForm !== v.fm) { wForm = v.fm; try { localStorage.setItem(LS_WFILTER, wForm); } catch (e) {} } return addCustom('w', Object.assign({ id: newId(), vb: v.vb, fm: v.fm }, res), W); } }));
 $('fChapRen').addEventListener('click', () => {
-  const ch = fChapSel[fSet]; if (!ch) return;
+  const ch = fChapSel[fSet]; if (!ch) return; const info = fChapters(fSet).find(x => x.ch === ch); if (!info) return;
   openForm({ title: 'Kapitel umbenennen', note: 'Der neue Name gilt nur für die Anzeige. Karten und Lernfortschritt bleiben unverändert.',
-    fields: [{ k: 'name', label: 'NAME DES KAPITELS', hint: 'Original im Buch: ' + ch }], values: { name: chapName(fSet, ch) },
-    onSave: v => { const n = v.name.trim(); if (!n) return 'Der Name darf nicht leer sein.'; CHAPNAMES[fSet] = CHAPNAMES[fSet] || {}; if (n === ch) delete CHAPNAMES[fSet][ch]; else CHAPNAMES[fSet][ch] = n; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); return true; },
+    fields: [{ k: 'name', label: 'NAME DES KAPITELS', hint: 'So steht es ursprünglich in der App: ' + info.auto + '. Du kannst den ganzen Namen frei ändern, auch die Präpositionen.' }], values: { name: info.label },
+    onSave: v => { const n = v.name.trim(); if (!n) return 'Der Name darf nicht leer sein.'; CHAPNAMES[fSet] = CHAPNAMES[fSet] || {}; if (n === info.auto || n === ch) delete CHAPNAMES[fSet][ch]; else CHAPNAMES[fSet][ch] = n; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); return true; },
     onRestore: CHAPNAMES[fSet] && CHAPNAMES[fSet][ch] ? () => { delete CHAPNAMES[fSet][ch]; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); } : null, restoreLabel: 'Originalnamen verwenden' });
 });
 function renderUndelete() { const n = DELETED.f.length + DELETED.s.length + DELETED.v.length + DELETED.w.length; const b = $('undeleteBtn'); b.textContent = n ? 'Wiederherstellen (' + n + ')' : 'Keine'; b.disabled = !n; }
