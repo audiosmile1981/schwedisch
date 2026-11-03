@@ -44,20 +44,20 @@
   .modebtn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--surface); color: var(--ink); font-weight: 700; font-size: .85rem; box-shadow: var(--shadow); }
   :root[data-mode="moon"] .modebtn { background: #F2F5F8; color: #13293D; }
   .modebtn svg { width: 16px; height: 16px; }
-  .streakbox { background: var(--hero-bg); color: var(--hero-ink); border-radius: 22px; padding: 18px 18px 16px; margin: 0 0 14px; }
+  .streakbox { background: var(--hero-bg); color: var(--hero-ink); border-radius: 22px; padding: 14px 16px; margin: 0 0 12px; }
   .streaktop { display: flex; align-items: center; gap: 12px; }
   .flame { width: 34px; height: 34px; flex: none; color: var(--yellow); }
   :root[data-mode="moon"] .flame { color: #E0A800; }
   .streakmain { font-size: 1.5rem; font-weight: 800; line-height: 1.15; }
   .streakbest { font-size: .8rem; color: var(--hero-muted); margin-top: 2px; min-height: 1em; }
-  .dots { display: flex; justify-content: space-between; margin: 16px 0 12px; }
+  .dots { display: flex; justify-content: space-between; margin: 12px 0 10px; }
   .dayc { text-align: center; } .dl { font-size: .7rem; color: var(--hero-muted); margin-top: 5px; }
   .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--dot-off); margin: 0 auto; }
   .dot.on { background: var(--dot-on); border-color: var(--dot-on); }
   .dot.today { border-color: var(--dot-ring); }
   .streaknote { font-size: .85rem; line-height: 1.45; color: var(--hero-muted); }
-  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .bigbtn { display: flex; flex-direction: column; gap: 9px; text-align: left; min-height: 172px; padding: 16px; border-radius: 20px; border: 0; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; }
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .bigbtn { display: flex; flex-direction: column; gap: 7px; text-align: left; min-height: 140px; padding: 14px; border-radius: 20px; border: 0; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; }
   .bigbtn:active { transform: scale(.98); }
   .tilehead { display: flex; justify-content: space-between; align-items: center; }
   .ticon { width: 40px; height: 40px; border-radius: 12px; background: var(--tint); display: flex; align-items: center; justify-content: center; color: var(--icon); }
@@ -285,7 +285,9 @@
       <div class="streaknote" id="streakNote"></div>
     </div>
     <div class="tiles">
-      <button class="bigbtn" id="goFlash"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="13" height="15" rx="2"></rect><path d="M8 3h10a2 2 0 0 1 2 2v12"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Präpositionen</span><span class="bs" id="homeFSub"></span><span class="tbar"><span id="homeFBar"></span></span></button>
+      <button class="bigbtn" id="goFRUM" data-set="RUM"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Raum</span><span class="bs" id="homeFRUMSub"></span><span class="tbar"><span id="homeFRUMBar"></span></span></button>
+      <button class="bigbtn" id="goFTID" data-set="TID"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Zeit</span><span class="bs" id="homeFTIDSub"></span><span class="tbar"><span id="homeFTIDBar"></span></span></button>
+      <button class="bigbtn" id="goFOVR" data-set="OVR"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Sonstiges</span><span class="bs" id="homeFOVRSub"></span><span class="tbar"><span id="homeFOVRBar"></span></span></button>
       <button class="bigbtn" id="goSent"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"></path><path d="M17 15l3 3-3 3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositionen üben</span><span class="bs" id="homeSSub"></span><span class="tbar"><span id="homeSBar"></span></span></button>
       <button class="bigbtn" id="goVerb"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"></path><path d="M3 13l9 5 9-5"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Flashcards starke Verben</span><span class="bs" id="homeVSub"></span><span class="tbar"><span id="homeVBar"></span></span></button>
       <button class="bigbtn" id="goWork"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M14 6l4 4"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span><span class="tbar"><span id="homeWBar"></span></span></button>
@@ -295,8 +297,9 @@
   </div>
 
   <div id="viewFlash" class="hidden">
-    <div class="topbar"><button id="backF" aria-label="Zurück zum Start">‹</button><span class="ttl">Flashcards Präpositionen</span><button class="editbtn" id="editF" aria-label="Diese Karte bearbeiten">✎</button></div>
+    <div class="topbar"><button id="backF" aria-label="Zurück zum Start">‹</button><span class="ttl" id="fTitle">Flashcards Präpositionen</span><button class="editbtn" id="editF" aria-label="Diese Karte bearbeiten">✎</button></div>
     <div class="sub">Karte antippen zum Umdrehen. Nach rechts wischen: gewusst, die Karte kommt nach 3, 7 und 10 Tagen zur Kontrolle wieder. Nach links wischen: nochmal, kommt morgen wieder.</div>
+    <select class="vfilter" id="fChap" aria-label="Kapitel wählen"></select>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="counter" id="counter"></div>
     <div class="goalline" id="fGoal"></div><div class="gprog"><div class="gfill" id="fGFill"></div></div>
@@ -738,11 +741,11 @@ function renderHome() {
     const lab = document.createElement('div'); lab.className = 'dl'; lab.textContent = new Date(y, m - 1, dd).toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '');
     wrap.append(dot, lab); dots.appendChild(wrap);
   }
-  $('homeFSub').textContent = 'Heute ' + v.f + ' von ' + v.gf + (v.f >= v.gf ? ' ✓' : '') + ' · ' + F.queue.length + ' offen';
+  ['RUM', 'TID', 'OVR'].forEach(s => { const ss = fSetStats(s); $('homeF' + s + 'Sub').textContent = ss.open + ' offen · ' + (ss.n ? Math.round(ss.learned / ss.n * 100) : 0) + ' % gelernt'; const b = $('homeF' + s + 'Bar'); b.style.width = (ss.n ? ss.learned / ss.n * 100 : 0) + '%'; b.classList.toggle('full', ss.n > 0 && ss.learned === ss.n); });
   $('homeSSub').textContent = 'Heute ' + v.s + ' von ' + v.gs + (v.s >= v.gs ? ' ✓' : '') + ' · ' + S.queue.length + ' offen';
   $('homeVSub').textContent = 'Heute ' + v.v + ' von ' + v.gv + (v.v >= v.gv ? ' ✓' : '') + ' · ' + V.queue.length + ' offen';
   $('homeWSub').textContent = 'Heute ' + v.w + ' von ' + v.gw + (v.w >= v.gw ? ' ✓' : '') + ' · ' + W.queue.length + ' offen';
-  [['F', v.f, v.gf], ['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw]].forEach(([k, n, g]) => {
+  [['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw]].forEach(([k, n, g]) => {
     const b = $('home' + k + 'Bar'); const p = g > 0 ? Math.min(1, n / g) : 0; b.style.width = (p * 100) + '%'; b.classList.toggle('full', p >= 1);
   });
   renderMode();
@@ -815,6 +818,35 @@ function bindSwipe(stageEl, badgeR, badgeL, o) {
 }
 
 // ---------- Modul 1: Flashcards ----------
+const FSETS = { RUM: 'Raum', TID: 'Zeit', OVR: 'Sonstiges' };
+const LS_FSET = 'schwedisch-app-fset-v1';
+function fSetOf(c) { const p = String(c.part || ''); return p.indexOf('RUM') === 0 ? 'RUM' : p.indexOf('TID') === 0 ? 'TID' : 'OVR'; }
+function fChapOf(c) { const t = String(c.part || '').split(' · ').map(x => x.trim()); if (/^GENITIV/i.test(t[0])) return 'Genitivuttryck'; return t[1] && !/^Nr\./.test(t[1]) ? t[1] : 'Allgemein'; }
+let fSet = 'RUM', fChapSel = {};
+try { const s = JSON.parse(localStorage.getItem(LS_FSET)); if (s && typeof s === 'object') { if (s.set in FSETS) fSet = s.set; if (s.chap && typeof s.chap === 'object') fChapSel = s.chap; } } catch (e) {}
+function saveFSet() { try { localStorage.setItem(LS_FSET, JSON.stringify({ set: fSet, chap: fChapSel })); } catch (e) {} }
+function fChapters(set) {
+  const order = [], by = {};
+  cards.forEach(c => { if (fSetOf(c) !== set) return; const ch = fChapOf(c); if (!by[ch]) { by[ch] = { n: 0, preps: {} }; order.push(ch); } by[ch].n++;
+    String(c.answer || '').split('/').map(x => x.trim().toLowerCase()).filter(x => x && x.indexOf('keine') !== 0).forEach(p => { by[ch].preps[p] = (by[ch].preps[p] || 0) + 1; }); });
+  return order.map(ch => { const ps = Object.keys(by[ch].preps).sort((a, b) => by[ch].preps[b] - by[ch].preps[a]); return { ch, n: by[ch].n, label: ch + ' – ' + ps.slice(0, 3).join(', ') + (ps.length > 3 ? ' …' : '') }; });
+}
+function fInPool(i) { const c = cards[i]; if (!c || fSetOf(c) !== fSet) return false; const ch = fChapSel[fSet]; return !ch || fChapOf(c) === ch; }
+function applyFlashFilter() { F.buildQueue(); F.queue = F.queue.filter(fInPool); }
+function renderFChap() {
+  const sel = $('fChap'), chs = fChapters(fSet), cur = fChapSel[fSet] || '';
+  const total = cards.filter(c => fSetOf(c) === fSet).length;
+  sel.innerHTML = '<option value="">Alle Kapitel (' + total + ')</option>' + chs.map(x => '<option value="' + esc(x.ch) + '">' + esc(x.label) + ' (' + x.n + ')</option>').join('');
+  sel.value = chs.some(x => x.ch === cur) ? cur : '';
+  $('fTitle').textContent = 'Flashcards ' + FSETS[fSet];
+}
+function fSetStats(set) {
+  const t = today(); let open = 0, learned = 0, n = 0;
+  cards.forEach((c, i) => { if (fSetOf(c) !== set) return; n++; const st = F.status[F.keys[i]];
+    if (!st || ((st.s === 'again' || st.s === 'review') && st.due <= t)) open++; if (st && (st.s === 'review' || st.s === 'mastered')) learned++; });
+  return { open, learned, n };
+}
+function openFlashSet(set) { fSet = set; saveFSet(); F.history = []; applyFlashFilter(); showView('flash'); }
 function fView(i) { const e = EDITS.f[F.keys[i]]; return e ? Object.assign({}, cards[i], e) : cards[i]; }
 const cardEl = $('card'), qText = $('qText'), deExamples = $('deExamples'), answerWord = $('answerWord'), ruleText = $('ruleText'), svExamples = $('svExamples'), pageRef = $('pageRef');
 const counter = $('counter'), progressFill = $('progressFill');
@@ -850,15 +882,15 @@ function fitCardHeight() {
 
 function renderFlash() {
   updateGoalLines();
-  const st = F.stats();
-  progressFill.style.width = (F.items.length ? ((st.mastered + st.review) / F.items.length) * 100 : 0) + '%';
+  renderFChap();
+  { const ss = fSetStats(fSet); progressFill.style.width = (ss.n ? ss.learned / ss.n * 100 : 0) + '%'; }
   const done = F.queue.length === 0;
   $('studyArea').style.display = done ? 'none' : '';
   $('doneScreen').style.display = done ? 'block' : 'none';
   $('undoBtn').disabled = F.history.length === 0;
   $('skipBtn').disabled = F.queue.length < 2;
   $('editF').disabled = done;
-  if (done) { $('doneText').textContent = F.doneText(); counter.textContent = 'Heute ist nichts mehr offen'; return; }
+  if (done) { $('doneText').textContent = fChapSel[fSet] ? 'In diesem Kapitel ist heute nichts mehr offen. Wähle oben ein anderes Kapitel oder „Alle Kapitel“.' : 'Im Set ' + FSETS[fSet] + ' ist heute nichts mehr offen. Schau später wieder vorbei oder wechsle auf dem Startbildschirm das Set.'; counter.textContent = 'Heute ist nichts mehr offen'; return; }
   const c = fView(F.queue[0]);
   flipped = false; cardEl.classList.remove('flipped');
   qText.textContent = '';
@@ -872,7 +904,7 @@ function renderFlash() {
   ruleText.textContent = c.rule;
   svExamples.innerHTML = c.sv.length ? c.sv.map(([sv, de, en]) => '<div class="ex"><div class="ln"><span class="tag sv">SV</span><span class="t s">' + esc(sv) + '</span></div>' + (de ? '<div class="ln"><span class="tag">DE</span><span class="t m">' + esc(de) + '</span></div>' : '') + (enOn && en ? '<div class="ln"><span class="tag en">EN</span><span class="t m">' + esc(en) + '</span></div>' : '') + '</div>').join('') : '<div class="ex"><div class="ln"><span class="t">Keine Beispielsätze in diesem Deck – siehe Buch, S. ' + c.page + '.</span></div></div>';
   pageRef.textContent = 'Prepositionsboken, S. ' + c.page + ' · ' + c.part;
-  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + c.part + (EDITS.f[F.keys[F.queue[0]]] ? ' · ✎ bearbeitet' : '');
+  counter.textContent = 'Heute noch ' + F.queue.length + ' · ' + F.tag(F.queue[0]) + fChapOf(c) + (EDITS.f[F.keys[F.queue[0]]] ? ' · ✎ bearbeitet' : '');
   requestAnimationFrame(fitCardHeight);
 }
 const swipeF = bindSwipe($('stage'), $('badgeRight'), $('badgeLeft'), {
@@ -886,7 +918,8 @@ $('knownBtn').addEventListener('click', () => swipeF.commit('known'));
 $('againBtn').addEventListener('click', () => swipeF.commit('again'));
 $('undoBtn').addEventListener('click', () => { if (F.undo()) { track('f', -1); renderFlash(); } });
 $('skipBtn').addEventListener('click', () => { if (F.skip()) renderFlash(); });
-$('shuffleBtn').addEventListener('click', () => { F.shuffle(); renderFlash(); });
+$('shuffleBtn').addEventListener('click', () => { F.shuffle(); applyFlashFilter(); renderFlash(); });
+$('fChap').addEventListener('change', e => { fChapSel[fSet] = e.target.value; saveFSet(); F.history = []; applyFlashFilter(); renderFlash(); });
 function armReset(btn, label, fn) {
   let armed = null;
   btn.addEventListener('click', () => {
@@ -894,7 +927,7 @@ function armReset(btn, label, fn) {
     clearTimeout(armed); armed = null; btn.textContent = label; fn();
   });
 }
-armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); renderFlash(); });
+armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); applyFlashFilter(); renderFlash(); });
 
 // ---------- Modul 2: Sätze üben ----------
 function sView(i) { const e = EDITS.s[S.keys[i]]; return e ? Object.assign({}, S.items[i], e) : S.items[i]; }
@@ -1958,7 +1991,7 @@ function renderManage() {
     row.append(left, btn); list.appendChild(row);
   });
 }
-$('manageBtn').addEventListener('click', () => openManage({ L: F, after: renderFlash, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
+$('manageBtn').addEventListener('click', () => openManage({ L: F, after: () => { applyFlashFilter(); renderFlash(); }, text: i => { const ps = cards[i].q.split('\n'); return [ps[0], (ps[1] ? ps[1] + ' · ' : '') + cards[i].part]; } }));
 $('sManageBtn').addEventListener('click', () => openManage({ L: S, after: renderSent, text: i => [tasks[i].pre + ' ___ ' + tasks[i].post, tasks[i].de] }));
 $('vManageBtn').addEventListener('click', () => openManage({ L: V, after: () => { applyVerbFilter(); renderVerb(); }, text: i => [VERBS[i].de + ' (' + VERBS[i].sv + ')', VGROUPS[VERBS[i].g]] }));
 $('wManageBtn').addEventListener('click', () => openManage({ L: W, after: () => { applyWorkFilter(); renderWork(); }, text: i => [WTASKS[i].pre + '___' + WTASKS[i].post, WTASKS[i].de + ' · ' + WFORMS[WTASKS[i].fm]] }));
@@ -1972,7 +2005,7 @@ function showView(v) {
   window.scrollTo(0, 0);
 }
 const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : 'home');
-$('goFlash').addEventListener('click', () => showView('flash'));
+['RUM', 'TID', 'OVR'].forEach(s => $('goF' + s).addEventListener('click', () => openFlashSet(s)));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
 $('backS').addEventListener('click', () => showView('home'));
@@ -1997,7 +2030,7 @@ document.addEventListener('keydown', e => {
 // ---------- Start und Karten laden ----------
 function startWith(list) {
   cards = list;
-  F.init(cards, cards.map(hashCard), false);
+  F.init(cards, cards.map(hashCard), false); applyFlashFilter();
   tasks = buildTasks(cards);
   S.init(tasks, tasks.map(t => t.key), true);
   V.init(VERBS, VERBS.map(x => 'v:' + x.sv), false); applyVerbFilter();
@@ -2027,7 +2060,7 @@ $('loadBtn').addEventListener('click', () => $('fileInput').click());
 window.addEventListener('resize', () => requestAnimationFrame(fitCardHeight));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || !cards.length) return;
-  if (F.builtOn !== today() || S.builtOn !== today() || V.builtOn !== today() || W.builtOn !== today()) { F.buildQueue(); S.buildQueue(); applyVerbFilter(); applyWorkFilter(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome(); }
+  if (F.builtOn !== today() || S.builtOn !== today() || V.builtOn !== today() || W.builtOn !== today()) { applyFlashFilter(); S.buildQueue(); applyVerbFilter(); applyWorkFilter(); const v = activeView(); if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome(); }
 });
 (function boot() {
   let list = null;
