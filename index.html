@@ -666,6 +666,7 @@ class Learner {
   skip() { if (this.queue.length > 1) { this.queue.push(this.queue.shift()); return true; } return false; }
   shuffle() { shuffleArray(this.order); this.buildQueue(); this.save(); }
   resetAll() { this.status = {}; this.history = []; this.order = this.items.map((_, i) => i); this.buildQueue(); this.save(); }
+  resetSome(pred) { this.items.forEach((_, i) => { if (pred(i)) delete this.status[this.keys[i]]; }); this.history = []; this.buildQueue(); this.save(); }
   reactivate(i) { this.status[this.keys[i]] = { s: 'again', stage: 0, due: today(), at: today() }; this.afterManage(); }
   practiceToday(i) { const st = this.status[this.keys[i]]; if (st) st.due = today(); this.afterManage(); }
   moveFront(i) { this.order = [i].concat(this.order.filter(x => x !== i)); this.afterManage(); }
@@ -901,7 +902,7 @@ function fitCardHeight() {
 
 function renderFlash() {
   updateGoalLines();
-  renderFChap();
+  renderFChap(); $('resetBtn').textContent = fResetLabel();
   { const ss = fSetStats(fSet); progressFill.style.width = (ss.n ? ss.learned / ss.n * 100 : 0) + '%'; }
   const done = F.queue.length === 0;
   $('studyArea').style.display = done ? 'none' : '';
@@ -940,13 +941,14 @@ $('skipBtn').addEventListener('click', () => { if (F.skip()) renderFlash(); });
 $('shuffleBtn').addEventListener('click', () => { F.shuffle(); applyFlashFilter(); renderFlash(); });
 $('fChap').addEventListener('change', e => { fChapSel[fSet] = e.target.value; saveFSet(); F.history = []; applyFlashFilter(); renderFlash(); });
 function armReset(btn, label, fn) {
-  let armed = null;
+  let armed = null; const lab = () => typeof label === 'function' ? label() : label;
   btn.addEventListener('click', () => {
-    if (armed === null) { btn.textContent = 'Wirklich? Alles löschen'; armed = setTimeout(() => { armed = null; btn.textContent = label; }, 5000); return; }
-    clearTimeout(armed); armed = null; btn.textContent = label; fn();
+    if (armed === null) { btn.textContent = 'Wirklich? Lernstand löschen'; armed = setTimeout(() => { armed = null; btn.textContent = lab(); }, 5000); return; }
+    clearTimeout(armed); armed = null; fn(); btn.textContent = lab();
   });
 }
-armReset($('resetBtn'), '⚙ Zurücksetzen', () => { F.resetAll(); applyFlashFilter(); renderFlash(); });
+const fResetLabel = () => '⚙ ' + (fChapSel[fSet] ? 'Kapitel' : 'Set ' + FSETS[fSet]) + ' zurücksetzen';
+armReset($('resetBtn'), fResetLabel, () => { F.resetSome(fInPool); applyFlashFilter(); renderFlash(); });
 
 // ---------- Modul 2: Sätze üben ----------
 function sView(i) { const e = EDITS.s[S.keys[i]]; return e ? Object.assign({}, S.items[i], e) : S.items[i]; }
@@ -1220,7 +1222,7 @@ const vCard = $('vCard'); let vFlipped = false;
 const jag = x => x === '–' ? '–' : 'jag ' + x;
 function renderVerb() {
   updateGoalLines();
-  vFilterOpts();
+  vFilterOpts(); $('vResetBtn').textContent = vResetLabel();
   const pool = V.items.map((_, i) => i).filter(i => vGroup === 'all' || V.items[i].g === vGroup);
   const learned = pool.filter(i => { const s = V.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
   $('vProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
@@ -1251,7 +1253,8 @@ $('vAgainBtn').addEventListener('click', () => swipeV.commit('again'));
 $('vUndoBtn').addEventListener('click', () => { if (V.undo()) { track('v', -1); renderVerb(); } });
 $('vSkipBtn').addEventListener('click', () => { if (V.skip()) renderVerb(); });
 $('vShuffleBtn').addEventListener('click', () => { V.shuffle(); applyVerbFilter(); renderVerb(); });
-armReset($('vResetBtn'), '⚙ Zurücksetzen', () => { V.resetAll(); applyVerbFilter(); renderVerb(); });
+const vResetLabel = () => vGroup === 'all' ? '⚙ Zurücksetzen' : '⚙ Gruppe zurücksetzen';
+armReset($('vResetBtn'), vResetLabel, () => { V.resetSome(i => vGroup === 'all' || V.items[i].g === vGroup); applyVerbFilter(); renderVerb(); });
 
 // ---------- Modul 4: Starke Verben üben ----------
 const WFORMS = { p: 'Präsens', t: 'Präteritum', f: 'Perfekt', i: 'Imperativ', z: 'Partizip' };
@@ -1777,7 +1780,7 @@ function wSetFeed(text, cls) { wFeed.textContent = text; wFeed.className = 'sfee
 function wShake() { wCard.classList.remove('shake'); void wCard.offsetWidth; wCard.classList.add('shake'); }
 function renderWork() {
   updateGoalLines();
-  wFilterOpts();
+  wFilterOpts(); $('wResetBtn').textContent = wResetLabel();
   const pool = W.items.map((_, i) => i).filter(i => wForm === 'all' || W.items[i].fm === wForm);
   const learned = pool.filter(i => { const s = W.stateOf(i); return s === 'mastered' || s === 'review'; }).length;
   $('wProgress').style.width = (pool.length ? learned / pool.length * 100 : 0) + '%';
@@ -1845,7 +1848,8 @@ wInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefa
 $('wUndoBtn').addEventListener('click', () => { if (W.undo()) { track('w', -1); renderWork(); } });
 $('wSkipBtn').addEventListener('click', () => { if (W.skip()) renderWork(); });
 $('wShuffleBtn').addEventListener('click', () => { W.shuffle(); applyWorkFilter(); renderWork(); });
-armReset($('wResetBtn'), '⚙ Zurücksetzen', () => { W.resetAll(); applyWorkFilter(); renderWork(); });
+const wResetLabel = () => wForm === 'all' ? '⚙ Zurücksetzen' : '⚙ ' + WFORMS[wForm] + ' zurücksetzen';
+armReset($('wResetBtn'), wResetLabel, () => { W.resetSome(i => wForm === 'all' || W.items[i].fm === wForm); applyWorkFilter(); renderWork(); });
 document.querySelectorAll('#wChars button').forEach(b => {
   b.addEventListener('mousedown', e => e.preventDefault());
   b.addEventListener('click', () => { if (wInput.disabled) return; wInput.setRangeText(b.dataset.ch, wInput.selectionStart, wInput.selectionEnd, 'end'); wInput.focus(); });
@@ -2137,12 +2141,30 @@ function startWith(list) {
   showView('home');
   note('Fortschritt wird auf diesem Gerät gespeichert.');
 }
+function importCustom(raw) {
+  const it = raw.items || {}, str = x => typeof x === 'string' ? x : '';
+  const okGap = t => t && str(t.ans).trim() && typeof t.pre === 'string' && typeof t.post === 'string';
+  const clean = {
+    f: (it.f || []).filter(c => c && str(c.q).trim() && str(c.answer).trim() && Array.isArray(c.sv)).map(c => ({ part: str(c.part) || 'OVR · Eigene Karten', page: '', q: str(c.q), answer: str(c.answer), rule: str(c.rule), sv: c.sv.filter(Array.isArray).map(p => [str(p[0]), str(p[1]), str(p[2])]) })),
+    s: (it.s || []).filter(okGap).map(t => ({ de: str(t.de), en: str(t.en), pre: t.pre, ans: str(t.ans), alt: Array.isArray(t.alt) ? t.alt.map(str).filter(Boolean) : [], post: t.post })),
+    v: (it.v || []).filter(x => x && str(x.sv).trim() && str(x.de).trim()).map(x => ({ g: 'own', de: str(x.de), sv: str(x.sv), pres: str(x.pres) || '–', pret: str(x.pret) || '–', perf: str(x.perf) || '–', imp: str(x.imp) || '–', part: str(x.part) || '–' })),
+    w: (it.w || []).filter(t => okGap(t) && str(t.fm) in WFORMS).map(t => ({ vb: str(t.vb), fm: t.fm, de: str(t.de), en: str(t.en), pre: t.pre, ans: str(t.ans), alt: Array.isArray(t.alt) ? t.alt.map(str).filter(Boolean) : [], post: t.post }))
+  };
+  const sig = x => JSON.stringify(Object.assign({}, x, { id: undefined }));
+  let added = 0;
+  ['f', 's', 'v', 'w'].forEach(k => { const have = new Set(CUSTOM[k].map(sig)); clean[k].forEach(x => { if (have.has(sig(x))) return; have.add(sig(x)); CUSTOM[k].push(Object.assign({ id: newId() }, x)); added++; }); });
+  if (!saveJSON(LS_CUSTOM, CUSTOM)) { note('Die Karten konnten nicht gespeichert werden.'); return; }
+  buildAll(); rerender();
+  note(added ? added + (added === 1 ? ' eigene Karte importiert.' : ' eigene Karten importiert.') : 'Keine neuen Karten in der Datei – alles war schon vorhanden.');
+}
 function importFile(file) {
   if (!file) return;
   const r = new FileReader();
   r.onload = () => {
     try {
-      const raw = JSON.parse(r.result); const list = Array.isArray(raw) ? raw : raw.cards;
+      const raw = JSON.parse(r.result);
+      if (raw && raw.type === 'eigene-karten') { importCustom(raw); return; }
+      const list = Array.isArray(raw) ? raw : raw.cards;
       if (!validCards(list)) throw new Error('format');
       try { localStorage.setItem(LS_CARDS, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
       importMsg.textContent = '';
