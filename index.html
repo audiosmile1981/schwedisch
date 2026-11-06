@@ -59,6 +59,14 @@
   .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .bigbtn { display: flex; flex-direction: column; gap: 7px; text-align: left; min-height: 140px; padding: 14px; border-radius: 20px; border: 0; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; }
   .bigbtn:active { transform: scale(.98); }
+  .bigbtn { -webkit-touch-callout: none; }
+  .arrangebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 12px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+  .arrangebar button { flex: none; min-height: 40px; padding: 6px 16px; }
+  .tiles.arranging .bigbtn { touch-action: none; animation: wiggle .32s ease-in-out infinite alternate; outline: 2px dashed var(--border); outline-offset: -2px; }
+  .tiles.arranging .bigbtn:nth-child(2n) { animation-delay: -.16s; }
+  .tiles.arranging .bigbtn.dragging { animation: none; z-index: 5; box-shadow: 0 12px 30px rgba(19,41,61,0.28); opacity: .95; transition: none; }
+  @keyframes wiggle { from { transform: rotate(-0.8deg); } to { transform: rotate(0.8deg); } }
+  @media (prefers-reduced-motion: reduce) { .tiles.arranging .bigbtn { animation: none; } }
   .bigbtn.wide { grid-column: 1 / -1; min-height: 0; }
   .tilehead { display: flex; justify-content: space-between; align-items: center; }
   .ticon { width: 40px; height: 40px; border-radius: 12px; background: var(--tint); display: flex; align-items: center; justify-content: center; color: var(--icon); }
@@ -305,14 +313,15 @@
       <div class="dots" id="weekDots" role="img" aria-label="Die letzten sieben Tage"></div>
       <div class="streaknote" id="streakNote"></div>
     </div>
-    <div class="tiles">
+    <div class="arrangebar hidden" id="arrangeBar"><span>Kacheln verschieben: gedrückt halten und ziehen</span><button class="primary" id="arrangeDone">Fertig</button></div>
+    <div class="tiles" id="tiles">
       <button class="bigbtn" id="goFRUM" data-set="RUM"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Raum</span><span class="bs" id="homeFRUMSub"></span><span class="tbar"><span id="homeFRUMBar"></span></span></button>
       <button class="bigbtn" id="goFTID" data-set="TID"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Zeit</span><span class="bs" id="homeFTIDSub"></span><span class="tbar"><span id="homeFTIDBar"></span></span></button>
       <button class="bigbtn" id="goFOVR" data-set="OVR"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle></svg></span><span class="kick">PRÄP</span></span><span class="bt">Flashcards Sonstiges</span><span class="bs" id="homeFOVRSub"></span><span class="tbar"><span id="homeFOVRBar"></span></span></button>
       <button class="bigbtn" id="goSent"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"></path><path d="M17 15l3 3-3 3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositionen üben</span><span class="bs" id="homeSSub"></span><span class="tbar"><span id="homeSBar"></span></span></button>
       <button class="bigbtn" id="goVerb"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"></path><path d="M3 13l9 5 9-5"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Flashcards starke Verben</span><span class="bs" id="homeVSub"></span><span class="tbar"><span id="homeVBar"></span></span></button>
       <button class="bigbtn" id="goWork"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M14 6l4 4"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span><span class="tbar"><span id="homeWBar"></span></span></button>
-    <button class="bigbtn wide" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Paare, Zeitpräpositionen, „für“ und mehr</span></button>
+    <button class="bigbtn" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Paare, Zeitpräpositionen, „für“ und mehr</span></button>
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
@@ -2398,6 +2407,40 @@ $('newQ').addEventListener('click', () => {
 $('qPair').addEventListener('change', e => { qPair = e.target.value; try { localStorage.setItem(LS_QPAIR, qPair); } catch (x) {} qNewRound(); });
 $('goQuiz').addEventListener('click', () => { qNewRound(); showView('quiz'); });
 $('backQ').addEventListener('click', () => showView('home'));
+
+// ---------- Kacheln anordnen ----------
+const LS_TILES = 'schwedisch-app-tileorder-v1';
+const tilesEl = $('tiles');
+(function applyTileOrder() { let ord = []; try { ord = JSON.parse(localStorage.getItem(LS_TILES)) || []; } catch (e) {} const kids = [].slice.call(tilesEl.children); ord.map(id => kids.find(el => el.id === id)).filter(Boolean).concat(kids.filter(el => ord.indexOf(el.id) < 0)).forEach(el => tilesEl.appendChild(el)); })();
+function saveTileOrder() { saveJSON(LS_TILES, [].slice.call(tilesEl.children).map(el => el.id)); }
+let arranging = false, lp = null, drag = null, swallowClick = false;
+function setArranging(on) { arranging = on; if (!on) swallowClick = false; tilesEl.classList.toggle('arranging', on); $('arrangeBar').classList.toggle('hidden', !on); if (!on) saveTileOrder(); }
+$('arrangeDone').addEventListener('click', () => setArranging(false));
+tilesEl.addEventListener('click', e => { if (arranging || swallowClick) { e.stopPropagation(); e.preventDefault(); swallowClick = false; } }, true);
+tilesEl.addEventListener('contextmenu', e => e.preventDefault());
+tilesEl.addEventListener('pointerdown', e => {
+  const tile = e.target.closest('.bigbtn'); if (!tile) return;
+  if (arranging) { startDrag(tile, e); return; }
+  const sx = e.clientX, sy = e.clientY;
+  lp = { tile, sx, sy, t: setTimeout(() => { lp = null; setArranging(true); swallowClick = true; try { navigator.vibrate && navigator.vibrate(10); } catch (x) {} startDrag(tile, { clientX: sx, clientY: sy, pointerId: e.pointerId }); }, 500) };
+});
+tilesEl.addEventListener('pointermove', e => {
+  if (lp && Math.hypot(e.clientX - lp.sx, e.clientY - lp.sy) > 10) { clearTimeout(lp.t); lp = null; }
+  if (!drag) return; e.preventDefault();
+  drag.tile.style.transform = 'translate(' + (e.clientX - drag.x) + 'px,' + (e.clientY - drag.y) + 'px)';
+  drag.tile.style.visibility = 'hidden'; const under = document.elementFromPoint(e.clientX, e.clientY); drag.tile.style.visibility = '';
+  const target = under && under.closest && under.closest('.bigbtn');
+  if (target && target !== drag.tile && target.parentNode === tilesEl) {
+    const before = drag.tile.getBoundingClientRect();
+    const kids = [].slice.call(tilesEl.children), from = kids.indexOf(drag.tile), to = kids.indexOf(target);
+    tilesEl.insertBefore(drag.tile, from < to ? target.nextSibling : target);
+    const after = drag.tile.getBoundingClientRect(); drag.x += after.left - before.left; drag.y += after.top - before.top;
+    drag.tile.style.transform = 'translate(' + (e.clientX - drag.x) + 'px,' + (e.clientY - drag.y) + 'px)';
+  }
+}, { passive: false });
+function startDrag(tile, e) { drag = { tile, x: e.clientX, y: e.clientY }; tile.classList.add('dragging'); try { tile.setPointerCapture(e.pointerId); } catch (x) {} }
+function endDrag() { if (lp) { clearTimeout(lp.t); lp = null; } if (swallowClick) setTimeout(() => { swallowClick = false; }, 80); if (!drag) return; drag.tile.classList.remove('dragging'); drag.tile.style.transform = ''; drag = null; saveTileOrder(); }
+tilesEl.addEventListener('pointerup', endDrag); tilesEl.addEventListener('pointercancel', endDrag);
 
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
