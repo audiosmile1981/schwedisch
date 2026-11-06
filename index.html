@@ -2308,7 +2308,7 @@ function qLabel(p, withCount) {
 const qLine = p => qKind(p) === 'zeit' ? 'Zeit' : qKind(p) === 'de' ? p.split(':')[1] + ': ' + p.split(':')[2].split('|').join(' / ') : p.replace('|', ' / ');
 function qPairOpts() {
   const sel = $('qPair'); sel.textContent = '';
-  QACTIVE.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = qLabel(p, true); sel.appendChild(o); });
+  QACTIVE.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = qLabel(p, false); sel.appendChild(o); });
   if (![].some.call(sel.options, o => o.value === qPair) && sel.options.length) qPair = sel.options[0].value;
   sel.value = qPair;
 }
