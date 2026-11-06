@@ -164,6 +164,10 @@
   .qcard.ok .qgap { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
   .qcard.bad .qgap { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
   #qChoices button { min-height: 56px; font-size: 1.15rem; }
+  .qnote { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 12px; }
+  .qnote summary { font-weight: 800; font-size: .9rem; cursor: pointer; }
+  .qnote #qNote { margin-top: 8px; font-size: .9rem; line-height: 1.55; white-space: pre-wrap; color: var(--ink); }
+  .qnote #qNote.empty { color: var(--muted); }
   .scard input.blank { font: inherit; font-size: 16px; font-weight: 700; color: var(--accent); background: var(--tint); border: 0; border-bottom: 2px solid var(--accent); border-radius: 8px 8px 0 0; text-align: center; width: 9ch; padding: 2px 4px; margin: 0 4px; -webkit-appearance: none; appearance: none; }
   :root[data-mode="moon"] .scard input.blank { color: #FFFFFF; border-color: var(--yellow); }
   .scard input.blank.wide { width: 14ch; }
@@ -481,9 +485,10 @@
   </div>
 
   <div id="viewQuiz" class="hidden">
-    <div class="topbar"><button id="backQ" aria-label="Zurück zum Start">‹</button><span class="ttl">Präpositions-Quiz</span></div>
+    <div class="topbar"><button id="backQ" aria-label="Zurück zum Start">‹</button><span class="ttl">Präpositions-Quiz</span><button class="editbtn" id="editQ" aria-label="Merkhilfe bearbeiten">✎</button></div>
     <div class="sub">Welche der beiden Präpositionen gehört in die Lücke? Jede Runde hat zehn Sätze aus deinen Karten.</div>
     <select class="vfilter" id="qPair" aria-label="Präpositionspaar wählen"></select>
+    <details class="qnote" id="qNoteBox"><summary>Merkhilfe</summary><div id="qNote"></div></details>
     <div class="progress-bar"><div class="progress-fill" id="qProgress"></div></div>
     <div class="counter" id="qCounter"></div>
     <div class="goalline" id="qGoal"></div><div class="gprog"><div class="gfill" id="qGFill"></div></div>
@@ -499,6 +504,7 @@
       <div class="controls" id="qChoices"><button class="primary" id="qA"></button><button class="primary" id="qB"></button></div>
       <div class="controls hidden" id="qNextRow"><button class="primary" id="qNext">Weiter</button></div>
     </div>
+    <div class="shuffle-row"><button id="newQ">＋ Neuer Quiz-Satz</button></div>
     <div id="qDone" class="hidden donebox"><h2 id="qDoneTitle"></h2><p id="qDoneText"></p><div class="prow"><button class="primary" id="qAgain">Neue Runde</button></div></div>
   </div>
 
@@ -2030,7 +2036,10 @@ function renderUndelete() { const n = DELETED.f.length + DELETED.s.length + DELE
 $('undeleteBtn').addEventListener('click', () => { DELETED = { f: [], s: [], v: [], w: [] }; saveJSON(LS_DELETED, DELETED); buildAll(); renderUndelete(); });
 
 // ---------- Präpositions-Quiz ----------
-const LS_QPAIR = 'schwedisch-app-quizpair-v1';
+const LS_QPAIR = 'schwedisch-app-quizpair-v1', LS_QNOTES = 'schwedisch-app-quiznotes-v1';
+const QNOTE_DEFAULT = { 'från|av': 'från = Herkunft und Abstand\n• aus einem Ort, ab einem Zeitpunkt: från Stockholm, från klockan åtta\n• Entfernung, Trennung: långt från stationen, skild från\n\nav = Urheber, Ursache, Material, Teil eines Ganzen\n• Passiv / Urheber: skriven av Strindberg\n• Ursache: darra av köld, gråta av glädje\n• Material: gjord av trä\n• Teil eines Ganzen: en av dem, delar av Europa\n\nEtwas von jemandem bekommen: meist av (Jag fick presenten av Henrik), från geht auch.' };
+let QNOTES = {}; try { const d = JSON.parse(localStorage.getItem(LS_QNOTES)); if (d && typeof d === 'object') QNOTES = d; } catch (e) {}
+const qNoteOf = p => (p in QNOTES) ? QNOTES[p] : (QNOTE_DEFAULT[p] || '');
 const QPAIRS = [['från', 'av'], ['i', 'på'], ['till', 'för'], ['för', 'åt'], ['till', 'åt'], ['om', 'på'], ['med', 'av'], ['vid', 'på'], ['över', 'om'], ['mot', 'till']];
 let qPair = 'från|av', qRound = [], qPos = 0, qScore = 0, qAnswered = false;
 try { const p = localStorage.getItem(LS_QPAIR); if (p) qPair = p; } catch (e) {}
@@ -2061,8 +2070,9 @@ function qNewRound() {
   qRound = []; while (qRound.length < 10 && (A.length || B.length)) { const pick = (!B.length || (A.length && Math.random() < 0.5)) ? A : B; qRound.push(pick.shift()); }
   qPos = 0; qScore = 0; renderQuiz();
 }
+function renderQNote() { const t = qNoteOf(qPair), el = $('qNote'); el.textContent = t || 'Noch keine Merkhilfe für dieses Paar. Tippe oben rechts auf ✎, um eine eigene Erklärung anzulegen.'; el.classList.toggle('empty', !t); }
 function renderQuiz() {
-  updateGoalLines(); qPairOpts();
+  updateGoalLines(); qPairOpts(); renderQNote();
   const [a, b] = qPair.split('|');
   const done = qPos >= qRound.length;
   $('qPlay').classList.toggle('hidden', done || !qRound.length); $('qDone').classList.toggle('hidden', !done || !qRound.length);
@@ -2095,6 +2105,19 @@ $('qA').addEventListener('click', () => qChoose($('qA').textContent));
 $('qB').addEventListener('click', () => qChoose($('qB').textContent));
 $('qNext').addEventListener('click', () => { qPos++; renderQuiz(); });
 $('qAgain').addEventListener('click', qNewRound);
+$('editQ').addEventListener('click', () => {
+  const [a, b] = qPair.split('|');
+  openForm({ title: 'Merkhilfe: ' + a + ' oder ' + b, note: 'Deine eigene Erklärung zum Unterschied. Sie erscheint im Quiz oben unter „Merkhilfe“.',
+    fields: [{ k: 'note', label: 'ERKLÄRUNG', multi: true, hint: 'Freier Text, Zeilenumbrüche bleiben erhalten.' }], values: { note: qNoteOf(qPair) },
+    onSave: v => { QNOTES[qPair] = v.note.replace(/\s+$/, ''); saveJSON(LS_QNOTES, QNOTES); renderQNote(); $('qNoteBox').open = true; return true; },
+    onRestore: (qPair in QNOTES) && QNOTE_DEFAULT[qPair] ? () => { delete QNOTES[qPair]; saveJSON(LS_QNOTES, QNOTES); renderQNote(); } : null, restoreLabel: 'Vorlage wiederherstellen' });
+});
+$('newQ').addEventListener('click', () => {
+  const [a, b] = qPair.split('|');
+  openForm({ title: 'Neuer Quiz-Satz', note: 'Der Satz erscheint im Quiz bei jedem Paar, zu dem seine Präposition passt, und zusätzlich unter „Präpositionen üben“.',
+    fields: EDITORS.s.fields.map(f => f.k === 'sv' ? Object.assign({}, f, { hint: 'Die Präposition steht in geschweiften Klammern, z. B. Jag kommer {' + a + '} Berlin. oder Boken är skriven {' + b + '} henne.' }) : f), values: { sv: '', de: '', en: '' },
+    onSave: v => { const res = EDITORS.s.put(v); if (typeof res === 'string') return res; const r = addCustom('s', Object.assign({ id: newId() }, res), S); if (r === true) { qNewRound(); const full = res.pre + res.ans + res.post, k = qRound.findIndex(x => x.sv === full); if (k > 0) { qRound.unshift(qRound.splice(k, 1)[0]); renderQuiz(); } } return r; } });
+});
 $('qPair').addEventListener('change', e => { qPair = e.target.value; try { localStorage.setItem(LS_QPAIR, qPair); } catch (x) {} qNewRound(); });
 $('goQuiz').addEventListener('click', () => { qNewRound(); showView('quiz'); });
 $('backQ').addEventListener('click', () => showView('home'));
