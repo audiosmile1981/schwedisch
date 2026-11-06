@@ -2312,7 +2312,10 @@ function qPairOpts() {
   if (![].some.call(sel.options, o => o.value === qPair) && sel.options.length) qPair = sel.options[0].value;
   sel.value = qPair;
 }
+let qRoundPair = null;
 function qNewRound() {
+  if (QACTIVE.indexOf(qPair) < 0 && QACTIVE.length) { qPair = QACTIVE[0]; try { localStorage.setItem(LS_QPAIR, qPair); } catch (e) {} }
+  qRoundPair = qPair;
   const pool = qPool(qPair), groups = {};
   pool.sort(() => Math.random() - 0.5).forEach(x => { (groups[x.ans] = groups[x.ans] || []).push(x); });
   const keys = Object.keys(groups); qRound = [];
@@ -2328,6 +2331,7 @@ function qNewRound() {
 function renderQNote() { const t = qNoteOf(qPair), el = $('qNote'); el.textContent = t || 'Noch keine Merkhilfe für dieses Paar. Tippe oben rechts auf ✎, um eine eigene Erklärung anzulegen.'; el.classList.toggle('empty', !t); }
 function renderQuiz() {
   updateGoalLines(); qPairOpts(); renderQNote();
+  if (qRoundPair !== qPair) { qNewRound(); return; }
   const done = qPos >= qRound.length;
   $('qPlay').classList.toggle('hidden', done || !qRound.length); $('qDone').classList.toggle('hidden', !done || !qRound.length);
   $('qProgress').style.width = (qRound.length ? qPos / qRound.length * 100 : 0) + '%';
