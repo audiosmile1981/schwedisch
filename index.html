@@ -59,6 +59,7 @@
   .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .bigbtn { display: flex; flex-direction: column; gap: 7px; text-align: left; min-height: 140px; padding: 14px; border-radius: 20px; border: 0; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; }
   .bigbtn:active { transform: scale(.98); }
+  .bigbtn.wide { grid-column: 1 / -1; min-height: 0; }
   .tilehead { display: flex; justify-content: space-between; align-items: center; }
   .ticon { width: 40px; height: 40px; border-radius: 12px; background: var(--tint); display: flex; align-items: center; justify-content: center; color: var(--icon); }
   .ticon svg { width: 22px; height: 22px; }
@@ -94,8 +95,10 @@
   .vfilter { width: 100%; margin-bottom: 12px; padding: 11px 12px; background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); border-radius: 14px; font-family: var(--sans); font-size: 16px; font-weight: 600; }
 
   /* Karten */
-  .card-stage { perspective: 1600px; position: relative; touch-action: pan-y; transition: transform .22s ease, opacity .22s ease; will-change: transform; -webkit-user-select: none; user-select: none; }
-  .card-stage.dragging { transition: none; }
+  .card-stage { perspective: 1600px; position: relative; touch-action: pan-y; transition: transform .22s ease, opacity .22s ease; will-change: transform; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+  .card-stage.dragging { transition: none; -webkit-user-select: none; user-select: none; }
+  .face, .scard, .qcard { -webkit-user-select: text; user-select: text; }
+  button { -webkit-user-select: none; user-select: none; }
   .swipe-badge { position: absolute; top: 14px; z-index: 5; padding: 6px 12px; font-weight: 800; font-size: .95rem; border: 2px solid; border-radius: 10px; opacity: 0; pointer-events: none; background: var(--surface); }
   .swipe-badge.right { left: 14px; color: var(--ok); border-color: var(--ok); transform: rotate(-8deg); }
   .swipe-badge.left { right: 14px; color: var(--ink); border-color: var(--ink); transform: rotate(8deg); }
@@ -156,6 +159,11 @@
   .scard .sde { font-size: 1.08rem; line-height: 1.5; }
   .scard .sen { display: flex; gap: 9px; align-items: baseline; margin-top: 6px; font-size: .92rem; color: var(--muted); }
   .scard .ssv { font-size: 1.15rem; font-weight: 600; line-height: 2.1; }
+  .qgap { display: inline-block; min-width: 4.5ch; text-align: center; padding: 0 6px; border-bottom: 2px solid var(--accent); border-radius: 6px 6px 0 0; background: var(--tint); color: var(--accent); font-weight: 800; }
+  :root[data-mode="moon"] .qgap { color: #FFFFFF; border-color: var(--yellow); }
+  .qcard.ok .qgap { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
+  .qcard.bad .qgap { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
+  #qChoices button { min-height: 56px; font-size: 1.15rem; }
   .scard input.blank { font: inherit; font-size: 16px; font-weight: 700; color: var(--accent); background: var(--tint); border: 0; border-bottom: 2px solid var(--accent); border-radius: 8px 8px 0 0; text-align: center; width: 9ch; padding: 2px 4px; margin: 0 4px; -webkit-appearance: none; appearance: none; }
   :root[data-mode="moon"] .scard input.blank { color: #FFFFFF; border-color: var(--yellow); }
   .scard input.blank.wide { width: 14ch; }
@@ -299,6 +307,7 @@
       <button class="bigbtn" id="goSent"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"></path><path d="M17 15l3 3-3 3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositionen üben</span><span class="bs" id="homeSSub"></span><span class="tbar"><span id="homeSBar"></span></span></button>
       <button class="bigbtn" id="goVerb"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"></path><path d="M3 13l9 5 9-5"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Flashcards starke Verben</span><span class="bs" id="homeVSub"></span><span class="tbar"><span id="homeVBar"></span></span></button>
       <button class="bigbtn" id="goWork"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M14 6l4 4"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span><span class="tbar"><span id="homeWBar"></span></span></button>
+    <button class="bigbtn wide" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Zwei Präpositionen, eine ist richtig</span></button>
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
@@ -469,6 +478,28 @@
       <button id="wUndoBtn">↶ Rückgängig</button> <button id="wSkipBtn">⏭ Später</button> <button id="wShuffleBtn">🔀 Mischen</button><br>
       <button id="newW">＋ Neue Übung</button> <button id="wManageBtn">🗂 Sätze verwalten</button> <button id="wResetBtn">⚙ Zurücksetzen</button>
     </div>
+  </div>
+
+  <div id="viewQuiz" class="hidden">
+    <div class="topbar"><button id="backQ" aria-label="Zurück zum Start">‹</button><span class="ttl">Präpositions-Quiz</span></div>
+    <div class="sub">Welche der beiden Präpositionen gehört in die Lücke? Jede Runde hat zehn Sätze aus deinen Karten.</div>
+    <select class="vfilter" id="qPair" aria-label="Präpositionspaar wählen"></select>
+    <div class="progress-bar"><div class="progress-fill" id="qProgress"></div></div>
+    <div class="counter" id="qCounter"></div>
+    <div class="goalline" id="qGoal"></div><div class="gprog"><div class="gfill" id="qGFill"></div></div>
+    <div id="qPlay">
+      <div class="scard qcard" id="qCard">
+        <div class="slabel">DEUTSCH</div>
+        <div class="sde" id="qDe"></div><div class="sen" id="qEn"></div>
+        <div class="slabel sv">SCHWEDISCH</div>
+        <div class="ssv" id="qSv"></div>
+        <div class="sfeed" id="qFeed" aria-live="polite"></div>
+        <div class="sinfo" id="qInfo"></div>
+      </div>
+      <div class="controls" id="qChoices"><button class="primary" id="qA"></button><button class="primary" id="qB"></button></div>
+      <div class="controls hidden" id="qNextRow"><button class="primary" id="qNext">Weiter</button></div>
+    </div>
+    <div id="qDone" class="hidden donebox"><h2 id="qDoneTitle"></h2><p id="qDoneText"></p><div class="prow"><button class="primary" id="qAgain">Neue Runde</button></div></div>
   </div>
 
 </div>
@@ -744,7 +775,7 @@ function goalLine(textEl, fillEl, count, goal) {
   textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
   fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
 }
-function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); }
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); if ($('qGoal')) goalLine($('qGoal'), $('qGFill'), v.s, v.gs); }
 function renderHome() {
   const info = streakInfo(), v = dayView();
   $('streakMain').textContent = info.cur > 0 ? info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
@@ -1998,6 +2029,76 @@ $('fChapRen').addEventListener('click', () => {
 function renderUndelete() { const n = DELETED.f.length + DELETED.s.length + DELETED.v.length + DELETED.w.length; const b = $('undeleteBtn'); b.textContent = n ? 'Wiederherstellen (' + n + ')' : 'Keine'; b.disabled = !n; }
 $('undeleteBtn').addEventListener('click', () => { DELETED = { f: [], s: [], v: [], w: [] }; saveJSON(LS_DELETED, DELETED); buildAll(); renderUndelete(); });
 
+// ---------- Präpositions-Quiz ----------
+const LS_QPAIR = 'schwedisch-app-quizpair-v1';
+const QPAIRS = [['från', 'av'], ['i', 'på'], ['till', 'för'], ['för', 'åt'], ['till', 'åt'], ['om', 'på'], ['med', 'av'], ['vid', 'på'], ['över', 'om'], ['mot', 'till']];
+let qPair = 'från|av', qRound = [], qPos = 0, qScore = 0, qAnswered = false;
+try { const p = localStorage.getItem(LS_QPAIR); if (p) qPair = p; } catch (e) {}
+const qRe = w => new RegExp('(^|[^a-zåäöéA-ZÅÄÖÉ])(' + w + ')(?=$|[^a-zåäöéA-ZÅÄÖÉ])', 'gi');
+function qPool(pair) {
+  const [a, b] = pair.split('|'), out = [], seen = new Set();
+  const add = (sv, de, en) => {
+    if (!sv || seen.has(sv)) return;
+    const ma = sv.match(qRe(a)) || [], mb = sv.match(qRe(b)) || [];
+    if (ma.length + mb.length !== 1) return;
+    const w = ma.length ? a : b, m = qRe(w).exec(sv), at = m.index + m[1].length;
+    seen.add(sv); out.push({ sv, de: de || '', en: en || '', ans: w, pre: sv.slice(0, at), word: sv.substr(at, w.length), post: sv.slice(at + w.length) });
+  };
+  cards.forEach((c, ci) => { const cv = fView(ci); (cv.sv || []).forEach(p => add(p[0], p[1], p[2])); });
+  (S.items || []).forEach((t, i) => { if (t.ci >= 0) return; const v = sView(i); add(v.pre + v.ans + v.post, v.de, v.en); });
+  return out;
+}
+function qPairOpts() {
+  const sel = $('qPair'); sel.textContent = '';
+  QPAIRS.forEach(([a, b]) => { const pool = qPool(a + '|' + b), na = pool.filter(x => x.ans === a).length, nb = pool.length - na; if (na < 3 || nb < 3) return;
+    const o = document.createElement('option'); o.value = a + '|' + b; o.textContent = a + ' oder ' + b + ' (' + na + ' / ' + nb + ' Sätze)'; sel.appendChild(o); });
+  if (![].some.call(sel.options, o => o.value === qPair) && sel.options.length) qPair = sel.options[0].value;
+  sel.value = qPair;
+}
+function qNewRound() {
+  const pool = qPool(qPair), [a] = qPair.split('|');
+  const A = pool.filter(x => x.ans === a).sort(() => Math.random() - 0.5), B = pool.filter(x => x.ans !== a).sort(() => Math.random() - 0.5);
+  qRound = []; while (qRound.length < 10 && (A.length || B.length)) { const pick = (!B.length || (A.length && Math.random() < 0.5)) ? A : B; qRound.push(pick.shift()); }
+  qPos = 0; qScore = 0; renderQuiz();
+}
+function renderQuiz() {
+  updateGoalLines(); qPairOpts();
+  const [a, b] = qPair.split('|');
+  const done = qPos >= qRound.length;
+  $('qPlay').classList.toggle('hidden', done || !qRound.length); $('qDone').classList.toggle('hidden', !done || !qRound.length);
+  $('qProgress').style.width = (qRound.length ? qPos / qRound.length * 100 : 0) + '%';
+  if (!qRound.length) { $('qCounter').textContent = 'Für dieses Paar gibt es noch keine Sätze.'; return; }
+  if (done) {
+    $('qCounter').textContent = 'Runde beendet';
+    $('qDoneTitle').textContent = qScore + ' von ' + qRound.length + ' richtig' + (qScore === qRound.length ? ' 🎉' : '');
+    $('qDoneText').textContent = qScore === qRound.length ? 'Perfekt! Starte eine neue Runde oder wähle oben ein anderes Paar.' : 'Mit jeder Runde kommen die Sätze neu gemischt. Weiter so!';
+    return;
+  }
+  const q = qRound[qPos]; qAnswered = false;
+  $('qCounter').textContent = 'Satz ' + (qPos + 1) + ' von ' + qRound.length + ' · ' + qScore + ' richtig';
+  $('qDe').textContent = q.de; setEn('qEn', q.en);
+  const sv = $('qSv'); sv.textContent = ''; sv.append(q.pre); const g = document.createElement('span'); g.className = 'qgap'; g.id = 'qGap'; g.textContent = '?'; sv.append(g, q.post);
+  $('qCard').className = 'scard qcard'; $('qFeed').textContent = ''; $('qFeed').className = 'sfeed'; $('qInfo').textContent = '';
+  $('qA').textContent = a; $('qB').textContent = b; $('qChoices').classList.remove('hidden'); $('qNextRow').classList.add('hidden');
+}
+function qChoose(w) {
+  if (qAnswered || qPos >= qRound.length) return; qAnswered = true;
+  const q = qRound[qPos], ok = w.toLowerCase() === q.ans.toLowerCase();
+  if (ok) qScore++;
+  $('qGap').textContent = q.word; $('qCard').classList.add(ok ? 'ok' : 'bad');
+  $('qFeed').textContent = ok ? 'Richtig ✓' : 'Leider falsch – richtig ist „' + q.ans + '“.'; $('qFeed').className = 'sfeed ' + (ok ? 'ok' : 'bad');
+  $('qInfo').textContent = 'Vollständiger Satz: ' + q.sv;
+  $('qChoices').classList.add('hidden'); $('qNextRow').classList.remove('hidden');
+  playSwipe(ok ? 'known' : 'again'); track('s', 1);
+}
+$('qA').addEventListener('click', () => qChoose($('qA').textContent));
+$('qB').addEventListener('click', () => qChoose($('qB').textContent));
+$('qNext').addEventListener('click', () => { qPos++; renderQuiz(); });
+$('qAgain').addEventListener('click', qNewRound);
+$('qPair').addEventListener('change', e => { qPair = e.target.value; try { localStorage.setItem(LS_QPAIR, qPair); } catch (x) {} qNewRound(); });
+$('goQuiz').addEventListener('click', () => { qNewRound(); showView('quiz'); });
+$('backQ').addEventListener('click', () => showView('home'));
+
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
 function dataMsg(t) { $('dataMsg').textContent = t; }
@@ -2092,11 +2193,11 @@ $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderMan
 
 // ---------- Navigation ----------
 function showView(v) {
-  ['home', 'flash', 'sent', 'verb', 'work'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
-  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else renderHome();
+  ['home', 'flash', 'sent', 'verb', 'work', 'quiz'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else renderHome();
   window.scrollTo(0, 0);
 }
-const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : 'home');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : 'home');
 ['RUM', 'TID', 'OVR'].forEach(s => $('goF' + s).addEventListener('click', () => openFlashSet(s)));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
@@ -2114,6 +2215,8 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') swipeV.commit('known'); else if (e.key === 'ArrowLeft') swipeV.commit('again'); else if (e.key === ' ') { e.preventDefault(); flipVerb(); } else if (e.key.toLowerCase() === 'z') { if (V.undo()) { track('v', -1); renderVerb(); } }
   } else if (v === 'sent' && !typing) {
     if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
+  } else if (v === 'quiz') {
+    if (e.key === 'Enter' || e.key === ' ') { if (qAnswered) { e.preventDefault(); $('qNext').click(); } } else if (e.key === '1') $('qA').click(); else if (e.key === '2') $('qB').click();
   } else if (v === 'work' && !typing) {
     if (e.key === 'ArrowRight') swipeW.commit('known'); else if (e.key === 'ArrowLeft') swipeW.commit('again');
   }
