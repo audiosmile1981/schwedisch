@@ -172,6 +172,23 @@
   .qcard.ok .qgap { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
   .qcard.bad .qgap { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
   #qChoices button { min-height: 56px; font-size: 1.15rem; }
+  .acard { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
+  .acard h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 800; }
+  .acard .an { margin: 0 0 10px; font-size: .82rem; color: var(--muted); line-height: 1.45; }
+  .abig { font-size: 1.7rem; font-weight: 800; line-height: 1.1; }
+  .astat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; margin: 6px 0 10px; }
+  .astat div span { display: block; font-size: .72rem; color: var(--muted); font-weight: 700; }
+  .arow { display: grid; grid-template-columns: 5.5em 1fr auto; gap: 10px; align-items: center; padding: 6px 0; font-size: .9rem; }
+  .arow b { font-weight: 800; }
+  .arow .bar { height: 8px; border-radius: 4px; background: var(--bar-track); overflow: hidden; }
+  .arow .bar span { display: block; height: 100%; border-radius: 4px; }
+  .arow small { color: var(--muted); font-size: .78rem; white-space: nowrap; }
+  .lvl-bad span { background: var(--bad); } .lvl-mid span { background: var(--yellow); } .lvl-ok span { background: var(--ok); }
+  .agrp { font-size: .7rem; font-weight: 800; letter-spacing: .07em; color: var(--muted); margin: 12px 0 2px; }
+  .aconf { font-size: .9rem; line-height: 1.5; padding: 6px 0; border-bottom: 1px solid var(--tint); }
+  .aconf:last-child { border-bottom: 0; }
+  .abtns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
   #qChoices.many { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .qnote { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 12px; }
   .qnote summary { font-weight: 800; font-size: .9rem; cursor: pointer; }
@@ -322,6 +339,7 @@
       <button class="bigbtn" id="goVerb"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"></path><path d="M3 13l9 5 9-5"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Flashcards starke Verben</span><span class="bs" id="homeVSub"></span><span class="tbar"><span id="homeVBar"></span></span></button>
       <button class="bigbtn" id="goWork"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M14 6l4 4"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span><span class="tbar"><span id="homeWBar"></span></span></button>
     <button class="bigbtn" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Paare, Zeitpräpositionen, „für“ und mehr</span></button>
+      <button class="bigbtn" id="goStats"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg></span><span class="kick">AUSWERTUNG</span></span><span class="bt">Analyse</span><span class="bs" id="homeAnaSub"></span><span class="tbar"><span id="homeAnaBar"></span></span></button>
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
@@ -518,6 +536,12 @@
     <div id="qDone" class="hidden donebox"><h2 id="qDoneTitle"></h2><p id="qDoneText"></p><div class="prow"><button class="primary" id="qAgain">Neue Runde</button></div></div>
   </div>
 
+  <div id="viewStats" class="hidden">
+    <div class="topbar"><button id="backA" aria-label="Zurück zum Start">‹</button><span class="ttl">Analyse</span></div>
+    <div class="sub">Ausgewertet werden deine Antworten im Präpositions-Quiz und bei „Präpositionen üben“ (dort zählt jeweils der erste Versuch).</div>
+    <div id="anaBody"></div>
+  </div>
+
 </div>
 
 <script>
@@ -608,6 +632,9 @@ try { const d = JSON.parse(localStorage.getItem(LS_CUSTOM)); if (d) ['f', 's', '
 try { const d = JSON.parse(localStorage.getItem(LS_DELETED)); if (d) ['f', 's', 'v', 'w'].forEach(k => { if (Array.isArray(d[k])) DELETED[k] = d[k]; }); } catch (e) {}
 try { const d = JSON.parse(localStorage.getItem(LS_CHAPNAMES)); if (d && typeof d === 'object') CHAPNAMES = d; } catch (e) {}
 const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+const LS_STATS = 'schwedisch-app-stats-v1';
+let STATS = []; try { const d = JSON.parse(localStorage.getItem(LS_STATS)); if (Array.isArray(d)) STATS = d; } catch (e) {}
+function logAnswer(e) { STATS.push(Object.assign({ t: Date.now() }, e)); if (STATS.length > 5000) STATS = STATS.slice(-5000); saveJSON(LS_STATS, STATS); }
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
@@ -813,7 +840,7 @@ function renderHome() {
   [['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw]].forEach(([k, n, g]) => {
     const b = $('home' + k + 'Bar'); const p = g > 0 ? Math.min(1, n / g) : 0; b.style.width = (p * 100) + '%'; b.classList.toggle('full', p >= 1);
   });
-  renderMode();
+  renderMode(); if (typeof homeAnalysis === 'function') homeAnalysis();
 }
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
@@ -1083,15 +1110,16 @@ function checkSent() {
   const t = sView(S.queue[0]), v = sInput.value;
   if (!v.trim()) { setFeed('Gib zuerst eine Präposition ein.'); sInput.focus(); return; }
   const verdict = judge(v, t);
+  if (!sState.logged) { sState.logged = true; logAnswer({ src: 'sent', ans: t.ans.toLowerCase(), pick: v.trim().toLowerCase(), ok: verdict !== 'wrong', pre: t.pre, word: t.ans, post: t.post, de: t.de || '', en: t.en || '' }); }
   if (verdict !== 'wrong') { resolveSent('correct', verdict === 'accent' ? 'Achte auf die Akzente: ' + t.ans : ''); return; }
   sState.attempts++;
   if (sState.attempts >= 2) { resolveSent('failed'); return; }
   shakeCard(); setFeed('Nicht ganz. Versuch es noch einmal.', 'bad'); sInput.focus(); sInput.select();
 }
-function revealSent() { if (sState.resolved || !S.queue.length) return; sState.attempts = 2; resolveSent('failed'); }
+function revealSent() { if (sState.resolved || !S.queue.length) return; if (!sState.logged) { const t = sView(S.queue[0]); sState.logged = true; logAnswer({ src: 'sent', ans: t.ans.toLowerCase(), pick: '', ok: false, pre: t.pre, word: t.ans, post: t.post, de: t.de || '', en: t.en || '' }); } sState.attempts = 2; resolveSent('failed'); }
 function hintSent() {
   if (sState.resolved || !S.queue.length) return;
-  const c = cards[sView(S.queue[0]).ci], ps = c.q.split('\n');
+  const st = sView(S.queue[0]); if (!(st.ci >= 0)) { setFeed('Für eigene Übungen gibt es keinen Hinweis.'); return; } const c = cards[st.ci], ps = c.q.split('\n');
   setFeed('Hinweis: ' + ps[0] + (ps[1] ? ' (' + ps[1] + ')' : ''));
 }
 const swipeS = bindSwipe($('sStage'), $('sBadgeRight'), $('sBadgeLeft'), {
@@ -2340,7 +2368,7 @@ function qNewRound() {
 function renderQNote() { const t = qNoteOf(qPair), el = $('qNote'); el.textContent = t || 'Noch keine Merkhilfe für dieses Paar. Tippe oben rechts auf ✎, um eine eigene Erklärung anzulegen.'; el.classList.toggle('empty', !t); }
 function renderQuiz() {
   updateGoalLines(); qPairOpts(); renderQNote();
-  if (qRoundPair !== qPair) { qNewRound(); return; }
+  if (qRoundPair !== qPair && qRoundPair !== 'fehler') { qNewRound(); return; }
   const done = qPos >= qRound.length;
   $('qPlay').classList.toggle('hidden', done || !qRound.length); $('qDone').classList.toggle('hidden', !done || !qRound.length);
   $('qProgress').style.width = (qRound.length ? qPos / qRound.length * 100 : 0) + '%';
@@ -2352,7 +2380,7 @@ function renderQuiz() {
     return;
   }
   const q = qRound[qPos]; qAnswered = false;
-  $('qCounter').textContent = 'Satz ' + (qPos + 1) + ' von ' + qRound.length + ' · ' + qScore + ' richtig';
+  $('qCounter').textContent = (qRoundPair === 'fehler' ? 'Fehler-Runde · ' : '') + 'Satz ' + (qPos + 1) + ' von ' + qRound.length + ' · ' + qScore + ' richtig';
   $('qDe').textContent = q.de; setEn('qEn', q.en);
   const sv = $('qSv'); sv.textContent = ''; sv.append(q.pre); const g = document.createElement('span'); g.className = 'qgap'; g.id = 'qGap'; g.textContent = '?'; sv.append(g, q.post);
   $('qCard').className = 'scard qcard'; $('qFeed').textContent = ''; $('qFeed').className = 'sfeed'; $('qInfo').textContent = '';
@@ -2369,6 +2397,7 @@ function qChoose(w) {
   $('qInfo').textContent = 'Vollständiger Satz: ' + q.sv;
   $('qChoices').classList.add('hidden'); $('qNextRow').classList.remove('hidden');
   playSwipe(ok ? 'known' : 'again'); track('s', 1);
+  logAnswer({ src: 'quiz', v: qRoundPair, ans: q.ans.toLowerCase(), pick: w.toLowerCase(), ok, pre: q.pre, word: q.word, post: q.post, de: q.de, en: q.en, opts: q.opts });
 }
 $('qNext').addEventListener('click', () => { qPos++; renderQuiz(); });
 $('qAgain').addEventListener('click', qNewRound);
@@ -2404,7 +2433,7 @@ $('newQ').addEventListener('click', () => {
     fields: EDITORS.s.fields.map(f => f.k === 'sv' ? Object.assign({}, f, { hint: 'Die Präposition steht in geschweiften Klammern, z. B. Jag kommer {' + a + '} Berlin. oder Boken är skriven {' + b + '} henne.' }) : f), values: { sv: '', de: '', en: '' },
     onSave: v => { const res = EDITORS.s.put(v); if (typeof res === 'string') return res; const r = addCustom('s', Object.assign({ id: newId() }, res), S); if (r === true) { qNewRound(); const full = res.pre + res.ans + res.post, k = qRound.findIndex(x => x.sv === full); if (k > 0) { qRound.unshift(qRound.splice(k, 1)[0]); renderQuiz(); } } return r; } });
 });
-$('qPair').addEventListener('change', e => { qPair = e.target.value; try { localStorage.setItem(LS_QPAIR, qPair); } catch (x) {} qNewRound(); });
+$('qPair').addEventListener('change', e => { qRoundPair = null; qPair = e.target.value; try { localStorage.setItem(LS_QPAIR, qPair); } catch (x) {} qNewRound(); });
 $('goQuiz').addEventListener('click', () => { qNewRound(); showView('quiz'); });
 $('backQ').addEventListener('click', () => showView('home'));
 
@@ -2441,6 +2470,102 @@ tilesEl.addEventListener('pointermove', e => {
 function startDrag(tile, e) { drag = { tile, x: e.clientX, y: e.clientY }; tile.classList.add('dragging'); try { tile.setPointerCapture(e.pointerId); } catch (x) {} }
 function endDrag() { if (lp) { clearTimeout(lp.t); lp = null; } if (swallowClick) setTimeout(() => { swallowClick = false; }, 80); if (!drag) return; drag.tile.classList.remove('dragging'); drag.tile.style.transform = ''; drag = null; saveTileOrder(); }
 tilesEl.addEventListener('pointerup', endDrag); tilesEl.addEventListener('pointercancel', endDrag);
+
+// ---------- Analyse ----------
+const ANA_MIN = 50, PREP_MIN = 10;
+const ANA_PREPS = ['på', 'i', 'av', 'från', 'till', 'åt', 'för', 'om', 'med', 'vid', 'hos', 'under', 'över', 'efter', 'mot', 'genom', 'sedan', 'inom', 'ur', 'via', 'framför', 'före', 'enligt', 'bakom', 'mellan', 'utan', 'ovanför', 'nedanför', 'runt', 'kring', 'bland', 'per', 'utom', 'trots', 'inför', 'längs', 'bredvid'];
+const isPrep = w => ANA_PREPS.indexOf(w) >= 0 || (typeof PREPS !== 'undefined' && PREPS.has && PREPS.has(w)) || QACTIVE.some(p => (qOptsOf(p) || []).indexOf(w) >= 0);
+function anaPrepStats(list) {
+  const by = {};
+  list.forEach(e => { const a = e.ans; by[a] = by[a] || { n: 0, ok: 0, picks: {} }; by[a].n++; if (e.ok) by[a].ok++; else if (e.pick && e.pick !== a && isPrep(e.pick)) by[a].picks[e.pick] = (by[a].picks[e.pick] || 0) + 1; });
+  return by;
+}
+function homeAnalysis() {
+  const n = STATS.length, sub = $('homeAnaSub'), bar = $('homeAnaBar'); if (!sub) return;
+  if (n < ANA_MIN) { sub.textContent = 'Noch ' + (ANA_MIN - n) + ' Antworten bis zur Analyse'; bar.style.width = (n / ANA_MIN * 100) + '%'; bar.classList.remove('full'); }
+  else { const ok = STATS.filter(e => e.ok).length; sub.textContent = n + ' Antworten · ' + Math.round(ok / n * 100) + ' % richtig'; bar.style.width = (ok / n * 100) + '%'; bar.classList.toggle('full', ok / n >= 0.85); }
+}
+function el(tag, cls, txt) { const d = document.createElement(tag); if (cls) d.className = cls; if (txt != null) d.textContent = txt; return d; }
+function variantFor(prep, other) {
+  let best = null;
+  QACTIVE.forEach(p => { const o = qOptsOf(p); if (!o || o.indexOf(prep) < 0) return; const sc = (other && o.indexOf(other) >= 0 ? 2 : 0) + (qKind(p) === 'pair' ? 1 : 0); if (!best || sc > best.sc) best = { p, sc }; });
+  if (!best && ZEIT_DIST.indexOf(prep) >= 0 && QACTIVE.indexOf('zeit') >= 0) return 'zeit';
+  return best ? best.p : null;
+}
+function startErrorRound() {
+  const seen = new Set(), items = [];
+  for (let i = STATS.length - 1; i >= 0 && items.length < 10; i--) {
+    const e = STATS[i]; if (e.ok || !e.word) continue; const key = e.pre + e.word + e.post; if (seen.has(key)) continue;
+    if (STATS.slice(i + 1).some(x => x.ok && x.pre === e.pre && x.post === e.post)) continue;
+    seen.add(key);
+    let opts = Array.isArray(e.opts) && e.opts.length ? e.opts.slice() : [e.ans].concat(e.pick && e.pick !== e.ans && isPrep(e.pick) ? [e.pick] : ZEIT_DIST.filter(x => x !== e.ans).sort(() => Math.random() - 0.5).slice(0, 2));
+    if (opts.indexOf(e.ans) < 0) opts.push(e.ans);
+    items.push({ sv: key, de: e.de || '', en: e.en || '', ans: e.ans, pre: e.pre, word: e.word, post: e.post, opts: opts.sort(() => Math.random() - 0.5) });
+  }
+  if (!items.length) return false;
+  qRound = items; qPos = 0; qScore = 0; qRoundPair = 'fehler'; showView('quiz'); return true;
+}
+function renderStats() {
+  const body = $('anaBody'); body.textContent = ''; const n = STATS.length;
+  if (n < ANA_MIN) {
+    const c = el('div', 'acard'); c.append(el('h3', null, 'Noch nicht genug Daten'), el('p', 'an', 'Die Analyse öffnet sich ab ' + ANA_MIN + ' Antworten, damit sie aussagekräftig ist. Bisher: ' + n + '. Jede Quizfrage und jede Aufgabe bei „Präpositionen üben“ zählt.'));
+    const b = el('div', 'tbar'); const s = el('span'); s.style.width = (n / ANA_MIN * 100) + '%'; b.appendChild(s); c.appendChild(b); body.appendChild(c); return;
+  }
+  const ok = STATS.filter(e => e.ok).length, now = Date.now(), d14 = 14 * 864e5;
+  const recent = STATS.filter(e => now - e.t < d14), older = STATS.filter(e => now - e.t >= d14);
+  const pct = l => Math.round(l.filter(e => e.ok).length / l.length * 100), trendOk = recent.length >= 10 && older.length >= 10;
+  const sum = el('div', 'acard'); sum.appendChild(el('h3', null, 'Überblick'));
+  const g = el('div', 'astat');
+  [[n, 'Antworten'], [Math.round(ok / n * 100) + ' %', 'richtig'], [trendOk ? ((pct(recent) - pct(older) >= 0 ? '+' : '') + (pct(recent) - pct(older)) + ' %') : '–', 'Trend']].forEach(([v, l]) => { const d = el('div'); d.append(el('div', 'abig', String(v)), el('span', null, l)); g.appendChild(d); });
+  sum.appendChild(g);
+  const quizN = STATS.filter(e => e.src === 'quiz').length;
+  sum.appendChild(el('p', 'an', 'Davon ' + quizN + ' aus dem Quiz und ' + (n - quizN) + ' aus „Präpositionen üben“. ' + (trendOk ? 'Der Trend vergleicht die letzten 14 Tage mit der Zeit davor.' : 'Ein Trend erscheint, sobald es Antworten aus mehr als zwei Wochen gibt.')));
+  body.appendChild(sum);
+  const by = anaPrepStats(STATS), rated = [], few = [];
+  Object.keys(by).forEach(a => { const s = by[a]; (s.n >= PREP_MIN ? rated : few).push(Object.assign({ a, r: s.ok / s.n }, s)); });
+  rated.sort((x, y) => x.r - y.r);
+  const pc = el('div', 'acard'); pc.append(el('h3', null, 'Deine Präpositionen'), el('p', 'an', 'Bewertet wird jede Präposition, die mindestens ' + PREP_MIN + '-mal gefragt wurde.'));
+  [['HIER DRINGEND ÜBEN', x => x.r < 0.65, 'lvl-bad'], ['WIRD BESSER', x => x.r >= 0.65 && x.r < 0.85, 'lvl-mid'], ['SITZT SICHER', x => x.r >= 0.85, 'lvl-ok']].forEach(([t, f, cls]) => {
+    const l = rated.filter(f); if (!l.length) return; pc.appendChild(el('div', 'agrp', t));
+    l.forEach(x => { const r = el('div', 'arow'); const bar = el('div', 'bar ' + cls); const s = el('span'); s.style.width = Math.round(x.r * 100) + '%'; bar.appendChild(s); r.append(el('b', null, x.a), bar, el('small', null, x.ok + '/' + x.n + ' · ' + Math.round(x.r * 100) + ' %')); pc.appendChild(r); });
+  });
+  if (!rated.length) pc.appendChild(el('p', 'an', 'Noch keine Präposition wurde oft genug gefragt.'));
+  if (few.length) pc.appendChild(el('p', 'an', 'Noch zu wenig Daten: ' + few.sort((x, y) => y.n - x.n).map(x => x.a + ' (' + x.n + '×)').join(', ')));
+  body.appendChild(pc);
+  const conf = [];
+  Object.keys(by).forEach(a => Object.keys(by[a].picks).forEach(p => { const c = by[a].picks[p]; if (c >= 2) conf.push({ a, p, c, share: c / by[a].n }); }));
+  conf.sort((x, y) => y.c - x.c || y.share - x.share);
+  const cc = el('div', 'acard'); cc.appendChild(el('h3', null, 'Häufigste Verwechslungen'));
+  if (conf.length) conf.slice(0, 6).forEach(x => cc.appendChild(el('div', 'aconf', 'Wenn „' + x.a + '“ richtig ist, wählst du ' + x.c + '-mal „' + x.p + '“ (' + Math.round(x.share * 100) + ' % der Fälle).')));
+  else cc.appendChild(el('p', 'an', 'Bisher keine Verwechslung, die mehr als einmal vorkam.'));
+  body.appendChild(cc);
+  const rec = el('div', 'acard'); rec.appendChild(el('h3', null, 'Empfehlung'));
+  const weak = rated.find(x => x.r < 0.85), btns = el('div', 'abtns');
+  if (weak) {
+    const top = Object.keys(weak.picks).sort((x, y) => weak.picks[y] - weak.picks[x])[0], v = variantFor(weak.a, top);
+    rec.appendChild(el('p', 'an', 'Am meisten Übung braucht gerade „' + weak.a + '“ (' + Math.round(weak.r * 100) + ' % richtig)' + (top ? ', am häufigsten verwechselt mit „' + top + '“.' : '.')));
+    if (v) { const b = el('button', 'primary', 'Jetzt üben: ' + qLabel(v, false)); b.addEventListener('click', () => { qPair = v; try { localStorage.setItem(LS_QPAIR, qPair); } catch (e) {} qRoundPair = null; showView('quiz'); }); btns.appendChild(b); }
+    else rec.appendChild(el('p', 'an', 'Tipp: Leg im Quiz unter „Varianten“ eine Variante mit „' + weak.a + '“ an' + (top ? ', etwa „' + weak.a + ' / ' + top + '“.' : '.')));
+  } else rec.appendChild(el('p', 'an', 'Alle ausreichend geübten Präpositionen sitzen sicher. Weiter so!'));
+  const fb = el('button', null, 'Fehler-Runde'); fb.addEventListener('click', () => { if (!startErrorRound()) { fb.textContent = 'Keine offenen Fehler'; fb.disabled = true; } }); btns.appendChild(fb);
+  rec.appendChild(btns); rec.appendChild(el('p', 'an', 'Die Fehler-Runde wiederholt bis zu zehn Sätze, bei denen du zuletzt danebenlagst und die du seitdem noch nicht richtig hattest.'));
+  body.appendChild(rec);
+  const ex = el('div', 'acard'); ex.append(el('h3', null, 'Mit Claude besprechen'), el('p', 'an', 'Kopiert eine Zusammenfassung deiner Statistik. Füge sie im Chat ein, dann kann ich die Regeln hinter deinen Fehlern genauer anschauen.'));
+  const eb = el('div', 'abtns'), cb = el('button', null, 'Zusammenfassung kopieren');
+  cb.addEventListener('click', async () => {
+    const lines = ['Statistik Präpositionen: ' + n + ' Antworten, ' + Math.round(ok / n * 100) + ' % richtig'];
+    rated.forEach(x => lines.push(x.a + ': ' + x.ok + '/' + x.n + ' (' + Math.round(x.r * 100) + ' %)'));
+    if (conf.length) { lines.push('Verwechslungen:'); conf.slice(0, 8).forEach(x => lines.push('  ' + x.a + ' → ' + x.p + ': ' + x.c + '×')); }
+    const wrong = STATS.filter(e => !e.ok && e.word).slice(-15); if (wrong.length) { lines.push('Letzte Fehler:'); wrong.forEach(e => lines.push('  ' + e.pre + '[' + e.word + ']' + e.post + (e.pick ? '  (gewählt: ' + e.pick + ')' : ''))); }
+    const txt = lines.join('\n');
+    try { await navigator.clipboard.writeText(txt); cb.textContent = 'Kopiert ✓'; } catch (e) { try { await navigator.share({ text: txt }); } catch (x) { cb.textContent = 'Kopieren nicht möglich'; } }
+  });
+  const rb = el('button', 'danger', 'Statistik löschen'); let armed = null;
+  rb.addEventListener('click', () => { if (!armed) { rb.textContent = 'Wirklich löschen?'; rb.classList.add('armed'); armed = setTimeout(() => { armed = null; rb.textContent = 'Statistik löschen'; rb.classList.remove('armed'); }, 4000); return; } clearTimeout(armed); STATS = []; saveJSON(LS_STATS, STATS); renderStats(); });
+  eb.append(cb, rb); ex.appendChild(eb); body.appendChild(ex);
+}
+$('goStats').addEventListener('click', () => showView('stats'));
+$('backA').addEventListener('click', () => showView('home'));
 
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
@@ -2536,11 +2661,11 @@ $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderMan
 
 // ---------- Navigation ----------
 function showView(v) {
-  ['home', 'flash', 'sent', 'verb', 'work', 'quiz'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
-  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else renderHome();
+  ['home', 'flash', 'sent', 'verb', 'work', 'quiz', 'stats'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else if (v === 'stats') renderStats(); else renderHome();
   window.scrollTo(0, 0);
 }
-const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : 'home');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : !$('viewStats').classList.contains('hidden') ? 'stats' : 'home');
 ['RUM', 'TID', 'OVR'].forEach(s => $('goF' + s).addEventListener('click', () => openFlashSet(s)));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
