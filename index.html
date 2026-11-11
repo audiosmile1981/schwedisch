@@ -207,14 +207,14 @@
   .bsh { font-size: .66rem; font-weight: 800; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; }
   .bsrow { display: flex; flex-wrap: wrap; gap: 6px; }
   .bcell { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .bl { font-size: .55rem; font-weight: 800; letter-spacing: .05em; }
-  .bt { padding: 5px 8px; border-radius: 8px; font-weight: 800; font-size: .9rem; white-space: nowrap; }
-  .bt.be, .bl.be { color: #1F5E9C; } .bt.be { background: #E3ECF6; }
-  .bt.bs, .bl.bs { color: #2F6B3A; } .bt.bs { background: #E7F0E4; }
-  .bt.ba, .bl.ba { color: #7A5B00; } .bt.ba { background: #FDF1C9; }
-  .bt.bv, .bl.bv { color: #9B2335; } .bt.bv { background: #F6E3E6; }
-  .bt.br, .bl.br { color: #556A80; } .bt.br { background: #EEF1F4; }
-  :root[data-mode="moon"] .bl { color: #FFFFFF; }
+  .sb-l { font-size: .55rem; font-weight: 800; letter-spacing: .05em; }
+  .sb-t { padding: 5px 8px; border-radius: 8px; font-weight: 800; font-size: .9rem; white-space: nowrap; }
+  .sb-e { color: #1F5E9C; } .sb-t.sb-e { background: #E3ECF6; }
+  .sb-s { color: #2F6B3A; } .sb-t.sb-s { background: #E7F0E4; }
+  .sb-a { color: #7A5B00; } .sb-t.sb-a { background: #FDF1C9; }
+  .sb-v { color: #9B2335; } .sb-t.sb-v { background: #F6E3E6; }
+  .sb-r { color: #556A80; } .sb-t.sb-r { background: #EEF1F4; }
+  :root[data-mode="moon"] .sb-l { color: #FFFFFF; }
   .qwhy { color: var(--ink); font-size: .92rem; line-height: 1.5; margin-bottom: 8px; }
   .qwhy b { font-weight: 800; }
   .qfull { font-size: .82rem; color: var(--muted); }
@@ -3159,7 +3159,7 @@ function bSchema(toks, title) {
   const h = document.createElement('div'); h.className = 'bsh'; h.textContent = title; box.appendChild(h);
   const row = document.createElement('div'); row.className = 'bsrow';
   const groups = []; toks.forEach(([w, r]) => { const g = groups[groups.length - 1]; if (g && g.r === r && (r === 'R' || r === 'A')) g.w += ' ' + w; else groups.push({ w, r }); });
-  groups.forEach(g => { const c = document.createElement('div'); c.className = 'bcell'; const l = document.createElement('span'); l.className = 'bl b' + ROLE[g.r][1]; l.textContent = ROLE[g.r][0]; const t = document.createElement('span'); t.className = 'bt b' + ROLE[g.r][1]; t.textContent = g.w; c.append(l, t); row.appendChild(c); });
+  groups.forEach(g => { const c = document.createElement('div'); c.className = 'bcell'; const l = document.createElement('span'); l.className = 'sb-l sb-' + ROLE[g.r][1]; l.textContent = ROLE[g.r][0]; const t = document.createElement('span'); t.className = 'sb-t sb-' + ROLE[g.r][1]; t.textContent = g.w; c.append(l, t); row.appendChild(c); });
   box.appendChild(row); return box;
 }
 function mainToks(it) {
