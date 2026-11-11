@@ -187,6 +187,34 @@
   .agrp { font-size: .7rem; font-weight: 800; letter-spacing: .07em; color: var(--muted); margin: 12px 0 2px; }
   .aconf { font-size: .9rem; line-height: 1.5; padding: 6px 0; border-bottom: 1px solid var(--tint); }
   .aconf:last-child { border-bottom: 0; }
+  .btabs { display: flex; gap: 4px; padding: 4px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 12px; }
+  .btabs button { flex: 1; min-height: 40px; border: 0; border-radius: 10px; background: transparent; font-size: .85rem; }
+  .btabs button.on { background: var(--accent); color: var(--on-accent); }
+  .bline { font-size: 1.15rem; font-weight: 700; line-height: 2.3; }
+  .bgap { display: inline-block; vertical-align: middle; min-width: 28px; min-height: 30px; padding: 0 6px; margin: 0 4px; border-radius: 8px; border: 2px dashed var(--border); background: transparent; }
+  .bgap.picked { border-style: solid; font-weight: 800; }
+  .qcard.ok .bgap.picked { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
+  .qcard.bad .bgap.picked { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
+  .bans { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 58px; padding: 10px; border-radius: 14px; border: 1.5px dashed var(--border); background: var(--bg); margin-bottom: 14px; }
+  .blead { font-weight: 700; }
+  .btiles { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .btile { min-height: 44px; padding: 8px 14px; font-size: 1rem; }
+  .btile.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .bmain { font-size: 1.15rem; font-weight: 700; }
+  .binput { width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; font-weight: 600; }
+  .bnote { font-size: .88rem; line-height: 1.5; color: var(--ink); margin-bottom: 8px; }
+  .bschema { margin-top: 12px; }
+  .bsh { font-size: .66rem; font-weight: 800; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; }
+  .bsrow { display: flex; flex-wrap: wrap; gap: 6px; }
+  .bcell { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .bl { font-size: .55rem; font-weight: 800; letter-spacing: .05em; }
+  .bt { padding: 5px 8px; border-radius: 8px; font-weight: 800; font-size: .9rem; white-space: nowrap; }
+  .bt.be, .bl.be { color: #1F5E9C; } .bt.be { background: #E3ECF6; }
+  .bt.bs, .bl.bs { color: #2F6B3A; } .bt.bs { background: #E7F0E4; }
+  .bt.ba, .bl.ba { color: #7A5B00; } .bt.ba { background: #FDF1C9; }
+  .bt.bv, .bl.bv { color: #9B2335; } .bt.bv { background: #F6E3E6; }
+  .bt.br, .bl.br { color: #556A80; } .bt.br { background: #EEF1F4; }
+  :root[data-mode="moon"] .bl { color: #FFFFFF; }
   .qwhy { color: var(--ink); font-size: .92rem; line-height: 1.5; margin-bottom: 8px; }
   .qwhy b { font-weight: 800; }
   .qfull { font-size: .82rem; color: var(--muted); }
@@ -287,7 +315,8 @@
   <div class="grow"><span>Präpositionen üben</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Flashcards starke Verben</span><span class="step"><button id="gVm" aria-label="weniger">−</button><b id="gVv">15</b><button id="gVp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Starke Verben üben</span><span class="step"><button id="gWm" aria-label="weniger">−</button><b id="gWv">10</b><button id="gWp" aria-label="mehr">+</button></span></div>
-  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der vier Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <div class="grow"><span>Satzbau: inte &amp; Co.</span><span class="step"><button id="gBm" aria-label="weniger">−</button><b id="gBv">10</b><button id="gBp" aria-label="mehr">+</button></span></div>
+  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der fünf Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
   <div class="gsec">ANZEIGE UND TON</div>
   <div class="grow"><span>Englische Beispiele</span><button class="tgl" id="enToggle" aria-pressed="true">An</button></div>
   <div class="grow"><span>Töne (Wischen und Tagesziel)</span><button class="tgl" id="soundToggle" aria-pressed="true">An</button></div>
@@ -343,6 +372,7 @@
       <button class="bigbtn" id="goWork"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M14 6l4 4"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Starke Verben üben</span><span class="bs" id="homeWSub"></span><span class="tbar"><span id="homeWBar"></span></span></button>
     <button class="bigbtn" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Paare, Zeitpräpositionen, „für“ und mehr</span></button>
       <button class="bigbtn" id="goStats"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg></span><span class="kick">AUSWERTUNG</span></span><span class="bt">Analyse</span><span class="bs" id="homeAnaSub"></span><span class="tbar"><span id="homeAnaBar"></span></span></button>
+      <button class="bigbtn" id="goSatz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="5" height="6" rx="1.5"></rect><rect x="10" y="9" width="4" height="6" rx="1.5"></rect><rect x="16" y="9" width="5" height="6" rx="1.5"></rect><path d="M12 4v3M12 17v3"></path></svg></span><span class="kick">GRAMMATIK</span></span><span class="bt">Satzbau: inte &amp; Co.</span><span class="bs" id="homeBSub"></span><span class="tbar"><span id="homeBBar"></span></span></button>
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
@@ -541,8 +571,22 @@
 
   <div id="viewStats" class="hidden">
     <div class="topbar"><button id="backA" aria-label="Zurück zum Start">‹</button><span class="ttl">Analyse</span></div>
-    <div class="sub">Ausgewertet werden deine Antworten im Präpositions-Quiz und bei „Präpositionen üben“ (dort zählt jeweils der erste Versuch).</div>
+    <div class="sub">Ausgewertet werden deine Antworten im Präpositions-Quiz, bei „Präpositionen üben“ (dort zählt jeweils der erste Versuch) und ab 20 Aufgaben auch im Satzbau-Modul.</div>
     <div id="anaBody"></div>
+  </div>
+
+  <div id="viewSatz" class="hidden">
+    <div class="topbar"><button id="backB" aria-label="Zurück zum Start">‹</button><span class="ttl">Satzbau: inte &amp; Co.</span></div>
+    <div class="btabs" role="tablist"><button id="bTab1">Stufe 1</button><button id="bTab2">Stufe 2</button><button id="bTab3">Stufe 3</button></div>
+    <div class="progress-bar"><div class="progress-fill" id="bProgress"></div></div>
+    <div class="counter" id="bCounter"></div>
+    <div class="goalline" id="bGoal"></div><div class="gprog"><div class="gfill" id="bGFill"></div></div>
+    <div id="bPlay">
+      <div class="scard qcard" id="bCard"><div id="bTask"></div><div class="sfeed" id="bFeed" aria-live="polite"></div><div class="sinfo" id="bInfo"></div></div>
+      <div class="controls" id="bActions"><button id="bReset">Zurücksetzen</button><button class="primary" id="bCheck">Prüfen</button></div>
+      <div class="controls hidden" id="bNextRow"><button class="primary" id="bNext">Weiter</button></div>
+    </div>
+    <div id="bDoneBox" class="hidden donebox"><h2 id="bDoneTitle"></h2><p>Mit jeder Runde kommen die Sätze neu gemischt. Sätze, die du falsch hattest, kommen bevorzugt wieder.</p><div class="prow"><button class="primary" id="bAgain">Neue Runde</button></div></div>
   </div>
 
 </div>
@@ -764,21 +808,21 @@ const W = new Learner(LS_WORK);    // Starke Verben üben
 let cards = [], tasks = [];
 
 // ---------- Tagesziele und Streak ----------
-let streak = { goalF: 20, goalS: 10, goalV: 15, goalW: 10, daily: {}, praised: {} };
+let streak = { goalF: 20, goalS: 10, goalV: 15, goalW: 10, goalB: 10, daily: {}, praised: {} };
 const MILESTONES = { 3: 'Drei Tage am Stück – der Anfang einer Gewohnheit.', 7: 'Eine ganze Woche in Folge!', 14: 'Zwei Wochen am Stück, das ist richtig stark.', 30: 'Dreißig Tage in Folge – das ist echte Ausdauer.', 50: 'Fünfzig Tage! Das Wissen sitzt.', 100: 'Hundert Tage in Folge. Respekt!', 365: 'Ein ganzes Jahr, du bist eine Legende.' };
 const PRAISE = [['Bra jobbat!', 'Gut gemacht!'], ['Snyggt!', 'Stark!'], ['Grymt!', 'Richtig gut!'], ['Fantastiskt!', 'Fantastisch!'], ['Det sitter!', 'Das sitzt!'], ['Stark insats!', 'Starke Leistung!']];
 function loadStreak() {
   let d = null; try { d = JSON.parse(localStorage.getItem(LS_STREAK)); } catch (e) {}
   if (d && typeof d === 'object') {
-    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), goalW: Math.min(200, Math.max(5, Number(d.goalW) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
+    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), goalW: Math.min(200, Math.max(5, Number(d.goalW) || 10)), goalB: Math.min(200, Math.max(5, Number(d.goalB) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
   }
   const cut = addDays(-400); Object.keys(streak.daily).forEach(k => { if (k < cut) delete streak.daily[k]; });
   const cutP = addDays(-10); Object.keys(streak.praised).forEach(k => { if (k < cutP) delete streak.praised[k]; });
 }
 function saveStreak() { try { localStorage.setItem(LS_STREAK, JSON.stringify(streak)); } catch (e) {} }
 function peekDay(d) { return streak.daily[d] || null; }
-function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; if (typeof e.w !== 'number') e.w = 0; if (typeof e.gw !== 'number') e.gw = streak.goalW; return e; }
-function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv) || (e.gw > 0 && (e.w || 0) >= e.gw)); }
+function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; if (typeof e.w !== 'number') e.w = 0; if (typeof e.gw !== 'number') e.gw = streak.goalW; if (typeof e.b !== 'number') e.b = 0; if (typeof e.gb !== 'number') e.gb = streak.goalB; return e; }
+function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv) || (e.gw > 0 && (e.w || 0) >= e.gw) || (e.gb > 0 && (e.b || 0) >= e.gb)); }
 function streakInfo() {
   const t = today(); let cur = 0, d = t;
   if (!qualifies(peekDay(t))) d = addDaysFrom(t, -1);
@@ -788,7 +832,7 @@ function streakInfo() {
   days.forEach(k => { run = prev && addDaysFrom(prev, 1) === k ? run + 1 : 1; if (run > best) best = run; prev = k; });
   return { cur, best, todayDone: qualifies(peekDay(t)) };
 }
-function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW }; }
+function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW, b: e ? (e.b || 0) : 0, gb: e && typeof e.gb === 'number' ? e.gb : streak.goalB }; }
 function track(kind, delta) {
   const e = dayEntry(today());
   e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
@@ -801,7 +845,7 @@ function maybePraise(kind) {
   if (!(goal > 0) || e[kind] !== goal) return;
   const pr = streak.praised[t] || (streak.praised[t] = {});
   if (pr[kind]) return; pr[kind] = true; saveStreak();
-  const other = ['f', 's', 'v', 'w'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
+  const other = ['f', 's', 'v', 'w', 'b'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
   const info = streakInfo();
   setTimeout(() => showPraise(kind, e[kind], info, other), 350);
 }
@@ -809,7 +853,7 @@ function showPraise(kind, count, info, other) {
   const p = PRAISE[Math.floor(Math.random() * PRAISE.length)];
   $('pEmoji').textContent = '🎉';
   $('pTitle').textContent = p[0] + ' (' + p[1] + ')';
-  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Präpositions-Flashcards', s: ' Präpositionssätze', v: ' Verb-Flashcards', w: ' Verbsätze' })[kind] + ' heute geübt. ';
+  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Präpositions-Flashcards', s: ' Präpositionssätze', v: ' Verb-Flashcards', w: ' Verbsätze', b: ' Satzbau-Aufgaben' })[kind] + ' heute geübt. ';
   if (other) txt += 'Dein Streak-Tag stand schon, und jetzt hast du auch dieses Ziel geschafft.';
   else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
   $('pText').textContent = txt;
@@ -823,13 +867,13 @@ function goalLine(textEl, fillEl, count, goal) {
   textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
   fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
 }
-function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); if ($('qGoal')) goalLine($('qGoal'), $('qGFill'), v.s, v.gs); }
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); if ($('qGoal')) goalLine($('qGoal'), $('qGFill'), v.s, v.gs); if ($('bGoal')) goalLine($('bGoal'), $('bGFill'), v.b, v.gb); }
 function renderHome() {
   const info = streakInfo(), v = dayView();
   $('streakMain').textContent = info.cur > 0 ? info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
   $('streakBest').textContent = info.best > 0 ? 'Rekord: ' + info.best + (info.best === 1 ? ' Tag' : ' Tage') : '';
   if (info.todayDone) $('streakNote').textContent = 'Heute geschafft ✓ Dein Streak lebt.';
-  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Präpositions-Flashcards, ' + Math.max(0, v.gs - v.s) + ' Präpositionssätze, ' + Math.max(0, v.gv - v.v) + ' Verb-Flashcards oder ' + Math.max(0, v.gw - v.w) + ' Verbsätze.';
+  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Präpositions-Flashcards, ' + Math.max(0, v.gs - v.s) + ' Präpositionssätze, ' + Math.max(0, v.gv - v.v) + ' Verb-Flashcards, ' + Math.max(0, v.gw - v.w) + ' Verbsätze oder ' + Math.max(0, v.gb - v.b) + ' Satzbau-Aufgaben.';
   const dots = $('weekDots'); dots.textContent = '';
   for (let k = 6; k >= 0; k--) {
     const d = addDays(-k), [y, m, dd] = d.split('-').map(Number), wrap = document.createElement('div'); wrap.className = 'dayc';
@@ -842,14 +886,15 @@ function renderHome() {
   $('homeSSub').textContent = 'Heute ' + v.s + ' von ' + v.gs + (v.s >= v.gs ? ' ✓' : '') + ' · ' + S.queue.length + ' offen';
   $('homeVSub').textContent = 'Heute ' + v.v + ' von ' + v.gv + (v.v >= v.gv ? ' ✓' : '') + ' · ' + V.queue.length + ' offen';
   $('homeWSub').textContent = 'Heute ' + v.w + ' von ' + v.gw + (v.w >= v.gw ? ' ✓' : '') + ' · ' + W.queue.length + ' offen';
-  [['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw]].forEach(([k, n, g]) => {
+  $('homeBSub').textContent = 'Heute ' + v.b + ' von ' + v.gb + (v.b >= v.gb ? ' ✓' : '');
+  [['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw], ['B', v.b, v.gb]].forEach(([k, n, g]) => {
     const b = $('home' + k + 'Bar'); const p = g > 0 ? Math.min(1, n / g) : 0; b.style.width = (p * 100) + '%'; b.classList.toggle('full', p >= 1);
   });
   renderMode(); if (typeof homeAnalysis === 'function') homeAnalysis();
 }
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
-function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; }
+function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -863,6 +908,7 @@ $('modeToggle').addEventListener('click', () => setMode(!isMoon()));
 $('modeBtn').addEventListener('click', () => setMode(!isMoon()));
 $('soundToggle').addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem(LS_SOUND, soundOn ? 'on' : 'off'); } catch (e) {} renderSoundToggle(); if (soundOn) { unlockAudio(); playSwipe('known'); } });
 $('gWm').addEventListener('click', () => changeGoal('w', -5)); $('gWp').addEventListener('click', () => changeGoal('w', 5));
+$('gBm').addEventListener('click', () => changeGoal('b', -5)); $('gBp').addEventListener('click', () => changeGoal('b', 5));
 $('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
 $('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
 
@@ -2545,6 +2591,7 @@ function startErrorRound() {
 }
 function renderStats() {
   const body = $('anaBody'); body.textContent = ''; const n = STATS.length;
+  const sc = satzAnalysisCard(); if (sc) body.appendChild(sc);
   if (n < ANA_MIN) {
     const c = el('div', 'acard'); c.append(el('h3', null, 'Noch nicht genug Daten'), el('p', 'an', 'Die Analyse öffnet sich ab ' + ANA_MIN + ' Antworten, damit sie aussagekräftig ist. Bisher: ' + n + '. Jede Quizfrage und jede Aufgabe bei „Präpositionen üben“ zählt.'));
     const b = el('div', 'tbar'); const s = el('span'); s.style.width = (n / ANA_MIN * 100) + '%'; b.appendChild(s); c.appendChild(b); body.appendChild(c); return;
@@ -2604,6 +2651,615 @@ function renderStats() {
 }
 $('goStats').addEventListener('click', () => showView('stats'));
 $('backA').addEventListener('click', () => showView('home'));
+
+// ---------- Satzbau: inte & Co. ----------
+// Eigene Sätze (von Claude formuliert): [Deutsch, Hauptsatz-Anfang, [[Wort, Rolle]], Hauptsatz-Variante, deren Deutsch]
+// Rollen: E = Einleiter, S = Subjekt, A = Satzadverb, V = gebeugtes Verb, R = Rest
+const BSENT = [["Ich weiß, dass er heute nicht kommt.", "Jag vet", [["att", "E"],
+["han", "S"],
+["inte", "A"],
+["kommer", "V"],
+["i dag", "R"]], "Han kommer inte i dag.", "Er kommt heute nicht."],
+["Sie sagt, dass sie keine Zeit hat.", "Hon säger", [["att", "E"],
+["hon", "S"],
+["inte", "A"],
+["har", "V"],
+["tid", "R"]], "Hon har inte tid.", "Sie hat keine Zeit."],
+["Es ist schade, dass du nicht mitkommen kannst.", "Det är synd", [["att", "E"],
+["du", "S"],
+["inte", "A"],
+["kan", "V"],
+["följa med", "R"]], "Du kan inte följa med.", "Du kannst nicht mitkommen."],
+["Ich hoffe, dass es morgen nicht regnet.", "Jag hoppas", [["att", "E"],
+["det", "S"],
+["inte", "A"],
+["regnar", "V"],
+["i morgon", "R"]], "Det regnar inte i morgon.", "Morgen regnet es nicht."],
+["Er behauptet, dass er nie raucht.", "Han påstår", [["att", "E"],
+["han", "S"],
+["aldrig", "A"],
+["röker", "V"]], "Han röker aldrig.", "Er raucht nie."],
+["Wir wissen, dass sie immer pünktlich ist.", "Vi vet", [["att", "E"],
+["hon", "S"],
+["alltid", "A"],
+["är", "V"],
+["punktlig", "R"]], "Hon är alltid punktlig.", "Sie ist immer pünktlich."],
+["Ich glaube, dass er schon gegangen ist.", "Jag tror", [["att", "E"],
+["han", "S"],
+["redan", "A"],
+["har", "V"],
+["gått", "R"]], "Han har redan gått.", "Er ist schon gegangen."],
+["Sie erzählte, dass sie oft in Stockholm ist.", "Hon berättade", [["att", "E"],
+["hon", "S"],
+["ofta", "A"],
+["är", "V"],
+["i Stockholm", "R"]], "Hon är ofta i Stockholm.", "Sie ist oft in Stockholm."],
+["Ich finde, dass du wirklich gut Schwedisch sprichst.", "Jag tycker", [["att", "E"],
+["du", "S"],
+["verkligen", "A"],
+["pratar", "V"],
+["bra svenska", "R"]], "Du pratar verkligen bra svenska.", "Du sprichst wirklich gut Schwedisch."],
+["Es ist wichtig, dass wir nicht zu spät kommen.", "Det är viktigt", [["att", "E"],
+["vi", "S"],
+["inte", "A"],
+["kommer", "V"],
+["för sent", "R"]], "Vi kommer inte för sent.", "Wir kommen nicht zu spät."],
+["Ich bin froh, dass du nicht krank geworden bist.", "Jag är glad", [["att", "E"],
+["du", "S"],
+["inte", "A"],
+["har", "V"],
+["blivit sjuk", "R"]], "Du har inte blivit sjuk.", "Du bist nicht krank geworden."],
+["Er sagte, dass er nicht mehr dort wohnt.", "Han sa", [["att", "E"],
+["han", "S"],
+["inte längre", "A"],
+["bor", "V"],
+["där", "R"]], "Han bor inte längre där.", "Er wohnt nicht mehr dort."],
+["Sie meint, dass sie auch kommen will.", "Hon menar", [["att", "E"],
+["hon", "S"],
+["också", "A"],
+["vill", "V"],
+["komma", "R"]], "Hon vill också komma.", "Sie will auch kommen."],
+["Ich habe gehört, dass er vielleicht umzieht.", "Jag har hört", [["att", "E"],
+["han", "S"],
+["kanske", "A"],
+["flyttar", "V"]], "Han flyttar kanske.", "Er zieht vielleicht um."],
+["Wir merkten, dass das Essen noch nicht fertig war.", "Vi märkte", [["att", "E"],
+["maten", "S"],
+["inte", "A"],
+["var", "V"],
+["klar än", "R"]], "Maten var inte klar än.", "Das Essen war noch nicht fertig."],
+["Ich kam zu spät, weil der Bus nicht kam.", "Jag kom för sent,", [["eftersom", "E"],
+["bussen", "S"],
+["inte", "A"],
+["kom", "V"]], "Bussen kom inte.", "Der Bus kam nicht."],
+["Wir bleiben zu Hause, weil es nicht aufhört zu regnen.", "Vi stannar hemma,", [["eftersom", "E"],
+["det", "S"],
+["inte", "A"],
+["slutar", "V"],
+["regna", "R"]], "Det slutar inte regna.", "Es hört nicht auf zu regnen."],
+["Er ist müde, weil er nie früh ins Bett geht.", "Han är trött,", [["eftersom", "E"],
+["han", "S"],
+["aldrig", "A"],
+["går", "V"],
+["och lägger sig tidigt", "R"]], "Han går aldrig och lägger sig tidigt.", "Er geht nie früh ins Bett."],
+["Ich frage nach, weil ich es nicht verstanden habe.", "Jag frågar igen,", [["eftersom", "E"],
+["jag", "S"],
+["inte", "A"],
+["har", "V"],
+["förstått", "R"]], "Jag har inte förstått.", "Ich habe es nicht verstanden."],
+["Sie kommt selten mit, weil sie nicht immer Zeit hat.", "Hon följer sällan med,", [["eftersom", "E"],
+["hon", "S"],
+["inte alltid", "A"],
+["har", "V"],
+["tid", "R"]], "Hon har inte alltid tid.", "Sie hat nicht immer Zeit."],
+["Wir nehmen das Auto, weil der Zug oft Verspätung hat.", "Vi tar bilen,", [["eftersom", "E"],
+["tåget", "S"],
+["ofta", "A"],
+["är", "V"],
+["försenat", "R"]], "Tåget är ofta försenat.", "Der Zug hat oft Verspätung."],
+["Er bekam den Job, weil er wirklich gut vorbereitet war.", "Han fick jobbet,", [["eftersom", "E"],
+["han", "S"],
+["verkligen", "A"],
+["var", "V"],
+["väl förberedd", "R"]], "Han var verkligen väl förberedd.", "Er war wirklich gut vorbereitet."],
+["Ich esse kein Fleisch, weil ich es nicht mag.", "Jag äter inte kött,", [["eftersom", "E"],
+["jag", "S"],
+["inte", "A"],
+["tycker om", "V"],
+["det", "R"]], "Jag tycker inte om det.", "Ich mag es nicht."],
+["Ich frage mich, ob er nicht schon nach Hause gegangen ist.", "Jag undrar", [["om", "E"],
+["han", "S"],
+["inte redan", "A"],
+["har", "V"],
+["gått hem", "R"]], "Han har inte redan gått hem.", "Er ist nicht schon nach Hause gegangen."],
+["Weißt du, ob sie heute nicht arbeitet?", "Vet du", [["om", "E"],
+["hon", "S"],
+["inte", "A"],
+["jobbar", "V"],
+["i dag", "R"]], "Hon jobbar inte i dag.", "Sie arbeitet heute nicht."],
+["Er fragte, ob ich nie Kaffee trinke.", "Han frågade", [["om", "E"],
+["jag", "S"],
+["aldrig", "A"],
+["dricker", "V"],
+["kaffe", "R"]], "Jag dricker aldrig kaffe.", "Ich trinke nie Kaffee."],
+["Ich weiß nicht, ob sie immer so früh aufsteht.", "Jag vet inte", [["om", "E"],
+["hon", "S"],
+["alltid", "A"],
+["går", "V"],
+["upp så tidigt", "R"]], "Hon går alltid upp så tidigt.", "Sie steht immer so früh auf."],
+["Sag Bescheid, wenn du nicht kommen kannst.", "Säg till", [["om", "E"],
+["du", "S"],
+["inte", "A"],
+["kan", "V"],
+["komma", "R"]], "Du kan inte komma.", "Du kannst nicht kommen."],
+["Ruf an, wenn du dich nicht wohlfühlst.", "Ring", [["om", "E"],
+["du", "S"],
+["inte", "A"],
+["mår", "V"],
+["bra", "R"]], "Du mår inte bra.", "Du fühlst dich nicht wohl."],
+["Wenn er nicht bald antwortet, rufe ich ihn an.", "Jag ringer honom", [["om", "E"],
+["han", "S"],
+["inte", "A"],
+["svarar", "V"],
+["snart", "R"]], "Han svarar inte snart.", "Er antwortet nicht bald."],
+["Wir gehen spazieren, wenn es nicht regnet.", "Vi tar en promenad", [["om", "E"],
+["det", "S"],
+["inte", "A"],
+["regnar", "V"]], "Det regnar inte.", "Es regnet nicht."],
+["Ich werde sauer, wenn er nie zuhört.", "Jag blir arg", [["när", "E"],
+["han", "S"],
+["aldrig", "A"],
+["lyssnar", "V"]], "Han lyssnar aldrig.", "Er hört nie zu."],
+["Sie war überrascht, als er nicht anrief.", "Hon blev förvånad", [["när", "E"],
+["han", "S"],
+["inte", "A"],
+["ringde", "V"]], "Han ringde inte.", "Er rief nicht an."],
+["Es ist schön, wenn die Kinder nicht streiten.", "Det är skönt", [["när", "E"],
+["barnen", "S"],
+["inte", "A"],
+["bråkar", "V"]], "Barnen bråkar inte.", "Die Kinder streiten nicht."],
+["Ich werde nervös, wenn ich nicht genug geschlafen habe.", "Jag blir nervös", [["när", "E"],
+["jag", "S"],
+["inte", "A"],
+["har", "V"],
+["sovit tillräckligt", "R"]], "Jag har inte sovit tillräckligt.", "Ich habe nicht genug geschlafen."],
+["Er ist glücklich, wenn er endlich frei hat.", "Han är glad", [["när", "E"],
+["han", "S"],
+["äntligen", "A"],
+["är", "V"],
+["ledig", "R"]], "Han är äntligen ledig.", "Er hat endlich frei."],
+["Das ist der Film, den ich nie gesehen habe.", "Det är filmen", [["som", "E"],
+["jag", "S"],
+["aldrig", "A"],
+["har", "V"],
+["sett", "R"]], "Jag har aldrig sett filmen.", "Ich habe den Film nie gesehen."],
+["Das ist das Buch, das ich nicht gelesen habe.", "Det är boken", [["som", "E"],
+["jag", "S"],
+["inte", "A"],
+["har", "V"],
+["läst", "R"]], "Jag har inte läst boken.", "Ich habe das Buch nicht gelesen."],
+["Er ist ein Kollege, den ich oft treffe.", "Han är en kollega", [["som", "E"],
+["jag", "S"],
+["ofta", "A"],
+["träffar", "V"]], "Jag träffar kollegan ofta.", "Ich treffe den Kollegen oft."],
+["Das ist ein Problem, das wir noch nicht gelöst haben.", "Det är ett problem", [["som", "E"],
+["vi", "S"],
+["inte", "A"],
+["har", "V"],
+["löst än", "R"]], "Vi har inte löst problemet än.", "Wir haben das Problem noch nicht gelöst."],
+["Es gibt vieles, was ich nicht verstehe.", "Det finns mycket", [["som", "E"],
+["jag", "S"],
+["inte", "A"],
+["förstår", "V"]], "Jag förstår inte allt.", "Ich verstehe nicht alles."],
+["Das ist die Kollegin, die nicht geantwortet hat.", "Det är kollegan", [["som", "E"],
+["inte", "A"],
+["har", "V"],
+["svarat", "R"]], "Kollegan har inte svarat.", "Die Kollegin hat nicht geantwortet."],
+["Wir suchen jemanden, der gern im Team arbeitet.", "Vi söker någon", [["som", "E"],
+["gärna", "A"],
+["arbetar", "V"],
+["i team", "R"]], "Hon arbetar gärna i team.", "Sie arbeitet gern im Team."],
+["Er ist der Einzige, der nie zu spät kommt.", "Han är den ende", [["som", "E"],
+["aldrig", "A"],
+["kommer", "V"],
+["för sent", "R"]], "Han kommer aldrig för sent.", "Er kommt nie zu spät."],
+["Ich kenne niemanden, der nicht gern reist.", "Jag känner ingen", [["som", "E"],
+["inte", "A"],
+["tycker om", "V"],
+["att resa", "R"]], "Han tycker inte om att resa.", "Er reist nicht gern."],
+["Das ist ein Wort, das man oft hört.", "Det är ett ord", [["som", "E"],
+["man", "S"],
+["ofta", "A"],
+["hör", "V"]], "Man hör ordet ofta.", "Man hört das Wort oft."],
+["Er kam zur Arbeit, obwohl er nicht gesund war.", "Han kom till jobbet,", [["fast", "E"],
+["han", "S"],
+["inte", "A"],
+["var", "V"],
+["frisk", "R"]], "Han var inte frisk.", "Er war nicht gesund."],
+["Sie lächelte, obwohl sie wirklich müde war.", "Hon log,", [["fast", "E"],
+["hon", "S"],
+["verkligen", "A"],
+["var", "V"],
+["trött", "R"]], "Hon var verkligen trött.", "Sie war wirklich müde."],
+["Wir fuhren los, obwohl er noch nicht fertig war.", "Vi åkte iväg,", [["trots att", "E"],
+["han", "S"],
+["inte", "A"],
+["var", "V"],
+["klar", "R"]], "Han var inte klar.", "Er war nicht fertig."],
+["Er kaufte das Auto, obwohl er es eigentlich nicht brauchte.", "Han köpte bilen,", [["trots att", "E"],
+["han", "S"],
+["egentligen inte", "A"],
+["behövde", "V"],
+["den", "R"]], "Han behövde egentligen inte bilen.", "Er brauchte das Auto eigentlich nicht."],
+["Sie bestand die Prüfung, obwohl sie nie gelernt hatte.", "Hon klarade provet,", [["trots att", "E"],
+["hon", "S"],
+["aldrig", "A"],
+["hade", "V"],
+["pluggat", "R"]], "Hon hade aldrig pluggat.", "Sie hatte nie gelernt."],
+["Ich schreibe es auf, damit ich es nicht vergesse.", "Jag skriver upp det", [["så att", "E"],
+["jag", "S"],
+["inte", "A"],
+["glömmer", "V"],
+["det", "R"]], "Jag glömmer det inte.", "Ich vergesse es nicht."],
+["Sprich leise, damit das Baby nicht aufwacht.", "Prata tyst", [["så att", "E"],
+["bebisen", "S"],
+["inte", "A"],
+["vaknar", "V"]], "Bebisen vaknar inte.", "Das Baby wacht nicht auf."],
+["Er ging früh, damit er den Zug nicht verpasste.", "Han gick tidigt", [["så att", "E"],
+["han", "S"],
+["inte", "A"],
+["skulle", "V"],
+["missa tåget", "R"]], "Han skulle inte missa tåget.", "Er wollte den Zug nicht verpassen."],
+["Wir warten, bis er wirklich fertig ist.", "Vi väntar", [["tills", "E"],
+["han", "S"],
+["verkligen", "A"],
+["är", "V"],
+["klar", "R"]], "Han är verkligen klar.", "Er ist wirklich fertig."],
+["Ich lese, während er noch schläft.", "Jag läser", [["medan", "E"],
+["han", "S"],
+["fortfarande", "A"],
+["sover", "V"]], "Han sover fortfarande.", "Er schläft noch."],
+["Nimm einen Schirm mit, falls es doch regnet.", "Ta med ett paraply", [["ifall", "E"],
+["det", "S"],
+["ändå", "A"],
+["regnar", "V"]], "Det regnar ändå.", "Es regnet doch."],
+["Ich komme mit, auch wenn ich nicht viel Zeit habe.", "Jag följer med,", [["även om", "E"],
+["jag", "S"],
+["inte", "A"],
+["har", "V"],
+["så mycket tid", "R"]], "Jag har inte så mycket tid.", "Ich habe nicht so viel Zeit."],
+["Er ist enttäuscht, dass sie ihn nicht einmal gegrüßt hat.", "Han är besviken över", [["att", "E"],
+["hon", "S"],
+["inte ens", "A"],
+["har", "V"],
+["hälsat", "R"]], "Hon har inte ens hälsat.", "Sie hat nicht einmal gegrüßt."],
+["Sie sagt, dass sie auch nicht kommen kann.", "Hon säger", [["att", "E"],
+["hon", "S"],
+["inte heller", "A"],
+["kan", "V"],
+["komma", "R"]], "Hon kan inte heller komma.", "Sie kann auch nicht kommen."],
+["Ich verspreche, dass ich nie wieder zu spät komme.", "Jag lovar", [["att", "E"],
+["jag", "S"],
+["aldrig mer", "A"],
+["ska", "V"],
+["komma för sent", "R"]], "Jag ska aldrig mer komma för sent.", "Ich werde nie wieder zu spät kommen."],
+["Es ist klar, dass wir nicht alle einladen können.", "Det är klart", [["att", "E"],
+["vi", "S"],
+["inte", "A"],
+["kan", "V"],
+["bjuda alla", "R"]], "Vi kan inte bjuda alla.", "Wir können nicht alle einladen."],
+["Ich merke, dass ich das Wort immer vergesse.", "Jag märker", [["att", "E"],
+["jag", "S"],
+["alltid", "A"],
+["glömmer", "V"],
+["ordet", "R"]], "Jag glömmer alltid ordet.", "Ich vergesse das Wort immer."],
+["Er gab zu, dass er den Bericht noch nicht geschrieben hatte.", "Han erkände", [["att", "E"],
+["han", "S"],
+["inte", "A"],
+["hade", "V"],
+["skrivit rapporten än", "R"]], "Han hade inte skrivit rapporten än.", "Er hatte den Bericht noch nicht geschrieben."],
+["Ich glaube, dass sie es wirklich ernst meint.", "Jag tror", [["att", "E"],
+["hon", "S"],
+["verkligen", "A"],
+["menar", "V"],
+["allvar", "R"]], "Hon menar verkligen allvar.", "Sie meint es wirklich ernst."],
+["Er erklärte, dass er die Regeln nicht kannte.", "Han förklarade", [["att", "E"],
+["han", "S"],
+["inte", "A"],
+["kände till", "V"],
+["reglerna", "R"]], "Han kände inte till reglerna.", "Er kannte die Regeln nicht."],
+["Mir fiel auf, dass sie nie etwas sagt.", "Jag märkte", [["att", "E"],
+["hon", "S"],
+["aldrig", "A"],
+["säger", "V"],
+["något", "R"]], "Hon säger aldrig något.", "Sie sagt nie etwas."],
+["Wir freuen uns, dass ihr endlich da seid.", "Vi är glada", [["att", "E"],
+["ni", "S"],
+["äntligen", "A"],
+["är", "V"],
+["här", "R"]], "Ni är äntligen här.", "Ihr seid endlich da."],
+["Ich wusste nicht, dass er schon verheiratet ist.", "Jag visste inte", [["att", "E"],
+["han", "S"],
+["redan", "A"],
+["är", "V"],
+["gift", "R"]], "Han är redan gift.", "Er ist schon verheiratet."],
+["Sie behauptet, dass sie das Formular nicht bekommen hat.", "Hon påstår", [["att", "E"],
+["hon", "S"],
+["inte", "A"],
+["har", "V"],
+["fått blanketten", "R"]], "Hon har inte fått blanketten.", "Sie hat das Formular nicht bekommen."],
+["Der Chef sagt, dass wir nicht länger warten können.", "Chefen säger", [["att", "E"],
+["vi", "S"],
+["inte", "A"],
+["kan", "V"],
+["vänta längre", "R"]], "Vi kan inte vänta längre.", "Wir können nicht länger warten."],
+["Ich bin sicher, dass er es nicht so gemeint hat.", "Jag är säker på", [["att", "E"],
+["han", "S"],
+["inte", "A"],
+["menade", "V"],
+["så", "R"]], "Han menade inte så.", "Er hat es nicht so gemeint."],
+["Es stimmt, dass wir oft zu viel arbeiten.", "Det stämmer", [["att", "E"],
+["vi", "S"],
+["ofta", "A"],
+["jobbar", "V"],
+["för mycket", "R"]], "Vi jobbar ofta för mycket.", "Wir arbeiten oft zu viel."],
+["Wir kommen nicht, weil wir leider schon etwas vorhaben.", "Vi kommer inte,", [["eftersom", "E"],
+["vi", "S"],
+["tyvärr redan", "A"],
+["har", "V"],
+["andra planer", "R"]], "Vi har tyvärr redan andra planer.", "Wir haben leider schon andere Pläne."],
+["Er bleibt drinnen, weil er sich nicht gut fühlt.", "Han stannar inne,", [["eftersom", "E"],
+["han", "S"],
+["inte", "A"],
+["mår", "V"],
+["så bra", "R"]], "Han mår inte så bra.", "Er fühlt sich nicht so gut."],
+["Ich rufe an, weil ich die Mail nicht bekommen habe.", "Jag ringer,", [["eftersom", "E"],
+["jag", "S"],
+["inte", "A"],
+["har", "V"],
+["fått mejlet", "R"]], "Jag har inte fått mejlet.", "Ich habe die Mail nicht bekommen."],
+["Sie ist gestresst, weil sie nie Pause macht.", "Hon är stressad,", [["eftersom", "E"],
+["hon", "S"],
+["aldrig", "A"],
+["tar", "V"],
+["paus", "R"]], "Hon tar aldrig paus.", "Sie macht nie Pause."],
+["Wir verstehen uns gut, weil wir oft dasselbe denken.", "Vi kommer bra överens,", [["eftersom", "E"],
+["vi", "S"],
+["ofta", "A"],
+["tänker", "V"],
+["likadant", "R"]], "Vi tänker ofta likadant.", "Wir denken oft dasselbe."],
+["Ich weiß nicht, ob er wirklich krank ist.", "Jag vet inte", [["om", "E"],
+["han", "S"],
+["verkligen", "A"],
+["är", "V"],
+["sjuk", "R"]], "Han är verkligen sjuk.", "Er ist wirklich krank."],
+["Sie fragte, ob ich schon gegessen hätte.", "Hon frågade", [["om", "E"],
+["jag", "S"],
+["redan", "A"],
+["hade", "V"],
+["ätit", "R"]], "Jag hade redan ätit.", "Ich hatte schon gegessen."],
+["Es ist egal, ob du nicht alles schaffst.", "Det spelar ingen roll", [["om", "E"],
+["du", "S"],
+["inte", "A"],
+["hinner", "V"],
+["allt", "R"]], "Du hinner inte allt.", "Du schaffst nicht alles."],
+["Ich bin unsicher, ob ich wirklich umziehen will.", "Jag är osäker på", [["om", "E"],
+["jag", "S"],
+["verkligen", "A"],
+["vill", "V"],
+["flytta", "R"]], "Jag vill verkligen flytta.", "Ich will wirklich umziehen."],
+["Er wurde wütend, als sie nicht zuhörte.", "Han blev arg", [["när", "E"],
+["hon", "S"],
+["inte", "A"],
+["lyssnade", "V"]], "Hon lyssnade inte.", "Sie hörte nicht zu."],
+["Ich war erleichtert, als die Prüfung endlich vorbei war.", "Jag blev lättad", [["när", "E"],
+["provet", "S"],
+["äntligen", "A"],
+["var", "V"],
+["över", "R"]], "Provet var äntligen över.", "Die Prüfung war endlich vorbei."],
+["Es ist ärgerlich, wenn der Drucker nicht funktioniert.", "Det är irriterande", [["när", "E"],
+["skrivaren", "S"],
+["inte", "A"],
+["fungerar", "V"]], "Skrivaren fungerar inte.", "Der Drucker funktioniert nicht."],
+["Sie wird traurig, wenn ihre Freunde nie anrufen.", "Hon blir ledsen", [["när", "E"],
+["hennes vänner", "S"],
+["aldrig", "A"],
+["ringer", "V"]], "Hennes vänner ringer aldrig.", "Ihre Freunde rufen nie an."],
+["Das ist ein Ort, an dem ich nie gewesen bin.", "Det är en plats", [["där", "E"],
+["jag", "S"],
+["aldrig", "A"],
+["har", "V"],
+["varit", "R"]], "Jag har aldrig varit där.", "Ich bin nie dort gewesen."],
+["Er hat eine Wohnung, in der es nicht einmal eine Dusche gibt.", "Han har en lägenhet", [["där", "E"],
+["det", "S"],
+["inte ens", "A"],
+["finns", "V"],
+["en dusch", "R"]], "Det finns inte ens en dusch.", "Es gibt nicht einmal eine Dusche."],
+["Das ist der Grund, warum ich nicht komme.", "Det är anledningen till", [["att", "E"],
+["jag", "S"],
+["inte", "A"],
+["kommer", "V"]], "Jag kommer inte.", "Ich komme nicht."],
+["Ich verstehe nicht, warum er nie fragt.", "Jag förstår inte", [["varför", "E"],
+["han", "S"],
+["aldrig", "A"],
+["frågar", "V"]], "Han frågar aldrig.", "Er fragt nie."],
+["Sie erklärte, warum sie nicht pünktlich war.", "Hon förklarade", [["varför", "E"],
+["hon", "S"],
+["inte", "A"],
+["var", "V"],
+["i tid", "R"]], "Hon var inte i tid.", "Sie war nicht pünktlich."],
+["Er erzählte, wie er immer zur Arbeit fährt.", "Han berättade", [["hur", "E"],
+["han", "S"],
+["alltid", "A"],
+["åker", "V"],
+["till jobbet", "R"]], "Han åker alltid till jobbet.", "Er fährt immer zur Arbeit."],
+["Sie wunderte sich, wie er das nicht wissen konnte.", "Hon undrade", [["hur", "E"],
+["han", "S"],
+["inte", "A"],
+["kunde", "V"],
+["veta det", "R"]], "Han kunde inte veta det.", "Er konnte das nicht wissen."],
+["Ich hoffe, dass du dich nicht zu sehr ärgerst.", "Jag hoppas", [["att", "E"],
+["du", "S"],
+["inte", "A"],
+["blir", "V"],
+["för arg", "R"]], "Du blir inte för arg.", "Du ärgerst dich nicht zu sehr."],
+["Er meinte, dass er wahrscheinlich nicht kommen wird.", "Han sa", [["att", "E"],
+["han", "S"],
+["förmodligen inte", "A"],
+["kommer", "V"]], "Han kommer förmodligen inte.", "Er kommt wahrscheinlich nicht."],
+["Ich hörte, dass sie jetzt auch in Berlin wohnt.", "Jag hörde", [["att", "E"],
+["hon", "S"],
+["också", "A"],
+["bor", "V"],
+["i Berlin nu", "R"]], "Hon bor också i Berlin nu.", "Sie wohnt jetzt auch in Berlin."],
+["Es zeigte sich, dass das Projekt nie genehmigt worden war.", "Det visade sig", [["att", "E"],
+["projektet", "S"],
+["aldrig", "A"],
+["hade", "V"],
+["godkänts", "R"]], "Projektet hade aldrig godkänts.", "Das Projekt war nie genehmigt worden."],
+["Er gab zu, dass er die Antwort nicht wusste.", "Han medgav", [["att", "E"],
+["han", "S"],
+["inte", "A"],
+["visste", "V"],
+["svaret", "R"]], "Han visste inte svaret.", "Er wusste die Antwort nicht."],
+["Sie bedauert, dass sie ihn nie besucht hat.", "Hon ångrar", [["att", "E"],
+["hon", "S"],
+["aldrig", "A"],
+["har", "V"],
+["hälsat på honom", "R"]], "Hon har aldrig hälsat på honom.", "Sie hat ihn nie besucht."]].map(([de, lead, t, main, mde], i) => ({ id: 'b' + i, de, lead, t, main, mde }));
+const LS_BSTATS = 'schwedisch-app-satzstats-v1', LS_BSTAGE = 'schwedisch-app-satzstufe-v1';
+let BSTATS = []; try { const d = JSON.parse(localStorage.getItem(LS_BSTATS)); if (Array.isArray(d)) BSTATS = d; } catch (e) {}
+let bStage = 1; try { const s = Number(localStorage.getItem(LS_BSTAGE)); if (s >= 1 && s <= 3) bStage = s; } catch (e) {}
+let bRound = [], bPos = 0, bScore = 0, bDone = false, bPicked = [];
+const BAUX = ['har', 'hade', 'kan', 'kunde', 'ska', 'skulle', 'vill', 'ville', 'måste', 'brukar', 'får', 'fick', 'bör', 'borde'];
+const ROLE = { E: ['EINLEITER', 'e'], S: ['SUBJEKT', 's'], A: ['ADVERB', 'a'], V: ['VERB', 'v'], R: ['REST', 'r'] };
+const advOf = it => it.t.filter(x => x[1] === 'A').map(x => x[0]).join(' ');
+const verbOf = it => it.t.find(x => x[1] === 'V')[0];
+const conjOf = it => it.t[0][0];
+function bNewRound() {
+  const wrongIds = new Set(); const lastOk = {};
+  BSTATS.forEach(e => { lastOk[e.id] = e.ok; }); Object.keys(lastOk).forEach(id => { if (!lastOk[id]) wrongIds.add(id); });
+  const pool = BSENT.slice().sort(() => Math.random() - 0.5);
+  const first = pool.filter(x => wrongIds.has(x.id)).slice(0, 4);
+  bRound = first.concat(pool.filter(x => !wrongIds.has(x.id) || first.indexOf(x) < 0).filter(x => first.indexOf(x) < 0)).slice(0, 10).sort(() => Math.random() - 0.5);
+  bPos = 0; bScore = 0; renderSatz();
+}
+function bExplain(it) {
+  const a = advOf(it), v = verbOf(it), hasS = it.t.some(x => x[1] === 'S');
+  const L = [];
+  if (!hasS) L.push('Hier ist „' + conjOf(it) + '“ selbst das Subjekt. Deshalb folgt „' + a + '“ direkt darauf und steht vor dem Verb „' + v + '“.');
+  else L.push('Im Nebensatz steht „' + a + '“ nach dem Subjekt und vor dem gebeugten Verb „' + v + '“ (BIFF: Bisats – Inte – Före – Finit verb).');
+  if (a.indexOf(' ') > 0) L.push('Mehrere Adverbien bleiben zusammen und stehen gemeinsam vor dem Verb.');
+  if (BAUX.indexOf(v) >= 0) L.push('„' + v + '“ ist das gebeugte Verb. Infinitiv oder Partizip folgen erst danach.');
+  L.push('Zum Vergleich im Hauptsatz – dort steht das Adverb nach dem Verb: ' + it.main);
+  return L;
+}
+function bSchema(toks, title) {
+  const box = document.createElement('div'); box.className = 'bschema';
+  const h = document.createElement('div'); h.className = 'bsh'; h.textContent = title; box.appendChild(h);
+  const row = document.createElement('div'); row.className = 'bsrow';
+  const groups = []; toks.forEach(([w, r]) => { const g = groups[groups.length - 1]; if (g && g.r === r && (r === 'R' || r === 'A')) g.w += ' ' + w; else groups.push({ w, r }); });
+  groups.forEach(g => { const c = document.createElement('div'); c.className = 'bcell'; const l = document.createElement('span'); l.className = 'bl b' + ROLE[g.r][1]; l.textContent = ROLE[g.r][0]; const t = document.createElement('span'); t.className = 'bt b' + ROLE[g.r][1]; t.textContent = g.w; c.append(l, t); row.appendChild(c); });
+  box.appendChild(row); return box;
+}
+function mainToks(it) {
+  const m = it.main.replace(/[.!?]$/, '');
+  const a = advOf(it), v = verbOf(it);
+  const i = m.indexOf(' ' + v + ' '), j = m.indexOf(' ' + a);
+  if (i < 0 || j < 0) return null;
+  const subj = m.slice(0, i), rest = m.slice(i + v.length + 2).split(' ');
+  const out = [[subj, 'S'], [v, 'V']]; const aw = a.split(' '); let k = 0;
+  rest.forEach(w => { if (k < aw.length && w === aw[k]) { out.push([w, 'A']); k++; } else out.push([w, 'R']); });
+  return k === aw.length ? out : null;
+}
+function bResolve(ok, it) {
+  bDone = true; if (ok) bScore++;
+  BSTATS.push({ t: Date.now(), id: it.id, st: bStage, ok, conj: conjOf(it), adv: advOf(it) }); if (BSTATS.length > 3000) BSTATS = BSTATS.slice(-3000); saveJSON(LS_BSTATS, BSTATS);
+  playSwipe(ok ? 'known' : 'again'); track('b', 1);
+  $('bCard').className = 'scard qcard ' + (ok ? 'ok' : 'bad');
+  const fb = $('bFeed'); fb.textContent = ok ? 'Richtig ✓' : 'Leider falsch.'; fb.className = 'sfeed ' + (ok ? 'ok' : 'bad');
+  const info = $('bInfo'); info.textContent = '';
+  if (!ok) { const d = document.createElement('div'); d.className = 'qwhy'; const b = document.createElement('b'); b.textContent = 'Richtig ist:'; d.append(b, ' ' + it.lead + ' ' + it.t.map(x => x[0]).join(' ') + '.'); info.appendChild(d); }
+  bExplain(it).forEach((t, i) => { const d = document.createElement('div'); d.className = i === 0 ? 'qwhy' : 'bnote'; d.textContent = t; info.appendChild(d); });
+  info.appendChild(bSchema(it.t, 'NEBENSATZ'));
+  const mt = mainToks(it); if (mt) info.appendChild(bSchema(mt, 'ZUM VERGLEICH: HAUPTSATZ'));
+  $('bActions').classList.add('hidden'); $('bNextRow').classList.remove('hidden');
+}
+function renderSatz() {
+  updateGoalLines();
+  [1, 2, 3].forEach(s => $('bTab' + s).classList.toggle('on', s === bStage));
+  const done = bPos >= bRound.length;
+  $('bPlay').classList.toggle('hidden', done); $('bDoneBox').classList.toggle('hidden', !done);
+  $('bProgress').style.width = (bRound.length ? bPos / bRound.length * 100 : 0) + '%';
+  if (done) { $('bCounter').textContent = 'Runde beendet'; $('bDoneTitle').textContent = bScore + ' von ' + bRound.length + ' richtig' + (bScore === bRound.length ? ' 🎉' : ''); return; }
+  const it = bRound[bPos]; bDone = false; bPicked = [];
+  $('bCounter').textContent = 'Satz ' + (bPos + 1) + ' von ' + bRound.length + ' · ' + bScore + ' richtig';
+  $('bCard').className = 'scard qcard'; $('bFeed').textContent = ''; $('bFeed').className = 'sfeed'; $('bInfo').textContent = '';
+  $('bActions').classList.remove('hidden'); $('bNextRow').classList.add('hidden');
+  const task = $('bTask'); task.textContent = '';
+  const lab = (t) => { const l = document.createElement('div'); l.className = 'slabel'; l.textContent = t; task.appendChild(l); };
+  const txt = (t, cls) => { const d = document.createElement('div'); d.className = cls || 'sde'; d.textContent = t; task.appendChild(d); return d; };
+  $('bCheck').classList.toggle('hidden', bStage === 1); $('bReset').classList.toggle('hidden', bStage !== 2);
+  if (bStage === 1) {
+    lab('DEUTSCH'); txt(it.de);
+    lab('WO GEHÖRT „' + advOf(it).toUpperCase() + '“ HIN?');
+    const line = document.createElement('div'); line.className = 'bline';
+    line.append(it.lead + ' ');
+    const rest = it.t.filter(x => x[1] !== 'A'), correct = it.t.findIndex(x => x[1] === 'A');
+    rest.forEach((x, i) => {
+      if (i > 0) { const g = document.createElement('button'); g.className = 'bgap'; g.setAttribute('aria-label', 'Hier einfügen'); g.addEventListener('click', () => { if (bDone) return; g.classList.add('picked'); g.textContent = advOf(it); bResolve(i === correct, it); }); line.appendChild(g); }
+      line.append(x[0] + ' ');
+    });
+    const g = document.createElement('button'); g.className = 'bgap'; g.setAttribute('aria-label', 'Hier einfügen'); g.addEventListener('click', () => { if (bDone) return; g.classList.add('picked'); g.textContent = advOf(it); bResolve(rest.length === correct, it); }); line.appendChild(g);
+    task.appendChild(line);
+  } else if (bStage === 2) {
+    lab('DEUTSCH'); txt(it.de);
+    lab('BAUE DEN NEBENSATZ');
+    const ans = document.createElement('div'); ans.className = 'bans'; ans.id = 'bAns'; task.appendChild(ans);
+    lab('BAUSTEINE');
+    const tiles = document.createElement('div'); tiles.className = 'btiles'; tiles.id = 'bTiles'; task.appendChild(tiles);
+    const seq = []; it.t.forEach(x => { if (x[1] === 'A') x[0].split(' ').forEach(w => seq.push(w)); else seq.push(x[0]); });
+    const words = seq.map((w, i) => ({ w, i })).sort(() => Math.random() - 0.5);
+    const draw = () => {
+      ans.textContent = ''; const lead = document.createElement('span'); lead.className = 'blead'; lead.textContent = it.lead; ans.appendChild(lead);
+      bPicked.forEach((k, n) => { const b = document.createElement('button'); b.className = 'btile on'; b.textContent = words[k].w; b.addEventListener('click', () => { if (bDone) return; bPicked.splice(n, 1); draw(); }); ans.appendChild(b); });
+      tiles.textContent = ''; words.forEach((x, k) => { if (bPicked.indexOf(k) >= 0) return; const b = document.createElement('button'); b.className = 'btile'; b.textContent = x.w; b.addEventListener('click', () => { if (bDone) return; bPicked.push(k); draw(); }); tiles.appendChild(b); });
+      $('bCheck').disabled = bPicked.length !== words.length;
+    };
+    draw(); bDraw2 = () => { bPicked = []; draw(); }; bCheck2 = () => bResolve(bPicked.every((k, n) => words[k].w === seq[n]), it);
+  } else {
+    lab('HAUPTSATZ'); txt(it.main, 'bmain'); txt(it.mde, 'sen');
+    lab('BAUE IHN IN DEN NEBENSATZ EIN');
+    txt(it.lead + ' ' + conjOf(it) + ' …', 'bline');
+    const inp = document.createElement('input'); inp.className = 'binput'; inp.id = 'bInput'; inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false; inp.placeholder = 'Rest des Nebensatzes eintippen';
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('bCheck').click(); } });
+    task.appendChild(inp); $('bCheck').disabled = false;
+    const norm = s => s.toLowerCase().replace(/[.,!?]/g, ' ').replace(/\s+/g, ' ').trim();
+    const target = norm(it.t.slice(1).map(x => x[0]).join(' '));
+    bCheck2 = () => { const v = norm(inp.value); if (!v) { $('bFeed').textContent = 'Bitte zuerst den Nebensatz eintippen.'; return; } inp.disabled = true; const ok = v === target;
+      bResolve(ok, it);
+      if (!ok && v.split(' ').sort().join(' ') === target.split(' ').sort().join(' ')) { const d = document.createElement('div'); d.className = 'bnote'; d.textContent = 'Die Wörter stimmen, nur die Reihenfolge nicht.'; $('bInfo').prepend(d); } };
+  }
+}
+let bDraw2 = () => {}, bCheck2 = () => {};
+$('bCheck').addEventListener('click', () => { if (!bDone) bCheck2(); });
+$('bReset').addEventListener('click', () => { if (!bDone) bDraw2(); });
+$('bNext').addEventListener('click', () => { bPos++; renderSatz(); });
+$('bAgain').addEventListener('click', bNewRound);
+[1, 2, 3].forEach(s => $('bTab' + s).addEventListener('click', () => { bStage = s; try { localStorage.setItem(LS_BSTAGE, String(s)); } catch (e) {} bNewRound(); }));
+$('goSatz').addEventListener('click', () => { bNewRound(); showView('satz'); });
+$('backB').addEventListener('click', () => showView('home'));
+function satzAnalysisCard() {
+  if (BSTATS.length < 20) return null;
+  const c = el('div', 'acard'), n = BSTATS.length, ok = BSTATS.filter(e => e.ok).length;
+  c.append(el('h3', null, 'Satzbau: inte & Co.'), el('p', 'an', n + ' Aufgaben, ' + Math.round(ok / n * 100) + ' % richtig.'));
+  const grp = (key, label, min) => { const by = {}; BSTATS.forEach(e => { const k = e[key]; by[k] = by[k] || { n: 0, ok: 0 }; by[k].n++; if (e.ok) by[k].ok++; });
+    const l = Object.keys(by).filter(k => by[k].n >= min).map(k => ({ k, n: by[k].n, ok: by[k].ok, r: by[k].ok / by[k].n })).sort((a, b) => a.r - b.r); if (!l.length) return;
+    c.appendChild(el('div', 'agrp', label));
+    l.forEach(x => { const r = el('div', 'arow'); const cls = x.r < 0.65 ? 'lvl-bad' : x.r < 0.85 ? 'lvl-mid' : 'lvl-ok'; const bar = el('div', 'bar ' + cls); const s = el('span'); s.style.width = Math.round(x.r * 100) + '%'; bar.appendChild(s); r.append(el('b', null, key === 'st' ? 'Stufe ' + x.k : x.k), bar, el('small', null, x.ok + '/' + x.n + ' · ' + Math.round(x.r * 100) + ' %')); c.appendChild(r); }); };
+  grp('st', 'NACH STUFE', 5); grp('conj', 'NACH EINLEITER', 5); grp('adv', 'NACH ADVERB', 5);
+  return c;
+}
 
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
@@ -2699,11 +3355,11 @@ $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderMan
 
 // ---------- Navigation ----------
 function showView(v) {
-  ['home', 'flash', 'sent', 'verb', 'work', 'quiz', 'stats'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
-  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else if (v === 'stats') renderStats(); else renderHome();
+  ['home', 'flash', 'sent', 'verb', 'work', 'quiz', 'stats', 'satz'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else if (v === 'stats') renderStats(); else if (v === 'satz') renderSatz(); else renderHome();
   window.scrollTo(0, 0);
 }
-const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : !$('viewStats').classList.contains('hidden') ? 'stats' : 'home');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : !$('viewStats').classList.contains('hidden') ? 'stats' : !$('viewSatz').classList.contains('hidden') ? 'satz' : 'home');
 ['RUM', 'TID', 'OVR'].forEach(s => $('goF' + s).addEventListener('click', () => openFlashSet(s)));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
