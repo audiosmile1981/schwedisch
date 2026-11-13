@@ -4056,7 +4056,8 @@ function syncLogin() {
       if (!v.email.trim() || !v.pw) return 'Bitte E-Mail und Passwort eingeben.';
       $('eMsg').textContent = 'Anmelden …';
       FB.signInWithEmailAndPassword(syncAuth, v.email.trim(), v.pw).then(() => closeEdit()).catch(e => {
-        const c = e && e.code || ''; $('eMsg').textContent = c.indexOf('invalid') >= 0 || c.indexOf('wrong') >= 0 || c.indexOf('user-not-found') >= 0 ? 'E-Mail oder Passwort stimmt nicht.' : c.indexOf('network') >= 0 ? 'Keine Internetverbindung.' : c.indexOf('unauthorized-domain') >= 0 ? 'Diese Domain ist in Firebase noch nicht freigegeben (Authentication → Einstellungen → Autorisierte Domains).' : 'Anmeldung fehlgeschlagen: ' + c;
+        const c = e && e.code || ''; $('eMsg').textContent = c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email' || c.indexOf('wrong') >= 0 || c.indexOf('user-not-found') >= 0 ? 'E-Mail oder Passwort stimmt nicht.' : c.indexOf('network') >= 0 ? 'Keine Internetverbindung.' : c.indexOf('unauthorized-domain') >= 0 ? 'Diese Domain ist in Firebase noch nicht freigegeben (Authentication → Einstellungen → Autorisierte Domains).' : 'Anmeldung fehlgeschlagen.';
+        $('eMsg').textContent += ' (Code: ' + (c || 'unbekannt') + ')';
       });
       return 'Anmelden …';
     } });
