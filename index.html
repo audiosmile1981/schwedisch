@@ -77,6 +77,8 @@
   .tbar { height: 5px; border-radius: 3px; background: var(--bar-track); overflow: hidden; }
   .tbar span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--bar); transition: width .3s; }
   .tbar span.full { background: var(--yellow); }
+  .syncbanner { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 12px; font-size: .85rem; font-weight: 700; }
+  .syncbanner button { flex: none; min-height: 40px; padding: 6px 14px; }
   .homefoot { display: flex; gap: 8px; margin-top: 20px; }
   .homefoot button { flex: 1 1 0; min-width: 0; border-radius: 999px; font-size: .8rem; padding: 10px 6px; white-space: nowrap; }
   .save-note { font-size: .78rem; color: var(--muted); margin-top: 10px; min-height: 1em; text-align: center; }
@@ -318,6 +320,9 @@
   <div class="grow"><span>Starke Verben üben</span><span class="step"><button id="gWm" aria-label="weniger">−</button><b id="gWv">10</b><button id="gWp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Satzbau: inte &amp; Co.</span><span class="step"><button id="gBm" aria-label="weniger">−</button><b id="gBv">10</b><button id="gBp" aria-label="mehr">+</button></span></div>
   <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der fünf Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <div class="gsec">SYNCHRONISIERUNG</div>
+  <p class="gnote" id="syncStatus"></p>
+  <div class="grow"><span>Konto</span><button class="tgl" id="syncBtn">Anmelden</button></div>
   <div class="gsec">ANZEIGE UND TON</div>
   <div class="grow"><span>Englische Beispiele</span><button class="tgl" id="enToggle" aria-pressed="true">An</button></div>
   <div class="grow"><span>Töne (Wischen und Tagesziel)</span><button class="tgl" id="soundToggle" aria-pressed="true">An</button></div>
@@ -356,6 +361,7 @@
   </div>
 </div>
 <div class="wrap">
+  <div class="syncbanner hidden" id="syncBanner"><span>Neue Daten von deinem anderen Gerät</span><button class="primary" id="syncReload">Übernehmen</button></div>
   <div id="viewHome">
     <div class="homehead"><h1>Schwedisch</h1><button class="modebtn" id="modeBtn" type="button"></button></div>
     <div class="streakbox">
@@ -377,6 +383,7 @@
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
+    <p class="footnote" id="syncLine">Fortschritt wird auf diesem Gerät gespeichert.</p>
   </div>
 
   <div id="viewFlash" class="hidden">
@@ -593,6 +600,7 @@
 
 </div>
 
+<script src="fb.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const LS_EDITS = 'schwedisch-app-edits-v1';
@@ -682,10 +690,10 @@ try { const d = JSON.parse(localStorage.getItem(LS_DELETED)); if (d) ['f', 's', 
 try { const d = JSON.parse(localStorage.getItem(LS_CHAPNAMES)); if (d && typeof d === 'object') CHAPNAMES = d; } catch (e) {}
 const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
 const LS_STATS = 'schwedisch-app-stats-v1';
-let STATS = []; try { const d = JSON.parse(localStorage.getItem(LS_STATS)); if (Array.isArray(d)) STATS = d; } catch (e) {}
+let STATS = []; try { const d = JSON.parse(localStorage.getItem(LS_STATS)); if (Array.isArray(d)) STATS = d.slice(-2500); } catch (e) {}
 // Korrektur: „på gott humör“ ist richtig (vorher fälschlich „i“)
 STATS.forEach(e => { if (e.pre === 'Han är ' && e.post === ' gott humör.' && e.ans === 'i') { e.ans = 'på'; e.word = 'på'; e.ok = e.pick === 'på'; if (Array.isArray(e.opts) && e.opts.indexOf('på') < 0) e.opts.push('på'); } });
-function logAnswer(e) { STATS.push(Object.assign({ t: Date.now() }, e)); if (STATS.length > 5000) STATS = STATS.slice(-5000); saveJSON(LS_STATS, STATS); }
+function logAnswer(e) { STATS.push(Object.assign({ t: Date.now() }, e)); if (STATS.length > 2500) STATS = STATS.slice(-2500); saveJSON(LS_STATS, STATS); }
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 function saveEdits() { try { localStorage.setItem(LS_EDITS, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
@@ -2035,7 +2043,7 @@ function openForm(cfg) {
     const lab = document.createElement('label'); lab.textContent = f.label; lab.htmlFor = 'ef_' + f.k;
     let inp;
     if (f.type === 'select') { inp = document.createElement('select'); (typeof f.options === 'function' ? f.options() : f.options).forEach(([val, txt]) => { const o = document.createElement('option'); o.value = val; o.textContent = txt; inp.appendChild(o); }); }
-    else { inp = document.createElement(f.multi ? 'textarea' : 'input'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false; }
+    else { inp = document.createElement(f.multi ? 'textarea' : 'input'); if (f.type === 'password' || f.type === 'email') { inp.type = f.type; inp.autocomplete = f.type === 'password' ? 'current-password' : 'username'; } inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false; }
     inp.id = 'ef_' + f.k; const val = cfg.values[f.k]; inp.value = val == null ? '' : val;
     if (f.list) { const dl = document.createElement('datalist'); dl.id = 'dl_' + f.k; f.list().forEach(x => { const o = document.createElement('option'); o.value = x; dl.appendChild(o); }); inp.setAttribute('list', dl.id); box.appendChild(dl); }
     box.append(lab, inp);
@@ -3149,7 +3157,7 @@ BSENT.forEach(b => { b.lv = 'A'; b.fr = 1; b.x = ''; });
 ["kan", "V"],
 ["jag", "S"],
 ["inte", "A"],
-["komma", "R"]], "Jag kann inte komma.", "Ich kann nicht kommen.", 1, "„Därför“ eröffnet den Satz → Inversion: kan jag. „inte“ steht nach dem Subjekt und vor dem Infinitiv „komma“."],
+["komma", "R"]], "Jag kan inte komma.", "Ich kann nicht kommen.", 1, "„Därför“ eröffnet den Satz → Inversion: kan jag. „inte“ steht nach dem Subjekt und vor dem Infinitiv „komma“."],
 ["B2", "Leider habe ich die Mail nie bekommen.", "", [["Tyvärr", "F"],
 ["har", "V"],
 ["jag", "S"],
@@ -3172,7 +3180,7 @@ BSENT.forEach(b => { b.lv = 'A'; b.fr = 1; b.x = ''; });
 ["kan", "V"],
 ["jag", "S"],
 ["inte", "A"],
-["säga det än", "R"]], "Jag kann inte säga det på svenska än.", "Ich kann das auf Schwedisch noch nicht sagen.", 1, "Satzanfang „på svenska“ → kan jag. „inte“ nach dem Subjekt, vor dem Infinitiv."],
+["säga det än", "R"]], "Jag kan inte säga det på svenska än.", "Ich kann das auf Schwedisch noch nicht sagen.", 1, "Satzanfang „på svenska“ → kan jag. „inte“ nach dem Subjekt, vor dem Infinitiv."],
 ["B2", "Abends trinke ich normalerweise keinen Kaffee.", "", [["På kvällen", "F"],
 ["brukar", "V"],
 ["jag", "S"],
@@ -3919,7 +3927,7 @@ function startWith(list) {
   importEl.style.display = 'none';
   loadStreak();
   showView('home');
-  note('Fortschritt wird auf diesem Gerät gespeichert.');
+  note('');
 }
 function importCustom(raw) {
   const it = raw.items || {}, str = x => typeof x === 'string' ? x : '';
@@ -3967,6 +3975,113 @@ document.addEventListener('visibilitychange', () => {
   if (validCards(list)) startWith(list); else importEl.style.display = 'flex';
 })();
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
+
+// ---------- Synchronisierung über Firebase ----------
+const FB_CONFIG = { apiKey: 'AIzaSyBGIuC3Iwpu7Va6So-64If150rSXuBQ7gQ', authDomain: 'schwedisch-grammatik.firebaseapp.com', projectId: 'schwedisch-grammatik', storageBucket: 'schwedisch-grammatik.firebasestorage.app', messagingSenderId: '291718040966', appId: '1:291718040966:web:ff9e0daa24792cd85f3007' };
+const SYNC_PREFIX = 'schwedisch-app-', LS_SYNCMETA = 'schwedisch-sync-meta', LS_SYNCDEV = 'schwedisch-sync-dev';
+const _setItem = Storage.prototype.setItem, _removeItem = Storage.prototype.removeItem;
+let syncMeta = {}; try { syncMeta = JSON.parse(localStorage.getItem(LS_SYNCMETA)) || {}; } catch (e) {}
+let syncDev = null; try { syncDev = localStorage.getItem(LS_SYNCDEV); if (!syncDev) { syncDev = Math.random().toString(36).slice(2, 10); _setItem.call(localStorage, LS_SYNCDEV, syncDev); } } catch (e) { syncDev = 'x'; }
+let syncUser = null, syncDb = null, syncAuth = null, syncPending = new Set(), syncTimer = null, syncApplying = false, syncLast = 0, syncErr = '', syncRemote = false, syncUnsub = null, syncBusy = '';
+const syncOn = () => !!(window.FB && syncAuth);
+function saveMeta() { try { _setItem.call(localStorage, LS_SYNCMETA, JSON.stringify(syncMeta)); } catch (e) {} }
+Storage.prototype.setItem = function (k, v) {
+  _setItem.call(this, k, v);
+  if (this === localStorage && !syncApplying && typeof k === 'string' && k.indexOf(SYNC_PREFIX) === 0) { syncMeta[k] = Date.now(); saveMeta(); queueSync(k); }
+};
+Storage.prototype.removeItem = function (k) {
+  _removeItem.call(this, k);
+  if (this === localStorage && !syncApplying && typeof k === 'string' && k.indexOf(SYNC_PREFIX) === 0) { syncMeta[k] = Date.now(); saveMeta(); queueSync(k); }
+};
+function queueSync(k) { if (!syncUser) return; syncPending.add(k); clearTimeout(syncTimer); syncTimer = setTimeout(flushSync, 1200); }
+function flushSync() {
+  if (!syncUser || !syncDb || !syncPending.size) return Promise.resolve();
+  const keys = Array.from(syncPending); syncPending.clear();
+  const b = FB.writeBatch(syncDb);
+  keys.forEach(k => { const v = localStorage.getItem(k); b.set(FB.doc(syncDb, 'users', syncUser.uid, 'kv', k), { v: v === null ? null : v, t: syncMeta[k] || Date.now(), dev: syncDev }); });
+  const p = b.commit().then(() => { syncLast = Date.now(); syncErr = ''; renderSyncStatus(); }).catch(e => { syncErr = 'Hochladen fehlgeschlagen (' + (e && e.code || 'Fehler') + ')'; keys.forEach(k => syncPending.add(k)); renderSyncStatus(); });
+  renderSyncStatus(); return p;
+}
+function applyRemote(k, d) {
+  syncApplying = true;
+  try { if (d.v === null || d.v === undefined) _removeItem.call(localStorage, k); else _setItem.call(localStorage, k, d.v); } finally { syncApplying = false; }
+  syncMeta[k] = d.t;
+}
+function startListener() {
+  if (syncUnsub) syncUnsub();
+  syncUnsub = FB.onSnapshot(FB.collection(syncDb, 'users', syncUser.uid, 'kv'), snap => {
+    let changed = false;
+    snap.docChanges().forEach(ch => { if (ch.type === 'removed') return; const k = ch.doc.id, d = ch.doc.data(); if (!d || typeof d.t !== 'number') return; if ((syncMeta[k] || 0) >= d.t) return; applyRemote(k, d); changed = true; });
+    if (!snap.metadata.fromCache) { syncLast = Date.now(); syncErr = ''; }
+    if (changed) { saveMeta(); onRemoteChange(); }
+    renderSyncStatus();
+  }, e => { syncErr = 'Verbindung zur Cloud gestört (' + (e && e.code || 'Fehler') + ')'; renderSyncStatus(); });
+}
+function dialogOpen() { return ['editScreen', 'manageScreen'].some(id => $(id).style.display === 'block') || ['goalScreen', 'dataScreen', 'praiseScreen'].some(id => $(id).style.display === 'flex'); }
+function onRemoteChange() {
+  if (activeView() === 'home' && !dialogOpen()) { location.reload(); return; }
+  syncRemote = true; $('syncBanner').classList.remove('hidden');
+}
+async function initialMerge() {
+  syncBusy = 'Erster Abgleich mit der Cloud …'; renderSyncStatus();
+  let remote = {};
+  try { const snap = await FB.getDocsFromServer(FB.collection(syncDb, 'users', syncUser.uid, 'kv')); snap.forEach(d => { remote[d.id] = d.data(); }); }
+  catch (e) { syncBusy = ''; syncErr = 'Für den ersten Abgleich braucht die App Internet. Bitte später erneut anmelden.'; renderSyncStatus(); return; }
+  const done = () => { try { _setItem.call(localStorage, 'schwedisch-sync-init-' + syncUser.uid, '1'); } catch (e) {} syncBusy = ''; startListener(); renderSyncStatus(); };
+  const localKeys = Object.keys(localStorage).filter(k => k.indexOf(SYNC_PREFIX) === 0);
+  const upload = async () => { localKeys.forEach(k => { syncMeta[k] = Date.now(); syncPending.add(k); }); saveMeta(); await flushSync(); done(); };
+  const download = () => { localKeys.forEach(k => { if (!(k in remote)) { syncApplying = true; _removeItem.call(localStorage, k); syncApplying = false; } }); Object.keys(remote).forEach(k => applyRemote(k, remote[k])); saveMeta(); done(); location.reload(); };
+  if (!Object.keys(remote).length) { await upload(); return; }
+  if (!localStorage.getItem('schwedisch-app-cards-v1')) { download(); return; }
+  openForm({ title: 'Welche Daten sollen gelten?', note: 'In der Cloud gibt es schon Daten, und auf diesem Gerät auch. Wähle, welcher Stand gelten soll. Der andere wird überschrieben. Tipp: Auf dem Gerät, mit dem du bisher gelernt hast, wählst du „Dieses Gerät“.',
+    fields: [{ k: 'which', label: 'STAND', type: 'select', options: [['cloud', 'Cloud übernehmen (dieses Gerät wird überschrieben)'], ['local', 'Dieses Gerät hochladen (Cloud wird überschrieben)']] }], values: { which: 'cloud' },
+    onSave: v => { if (v.which === 'local') upload(); else download(); return true; } });
+}
+function renderSyncStatus() {
+  const st = $('syncStatus'), btn = $('syncBtn'), line = $('syncLine'); if (!st) return;
+  let txt;
+  if (!syncOn()) txt = 'Nicht verfügbar (Bibliothek nicht geladen – einmal mit Internet öffnen)';
+  else if (!syncUser) txt = 'Nicht angemeldet – Daten nur auf diesem Gerät';
+  else if (syncBusy) txt = syncBusy;
+  else if (syncErr) txt = syncErr;
+  else if (syncPending.size) txt = 'Angemeldet als ' + syncUser.email + ' · wird synchronisiert …';
+  else txt = 'Angemeldet als ' + syncUser.email + (syncLast ? ' · synchronisiert ✓' : ' · wartet auf Verbindung');
+  st.textContent = txt; btn.textContent = syncUser ? 'Abmelden' : 'Anmelden'; btn.disabled = !syncOn();
+  if (line) line.textContent = syncUser ? (navigator.onLine === false ? '☁ Offline – Änderungen werden später synchronisiert' : (syncErr ? '☁ ' + syncErr : '☁ Mit der Cloud synchronisiert')) : 'Fortschritt wird auf diesem Gerät gespeichert.';
+}
+function syncLogin() {
+  openForm({ title: 'Anmelden', note: 'Mit dem Konto, das du in Firebase angelegt hast. Danach werden deine Daten automatisch zwischen deinen Geräten abgeglichen.',
+    fields: [{ k: 'email', label: 'E-MAIL', type: 'email' }, { k: 'pw', label: 'PASSWORT', type: 'password' }], values: { email: '', pw: '' },
+    onSave: v => {
+      if (!v.email.trim() || !v.pw) return 'Bitte E-Mail und Passwort eingeben.';
+      $('eMsg').textContent = 'Anmelden …';
+      FB.signInWithEmailAndPassword(syncAuth, v.email.trim(), v.pw).then(() => closeEdit()).catch(e => {
+        const c = e && e.code || ''; $('eMsg').textContent = c.indexOf('invalid') >= 0 || c.indexOf('wrong') >= 0 || c.indexOf('user-not-found') >= 0 ? 'E-Mail oder Passwort stimmt nicht.' : c.indexOf('network') >= 0 ? 'Keine Internetverbindung.' : c.indexOf('unauthorized-domain') >= 0 ? 'Diese Domain ist in Firebase noch nicht freigegeben (Authentication → Einstellungen → Autorisierte Domains).' : 'Anmeldung fehlgeschlagen: ' + c;
+      });
+      return 'Anmelden …';
+    } });
+}
+$('syncBtn').addEventListener('click', () => {
+  if (!syncOn()) return;
+  if (syncUser) { flushSync().finally(() => { if (syncUnsub) { syncUnsub(); syncUnsub = null; } FB.signOut(syncAuth); }); }
+  else { $('goalScreen').style.display = 'none'; syncLogin(); }
+});
+$('syncReload').addEventListener('click', () => location.reload());
+window.addEventListener('online', renderSyncStatus); window.addEventListener('offline', renderSyncStatus);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSync(); else if (syncRemote && activeView() === 'home' && !dialogOpen()) location.reload(); });
+if (window.FB) {
+  try {
+    const app = FB.initializeApp(FB_CONFIG);
+    syncAuth = FB.getAuth(app);
+    syncDb = FB.initializeFirestore(app, { localCache: FB.persistentLocalCache({ tabManager: FB.persistentSingleTabManager() }) });
+    FB.onAuthStateChanged(syncAuth, user => {
+      syncUser = user; syncErr = '';
+      if (user) { if (localStorage.getItem('schwedisch-sync-init-' + user.uid)) startListener(); else initialMerge(); }
+      renderSyncStatus();
+    });
+  } catch (e) { syncErr = 'Synchronisierung konnte nicht starten.'; }
+}
+renderSyncStatus();
 
 </script>
 </body>
