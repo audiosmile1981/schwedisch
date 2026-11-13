@@ -268,7 +268,7 @@
   .mrow .mt { font-size: .9rem; line-height: 1.35; } .mrow .mg { font-size: .75rem; color: var(--muted); } .mrow .mm { font-size: .72rem; color: var(--accent); font-weight: 700; margin-top: 3px; }
   :root[data-mode="moon"] .mrow .mm { color: var(--yellow); }
   .mrow button { font-size: .75rem; padding: 6px 10px; min-height: 36px; flex-shrink: 0; }
-  #editScreen { z-index: 50; }
+  #editScreen { z-index: 55; }
   #editScreen .enote { font-size: .82rem; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
   #editScreen label { display: block; font-size: .7rem; font-weight: 800; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; }
   #editScreen .ehint { font-size: .76rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
@@ -309,6 +309,8 @@
     <label class="pick" for="fileInput">Datei auswählen</label><br>
     <p style="margin-top:18px">Du hast eine Sicherung? Dann stellst du damit alles auf einmal wieder her, inklusive Fortschritt.</p>
     <label class="pick alt" for="backupInput">Sicherung laden</label>
+    <p style="margin-top:18px">Du nutzt die App schon auf einem anderen Gerät und hast dort die Synchronisierung eingerichtet? Dann melde dich an, und deine Daten werden übernommen.</p>
+    <button class="pick alt" id="importLogin" type="button">Mit Konto anmelden</button>
     <div class="msg" id="importMsg" role="status"></div>
   </div>
 </div>
@@ -4068,6 +4070,7 @@ $('syncBtn').addEventListener('click', () => {
   else { $('goalScreen').style.display = 'none'; syncLogin(); }
 });
 $('syncReload').addEventListener('click', () => location.reload());
+$('importLogin').addEventListener('click', () => { if (!syncOn()) { importMsg.textContent = 'Die Anmeldung braucht eine Internetverbindung. Bitte Seite neu laden.'; return; } syncLogin(); });
 window.addEventListener('online', renderSyncStatus); window.addEventListener('offline', renderSyncStatus);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSync(); else if (syncRemote && activeView() === 'home' && !dialogOpen()) location.reload(); });
 if (window.FB) {
