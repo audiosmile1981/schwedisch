@@ -299,6 +299,54 @@
   .dmsg { font-size: .85rem; min-height: 1.2em; margin-top: 12px; color: var(--muted); }
   @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
   @media (prefers-reduced-motion: reduce) { .pemoji { animation: none; } .gfill, .tbar span, .progress-fill { transition: none; } body { transition: none; } }
+  /* Partikelverben */
+  .pstar { position: relative; height: 340px; background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; }
+  .pstar svg { position: absolute; left: 0; top: 0; }
+  .pstar line { stroke: var(--border); stroke-width: 1.5; }
+  .pcenter { position: absolute; width: 92px; height: 92px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: translate(-50%, -50%); text-align: center; padding: 4px; }
+  .pcenter b { font-size: 1.45rem; font-weight: 800; line-height: 1.1; }
+  .pcenter small { font-size: .66rem; font-weight: 600; opacity: .85; line-height: 1.2; max-width: 84px; }
+  .pbub { position: absolute; transform: translate(-50%, -50%); min-height: 38px; min-width: 50px; padding: 4px 12px; border-radius: 19px; background: var(--surface); color: var(--accent); border: 1.5px solid var(--border); font-size: .9rem; font-weight: 800; white-space: nowrap; }
+  .pbub.on, .pchip.on { background: var(--yellow); color: #13293D; border-color: var(--yellow); }
+  .pcloud { background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
+  .pcloudhead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .pcloudhead .pcenter { position: static; transform: none; width: 72px; height: 72px; flex: none; }
+  .pcloudhead .pcenter b { font-size: 1.2rem; }
+  .pchips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pchip { min-height: 38px; padding: 4px 12px; border-radius: 19px; background: var(--surface); color: var(--accent); border: 1.5px solid var(--border); font-size: .9rem; font-weight: 800; }
+  .pcard { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
+  .ptitle { display: flex; align-items: center; gap: 10px; font-size: 1.35rem; font-weight: 800; margin-bottom: 6px; }
+  .ptitle .ppart, .pbig .ppart { color: var(--accent); }
+  .pmean { border-top: 1px solid var(--bar-track); padding-top: 10px; margin-top: 10px; }
+  .pmean:first-of-type { border-top: 0; margin-top: 4px; padding-top: 0; }
+  .pmde { font-size: 1rem; font-weight: 700; line-height: 1.45; }
+  .pmsv { font-size: .84rem; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+  .pex { margin-top: 8px; padding-left: 10px; border-left: 3px solid var(--bar-track); }
+  .pexsv { display: flex; gap: 8px; align-items: flex-start; font-size: .98rem; line-height: 1.45; }
+  .pexsv span { flex: 1; }
+  .pextr { font-size: .86rem; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+  .pspk { flex: none; width: 32px; height: 32px; min-height: 32px; padding: 0; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; }
+  .pspk svg { width: 16px; height: 16px; }
+  .psec { font-size: .66rem; font-weight: 800; letter-spacing: .1em; color: var(--muted); margin: 14px 0 4px; }
+  .psec.warn { color: var(--bad); }
+  .psmall { font-size: .78rem; color: var(--muted); line-height: 1.45; margin-top: 10px; }
+  .plink { margin-top: 12px; min-height: 40px; padding: 6px 14px; border-radius: 14px; font-size: .88rem; }
+  .pbig { font-size: 1.9rem; font-weight: 800; line-height: 1.2; margin: 2px 0 6px; }
+  .phint { font-size: .86rem; color: var(--muted); line-height: 1.45; margin-bottom: 10px; }
+  .pctx { font-size: .95rem; line-height: 1.5; margin-bottom: 12px; display: flex; gap: 8px; align-items: flex-start; }
+  .pctx span { flex: 1; font-style: italic; }
+  .popts { display: flex; flex-direction: column; gap: 8px; }
+  .popts button { min-height: 52px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font-size: 1rem; font-weight: 700; text-align: left; padding: 8px 14px; line-height: 1.35; }
+  .popts button.right { border: 2px solid var(--ok); background: var(--ok-bg); color: var(--ok); }
+  .popts button.wrong { border: 2px solid var(--bad); background: var(--bad-bg); color: var(--bad); }
+  .plexrow { margin-top: 10px; }
+  .plexrow .pmde { font-size: .98rem; }
+  .pexchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .pexchip { min-height: 32px; padding: 4px 10px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font-size: .84rem; font-weight: 600; text-align: left; }
+  .pexchip b { color: var(--accent); }
+  .pexchip.nolink { border-style: dashed; color: var(--muted); opacity: 1; }
+  .pstress { font-size: .98rem; line-height: 1.5; margin-top: 8px; }
+  .pstress u { text-decoration: none; color: var(--accent); font-weight: 800; }
 </style>
 </head>
 <body>
@@ -321,7 +369,8 @@
   <div class="grow"><span>Flashcards starke Verben</span><span class="step"><button id="gVm" aria-label="weniger">−</button><b id="gVv">15</b><button id="gVp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Starke Verben üben</span><span class="step"><button id="gWm" aria-label="weniger">−</button><b id="gWv">10</b><button id="gWp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Satzbau: inte &amp; Co.</span><span class="step"><button id="gBm" aria-label="weniger">−</button><b id="gBv">10</b><button id="gBp" aria-label="mehr">+</button></span></div>
-  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der fünf Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
+  <div class="grow"><span>Partikelverben</span><span class="step"><button id="gPm" aria-label="weniger">−</button><b id="gPv">10</b><button id="gPp" aria-label="mehr">+</button></span></div>
+  <p class="gnote">Ein Tag zählt für deinen Streak, sobald du mindestens eines der sechs Ziele erreichst. Jede Bewertung (gewusst oder nochmal) zählt als eine geübte Karte.</p>
   <div class="gsec">SYNCHRONISIERUNG</div>
   <p class="gnote" id="syncStatus"></p>
   <div class="grow"><span>Konto</span><button class="tgl" id="syncBtn">Anmelden</button></div>
@@ -382,6 +431,7 @@
     <button class="bigbtn" id="goQuiz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h3M8 12h8M8 17h5"></path><path d="M17 4l3 3-3 3"></path><path d="M7 20l-3-3 3-3"></path></svg></span><span class="kick">PRÄP</span></span><span class="bt">Präpositions-Quiz</span><span class="bs" id="homeQSub">Paare, Zeitpräpositionen, „für“ und mehr</span></button>
       <button class="bigbtn" id="goStats"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg></span><span class="kick">AUSWERTUNG</span></span><span class="bt">Analyse</span><span class="bs" id="homeAnaSub"></span><span class="tbar"><span id="homeAnaBar"></span></span></button>
       <button class="bigbtn" id="goSatz"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="5" height="6" rx="1.5"></rect><rect x="10" y="9" width="4" height="6" rx="1.5"></rect><rect x="16" y="9" width="5" height="6" rx="1.5"></rect><path d="M12 4v3M12 17v3"></path></svg></span><span class="kick">GRAMMATIK</span></span><span class="bt">Satzbau: inte &amp; Co.</span><span class="bs" id="homeBSub"></span><span class="tbar"><span id="homeBBar"></span></span></button>
+      <button class="bigbtn" id="goPart"><span class="tilehead"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"></path></svg></span><span class="kick">VERBEN</span></span><span class="bt">Partikelverben</span><span class="bs" id="homePSub"></span><span class="tbar"><span id="homePBar"></span></span></button>
     </div>
     <div class="homefoot"><button id="goalsBtn">Einstellungen</button><button id="loadBtn">Karten laden</button><button id="dataBtn">Daten sichern</button></div>
     <div class="save-note" id="saveNote" aria-live="polite"></div>
@@ -598,6 +648,34 @@
       <div class="controls hidden" id="bNextRow"><button class="primary" id="bNext">Weiter</button></div>
     </div>
     <div id="bDoneBox" class="hidden donebox"><h2 id="bDoneTitle"></h2><p>Mit jeder Runde kommen die Sätze neu gemischt. Sätze, die du falsch hattest, kommen bevorzugt wieder.</p><div class="prow"><button class="primary" id="bAgain">Neue Runde</button></div></div>
+  </div>
+
+  <div id="viewPart" class="hidden">
+    <div class="topbar"><button id="backP" aria-label="Zurück zum Start">‹</button><span class="ttl">Partikelverben</span></div>
+    <div id="pEmpty" class="hidden pcard"><div class="ptitle">Daten fehlen noch</div><p class="phint">Für dieses Modul brauchst du die Datei <b>partikel.json</b> mit den Partikelverben aus „Se upp!“. Sie bleibt privat: Sie wird nur auf deinen Geräten und in deinem Cloud-Konto gespeichert, nicht auf GitHub.</p><button class="primary" id="pLoad">Datei auswählen</button></div>
+    <div id="pMain">
+      <div class="btabs" role="tablist"><button id="pTab1">Verb-Stern</button><button id="pTab2">Partikeln</button><button id="pTab3">Üben</button></div>
+      <div id="pStern">
+        <select class="vfilter" id="pVerb" aria-label="Grundverb wählen"></select>
+        <div id="pStarBox"></div>
+        <div id="pDetail"></div>
+      </div>
+      <div id="pLex" class="hidden">
+        <select class="vfilter" id="pPartSel" aria-label="Partikel wählen"></select>
+        <div id="pLexBody"></div>
+      </div>
+      <div id="pUeben" class="hidden">
+        <select class="vfilter" id="pScope" aria-label="Verben auswählen"></select>
+        <div class="progress-bar"><div class="progress-fill" id="pProgress"></div></div>
+        <div class="counter" id="pCounter"></div>
+        <div class="goalline" id="pGoal"></div><div class="gprog"><div class="gfill" id="pGFill"></div></div>
+        <div id="pPlay">
+          <div class="scard qcard" id="pCard"><div id="pTask"></div><div class="sfeed" id="pFeed" aria-live="polite"></div><div class="sinfo" id="pInfo"></div></div>
+          <div class="controls hidden" id="pNextRow"><button class="primary" id="pNext">Weiter</button></div>
+        </div>
+        <div id="pDoneBox" class="hidden donebox"><h2 id="pDoneTitle"></h2><p id="pDoneText"></p><div class="prow"><button class="primary" id="pAgain">Neue Runde</button></div></div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -820,21 +898,21 @@ const W = new Learner(LS_WORK);    // Starke Verben üben
 let cards = [], tasks = [];
 
 // ---------- Tagesziele und Streak ----------
-let streak = { goalF: 20, goalS: 10, goalV: 15, goalW: 10, goalB: 10, daily: {}, praised: {} };
+let streak = { goalF: 20, goalS: 10, goalV: 15, goalW: 10, goalB: 10, goalP: 10, daily: {}, praised: {} };
 const MILESTONES = { 3: 'Drei Tage am Stück – der Anfang einer Gewohnheit.', 7: 'Eine ganze Woche in Folge!', 14: 'Zwei Wochen am Stück, das ist richtig stark.', 30: 'Dreißig Tage in Folge – das ist echte Ausdauer.', 50: 'Fünfzig Tage! Das Wissen sitzt.', 100: 'Hundert Tage in Folge. Respekt!', 365: 'Ein ganzes Jahr, du bist eine Legende.' };
 const PRAISE = [['Bra jobbat!', 'Gut gemacht!'], ['Snyggt!', 'Stark!'], ['Grymt!', 'Richtig gut!'], ['Fantastiskt!', 'Fantastisch!'], ['Det sitter!', 'Das sitzt!'], ['Stark insats!', 'Starke Leistung!']];
 function loadStreak() {
   let d = null; try { d = JSON.parse(localStorage.getItem(LS_STREAK)); } catch (e) {}
   if (d && typeof d === 'object') {
-    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), goalW: Math.min(200, Math.max(5, Number(d.goalW) || 10)), goalB: Math.min(200, Math.max(5, Number(d.goalB) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
+    streak = { goalF: Math.min(200, Math.max(5, Number(d.goalF) || 20)), goalS: Math.min(200, Math.max(5, Number(d.goalS) || 10)), goalV: Math.min(200, Math.max(5, Number(d.goalV) || 15)), goalW: Math.min(200, Math.max(5, Number(d.goalW) || 10)), goalB: Math.min(200, Math.max(5, Number(d.goalB) || 10)), goalP: Math.min(200, Math.max(5, Number(d.goalP) || 10)), daily: d.daily && typeof d.daily === 'object' ? d.daily : {}, praised: d.praised && typeof d.praised === 'object' ? d.praised : {} };
   }
   const cut = addDays(-400); Object.keys(streak.daily).forEach(k => { if (k < cut) delete streak.daily[k]; });
   const cutP = addDays(-10); Object.keys(streak.praised).forEach(k => { if (k < cutP) delete streak.praised[k]; });
 }
 function saveStreak() { try { localStorage.setItem(LS_STREAK, JSON.stringify(streak)); } catch (e) {} }
 function peekDay(d) { return streak.daily[d] || null; }
-function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; if (typeof e.w !== 'number') e.w = 0; if (typeof e.gw !== 'number') e.gw = streak.goalW; if (typeof e.b !== 'number') e.b = 0; if (typeof e.gb !== 'number') e.gb = streak.goalB; return e; }
-function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv) || (e.gw > 0 && (e.w || 0) >= e.gw) || (e.gb > 0 && (e.b || 0) >= e.gb)); }
+function dayEntry(d) { if (!streak.daily[d]) streak.daily[d] = { f: 0, s: 0, v: 0, gf: streak.goalF, gs: streak.goalS, gv: streak.goalV }; const e = streak.daily[d]; if (typeof e.v !== 'number') e.v = 0; if (typeof e.gv !== 'number') e.gv = streak.goalV; if (typeof e.w !== 'number') e.w = 0; if (typeof e.gw !== 'number') e.gw = streak.goalW; if (typeof e.b !== 'number') e.b = 0; if (typeof e.gb !== 'number') e.gb = streak.goalB; if (typeof e.p !== 'number') e.p = 0; if (typeof e.gp !== 'number') e.gp = streak.goalP; return e; }
+function qualifies(e) { return !!e && ((e.gf > 0 && e.f >= e.gf) || (e.gs > 0 && e.s >= e.gs) || (e.gv > 0 && (e.v || 0) >= e.gv) || (e.gw > 0 && (e.w || 0) >= e.gw) || (e.gb > 0 && (e.b || 0) >= e.gb) || (e.gp > 0 && (e.p || 0) >= e.gp)); }
 function streakInfo() {
   const t = today(); let cur = 0, d = t;
   if (!qualifies(peekDay(t))) d = addDaysFrom(t, -1);
@@ -844,7 +922,7 @@ function streakInfo() {
   days.forEach(k => { run = prev && addDaysFrom(prev, 1) === k ? run + 1 : 1; if (run > best) best = run; prev = k; });
   return { cur, best, todayDone: qualifies(peekDay(t)) };
 }
-function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW, b: e ? (e.b || 0) : 0, gb: e && typeof e.gb === 'number' ? e.gb : streak.goalB }; }
+function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW, b: e ? (e.b || 0) : 0, gb: e && typeof e.gb === 'number' ? e.gb : streak.goalB, p: e ? (e.p || 0) : 0, gp: e && typeof e.gp === 'number' ? e.gp : streak.goalP }; }
 function track(kind, delta) {
   const e = dayEntry(today());
   e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
@@ -857,7 +935,7 @@ function maybePraise(kind) {
   if (!(goal > 0) || e[kind] !== goal) return;
   const pr = streak.praised[t] || (streak.praised[t] = {});
   if (pr[kind]) return; pr[kind] = true; saveStreak();
-  const other = ['f', 's', 'v', 'w', 'b'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
+  const other = ['f', 's', 'v', 'w', 'b', 'p'].some(k => k !== kind && e['g' + k] > 0 && (e[k] || 0) >= e['g' + k]);
   const info = streakInfo();
   setTimeout(() => showPraise(kind, e[kind], info, other), 350);
 }
@@ -865,7 +943,7 @@ function showPraise(kind, count, info, other) {
   const p = PRAISE[Math.floor(Math.random() * PRAISE.length)];
   $('pEmoji').textContent = '🎉';
   $('pTitle').textContent = p[0] + ' (' + p[1] + ')';
-  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Präpositions-Flashcards', s: ' Präpositionssätze', v: ' Verb-Flashcards', w: ' Verbsätze', b: ' Satzbau-Aufgaben' })[kind] + ' heute geübt. ';
+  let txt = 'Tagesziel erreicht: ' + count + ({ f: ' Präpositions-Flashcards', s: ' Präpositionssätze', v: ' Verb-Flashcards', w: ' Verbsätze', b: ' Satzbau-Aufgaben', p: ' Partikelverben' })[kind] + ' heute geübt. ';
   if (other) txt += 'Dein Streak-Tag stand schon, und jetzt hast du auch dieses Ziel geschafft.';
   else txt += '🔥 ' + info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge.' + (MILESTONES[info.cur] ? ' ' + MILESTONES[info.cur] : '');
   $('pText').textContent = txt;
@@ -879,13 +957,13 @@ function goalLine(textEl, fillEl, count, goal) {
   textEl.textContent = 'Tagesziel: ' + count + ' von ' + goal + (done ? ' ✓' : '');
   fillEl.style.width = (goal > 0 ? Math.min(100, (count / goal) * 100) : 0) + '%';
 }
-function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); if ($('qGoal')) goalLine($('qGoal'), $('qGFill'), v.s, v.gs); if ($('bGoal')) goalLine($('bGoal'), $('bGFill'), v.b, v.gb); }
+function updateGoalLines() { const v = dayView(); goalLine($('fGoal'), $('fGFill'), v.f, v.gf); goalLine($('sGoal'), $('sGFill'), v.s, v.gs); goalLine($('vGoal'), $('vGFill'), v.v, v.gv); goalLine($('wGoal'), $('wGFill'), v.w, v.gw); if ($('qGoal')) goalLine($('qGoal'), $('qGFill'), v.s, v.gs); if ($('bGoal')) goalLine($('bGoal'), $('bGFill'), v.b, v.gb); if ($('pGoal')) goalLine($('pGoal'), $('pGFill'), v.p, v.gp); }
 function renderHome() {
   const info = streakInfo(), v = dayView();
   $('streakMain').textContent = info.cur > 0 ? info.cur + (info.cur === 1 ? ' Tag' : ' Tage') + ' in Folge' : 'Noch kein Streak';
   $('streakBest').textContent = info.best > 0 ? 'Rekord: ' + info.best + (info.best === 1 ? ' Tag' : ' Tage') : '';
   if (info.todayDone) $('streakNote').textContent = 'Heute geschafft ✓ Dein Streak lebt.';
-  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Präpositions-Flashcards, ' + Math.max(0, v.gs - v.s) + ' Präpositionssätze, ' + Math.max(0, v.gv - v.v) + ' Verb-Flashcards, ' + Math.max(0, v.gw - v.w) + ' Verbsätze oder ' + Math.max(0, v.gb - v.b) + ' Satzbau-Aufgaben.';
+  else $('streakNote').textContent = 'Für den heutigen Streak-Tag: noch ' + Math.max(0, v.gf - v.f) + ' Präpositions-Flashcards, ' + Math.max(0, v.gs - v.s) + ' Präpositionssätze, ' + Math.max(0, v.gv - v.v) + ' Verb-Flashcards, ' + Math.max(0, v.gw - v.w) + ' Verbsätze, ' + Math.max(0, v.gb - v.b) + ' Satzbau-Aufgaben oder ' + Math.max(0, v.gp - v.p) + ' Partikelverben.';
   const dots = $('weekDots'); dots.textContent = '';
   for (let k = 6; k >= 0; k--) {
     const d = addDays(-k), [y, m, dd] = d.split('-').map(Number), wrap = document.createElement('div'); wrap.className = 'dayc';
@@ -902,11 +980,12 @@ function renderHome() {
   [['S', v.s, v.gs], ['V', v.v, v.gv], ['W', v.w, v.gw], ['B', v.b, v.gb]].forEach(([k, n, g]) => {
     const b = $('home' + k + 'Bar'); const p = g > 0 ? Math.min(1, n / g) : 0; b.style.width = (p * 100) + '%'; b.classList.toggle('full', p >= 1);
   });
+  if (typeof partHome === 'function') partHome();
   renderMode(); if (typeof homeAnalysis === 'function') homeAnalysis();
 }
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
-function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; }
+function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; $('gPv').textContent = streak.goalP; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -921,6 +1000,7 @@ $('modeBtn').addEventListener('click', () => setMode(!isMoon()));
 $('soundToggle').addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem(LS_SOUND, soundOn ? 'on' : 'off'); } catch (e) {} renderSoundToggle(); if (soundOn) { unlockAudio(); playSwipe('known'); } });
 $('gWm').addEventListener('click', () => changeGoal('w', -5)); $('gWp').addEventListener('click', () => changeGoal('w', 5));
 $('gBm').addEventListener('click', () => changeGoal('b', -5)); $('gBp').addEventListener('click', () => changeGoal('b', 5));
+$('gPm').addEventListener('click', () => changeGoal('p', -5)); $('gPp').addEventListener('click', () => changeGoal('p', 5));
 $('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
 $('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
 
@@ -2604,6 +2684,7 @@ function startErrorRound() {
 function renderStats() {
   const body = $('anaBody'); body.textContent = ''; const n = STATS.length;
   const sc = satzAnalysisCard(); if (sc) body.appendChild(sc);
+  const pac = typeof partAnalysisCard === 'function' ? partAnalysisCard() : null; if (pac) body.appendChild(pac);
   if (n < ANA_MIN) {
     const c = el('div', 'acard'); c.append(el('h3', null, 'Noch nicht genug Daten'), el('p', 'an', 'Die Analyse öffnet sich ab ' + ANA_MIN + ' Antworten, damit sie aussagekräftig ist. Bisher: ' + n + '. Jede Quizfrage und jede Aufgabe bei „Präpositionen üben“ zählt.'));
     const b = el('div', 'tbar'); const s = el('span'); s.style.width = (n / ANA_MIN * 100) + '%'; b.appendChild(s); c.appendChild(b); body.appendChild(c); return;
@@ -3786,6 +3867,279 @@ function satzAnalysisCard() {
   return c;
 }
 
+// ---------- Partikelverben ----------
+const LS_PART = 'schwedisch-app-partikel-v1', LS_PLEARN = 'schwedisch-app-partikel-learn-v1', LS_PSTATS = 'schwedisch-app-partikel-stats-v1', LS_PSTATE = 'schwedisch-app-partikel-state-v1';
+const PPART = ['an', 'av', 'bakom', 'bort', 'borta', 'dit', 'efter', 'emellan', 'emot', 'fast', 'fram', 'framme', 'för', 'förbi', 'före', 'hem', 'hemma', 'hit', 'i', 'ifatt', 'ifrån', 'igen', 'igenom', 'igång', 'ihop', 'ikapp', 'in', 'inne', 'isär', 'itu', 'iväg', 'kvar', 'loss', 'med', 'ner', 'ned', 'nere', 'om', 'omkring', 'omkull', 'på', 'runt', 'samman', 'sönder', 'till', 'tillbaka', 'undan', 'under', 'upp', 'uppe', 'ur', 'ut', 'ute', 'utför', 'vid', 'åt', 'över', 'mot', 'bakåt', 'framåt'];
+const P = new Learner(LS_PLEARN);
+let PD = null, PITEMS = [];
+let PSTATS = []; try { const d = JSON.parse(localStorage.getItem(LS_PSTATS)); if (Array.isArray(d)) PSTATS = d; } catch (e) {}
+let pState = { tab: 1, vi: -1, pi: -1, part: '', scope: 'all' };
+try { const d = JSON.parse(localStorage.getItem(LS_PSTATE)); if (d && typeof d === 'object') Object.assign(pState, d); } catch (e) {}
+function savePState() { saveJSON(LS_PSTATE, pState); }
+const validPart = d => !!d && d.type === 'partikelverben' && Array.isArray(d.verbs) && d.verbs.length > 0 && Array.isArray(d.lex);
+function setPart(d) {
+  PD = d; PITEMS = [];
+  d.verbs.forEach((v, vi) => v.pv.forEach((p, pi) => p.m.forEach((m, mi) => { if (m.de) PITEMS.push({ vi, pi, mi, key: p.p + '|' + mi }); })));
+  P.init(PITEMS, PITEMS.map(x => x.key), true);
+  if (!(pState.vi >= 0 && pState.vi < d.verbs.length)) { const t = d.verbs.findIndex(v => v.v === 'ta'); pState.vi = t >= 0 ? t : 0; pState.pi = -1; }
+  if (!pState.part || !d.lex.some(x => x.p === pState.part)) pState.part = d.lex.length ? d.lex[0].p : '';
+  if (pState.scope !== 'all' && !(Number(pState.scope) >= 0 && Number(pState.scope) < d.verbs.length)) pState.scope = 'all';
+}
+(function loadPart() { try { const d = JSON.parse(localStorage.getItem(LS_PART)); if (validPart(d)) setPart(d); } catch (e) {} })();
+function importPart(d) {
+  if (!validPart(d)) { note('Die Datei partikel.json hat nicht das erwartete Format.'); return; }
+  try { localStorage.setItem(LS_PART, JSON.stringify(d)); } catch (e) { note('Die Partikelverben konnten nicht auf dem Gerät gespeichert werden.'); importMsg.textContent = 'Die Partikelverben konnten nicht auf dem Gerät gespeichert werden.'; return; }
+  setPart(d); pRound = []; pPos = 0; pStarted = false;
+  const n = d.verbs.reduce((a, v) => a + v.pv.length, 0), msg = 'Partikelverben geladen: ' + d.verbs.length + ' Grundverben, ' + n + ' Partikelverben.';
+  note(msg);
+  if (importEl.style.display === 'flex') importMsg.textContent = msg + ' Jetzt noch die Datei karten.json laden.';
+  else if (activeView() === 'part') renderPart(); else renderHome();
+}
+
+// Aussprache (Stimme Oskar, falls vorhanden)
+let svVoice = null;
+function pickVoice() { try { const vs = speechSynthesis.getVoices().filter(v => /^sv/i.test(v.lang)); svVoice = vs.find(v => /oskar/i.test(v.name) && /förbättrad|enhanced|premium/i.test(v.name)) || vs.find(v => /oskar/i.test(v.name)) || vs[0] || null; } catch (e) {} }
+if ('speechSynthesis' in window) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch (e) {} }
+function speakSv(t) {
+  if (!('speechSynthesis' in window) || !t) return;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/\//g, ' ')); u.lang = 'sv-SE'; if (svVoice) u.voice = svVoice; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) {}
+}
+function spkBtn(t) {
+  const b = el('button', 'pspk'); b.setAttribute('aria-label', 'Vorlesen');
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path></svg>';
+  b.addEventListener('click', e => { e.stopPropagation(); speakSv(t); }); return b;
+}
+
+// Hilfsfunktionen
+const pvRest = name => name.split(' ').slice(1).join(' ');
+function stressTok(name) { const w = name.split(' '); for (let i = 1; i < w.length; i++) { if (w[i].replace(/[()]/g, '').split('/').some(x => PPART.indexOf(x) >= 0)) return i; } return -1; }
+function stressPart(name) { const i = stressTok(name); return i < 0 ? '' : name.split(' ')[i].replace(/[()]/g, '').split('/')[0]; }
+function pvNode(name, cls) {
+  const s = el('span', cls || null), w = name.split(' '), si = stressTok(name);
+  w.forEach((x, i) => { if (i) s.append(' '); if (i === si) s.appendChild(el('span', 'ppart', x.toUpperCase())); else s.append(x); });
+  return s;
+}
+const normPv = s => s.toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-zåäöé ]/g, ' ').replace(/\s+/g, ' ').trim();
+let PVINDEX = null;
+function pvIndex() {
+  if (PVINDEX && PVINDEX.d === PD) return PVINDEX.m;
+  const m = {}; PD.verbs.forEach((v, vi) => v.pv.forEach((p, pi) => { p.p.split(' / ').forEach(n => { const k = normPv(n); if (!(k in m)) m[k] = [vi, pi]; }); const full = normPv(p.p.replace(/\(([^)]*)\)/g, '$1')); if (!(full in m)) m[full] = [vi, pi]; }));
+  PVINDEX = { d: PD, m }; return m;
+}
+function findPv(sv) {
+  const idx = pvIndex();
+  for (const part of sv.split(/\s*\/\s*/)) { const k = normPv(part); if (k in idx) return idx[k]; const k2 = normPv(part.replace(/\(([^)]*)\)/g, '$1')); if (k2 in idx) return idx[k2]; }
+  return null;
+}
+const lexOf = part => PD.lex.filter(x => x.p === part);
+function trLines(box, de, en) {
+  if (de) box.appendChild(el('div', 'pextr', de));
+  if (enOn && en) { const d = el('div', 'pextr'); const t = el('span', 'tag en', 'EN'); t.style.marginRight = '6px'; d.append(t, en); box.appendChild(d); }
+}
+function exBlock(x) { const b = el('div', 'pex'), r = el('div', 'pexsv'); r.append(el('span', null, x[0]), spkBtn(x[0])); b.appendChild(r); trLines(b, x[1], x[2]); return b; }
+
+// Ansicht
+function pTab(n) { pState.tab = n; savePState(); renderPart(); }
+function renderPart() {
+  const has = !!PD;
+  $('pEmpty').classList.toggle('hidden', has); $('pMain').classList.toggle('hidden', !has);
+  if (!has) return;
+  [1, 2, 3].forEach(s => $('pTab' + s).classList.toggle('on', s === pState.tab));
+  $('pStern').classList.toggle('hidden', pState.tab !== 1); $('pLex').classList.toggle('hidden', pState.tab !== 2); $('pUeben').classList.toggle('hidden', pState.tab !== 3);
+  if (pState.tab === 1) renderStern(); else if (pState.tab === 2) renderLex(); else if (!pStarted) { pStarted = true; pNewRound(); } else renderUeben();
+}
+function fillVerbSelect(sel, withAll) {
+  if (sel.dataset.built === String(PD.verbs.length) + (withAll ? 'a' : '')) return;
+  sel.textContent = '';
+  if (withAll) { const o = el('option', null, 'Alle Grundverben (' + PITEMS.length + ' Bedeutungen)'); o.value = 'all'; sel.appendChild(o); }
+  PD.verbs.map((v, i) => i).sort((a, b) => PD.verbs[a].v.localeCompare(PD.verbs[b].v, 'sv') || a - b).forEach(i => { const v = PD.verbs[i], o = el('option', null, (withAll ? 'Nur ' : '') + v.v + ' – ' + v.de + ' (' + v.pv.length + ')'); o.value = String(i); sel.appendChild(o); });
+  sel.dataset.built = String(PD.verbs.length) + (withAll ? 'a' : '');
+}
+function renderStern() {
+  fillVerbSelect($('pVerb'), false); $('pVerb').value = String(pState.vi);
+  const v = PD.verbs[pState.vi], box = $('pStarBox'); box.textContent = '';
+  const n = v.pv.length;
+  const pick = pi => { pState.pi = pState.pi === pi ? -1 : pi; savePState(); renderStern(); if (pState.pi >= 0) setTimeout(() => { const d = $('pDetail'); if (d.getBoundingClientRect().top > window.innerHeight - 120) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); };
+  const center = (cls) => { const c = el('div', 'pcenter' + (cls ? ' ' + cls : '')); c.append(el('b', null, v.v), el('small', null, v.de)); return c; };
+  if (n <= 10) {
+    const star = el('div', 'pstar'); box.appendChild(star);
+    const W = star.clientWidth || Math.min(window.innerWidth - 32, 560), H = 340, cx = W / 2, cy = H / 2;
+    const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('aria-hidden', 'true'); star.appendChild(svg);
+    const two = n > 10, outer = Math.min(W / 2 - 48, H / 2 - 28), inner = Math.min(outer * 0.6, 100);
+    v.pv.forEach((p, i) => {
+      const ring = two ? i % 2 : 0, cnt = two ? (ring ? Math.floor(n / 2) : Math.ceil(n / 2)) : n, k = two ? Math.floor(i / 2) : i;
+      const R = two && ring ? inner + 8 : outer, ry = two && ring ? R : Math.min(R, H / 2 - 24), ang = -Math.PI / 2 + (k + (two && ring ? 0.5 : 0)) * 2 * Math.PI / cnt;
+      const x = cx + R * Math.cos(ang) * (two && ring ? 1 : 1), y = cy + ry * Math.sin(ang);
+      const ln = document.createElementNS(ns, 'line'); ln.setAttribute('x1', cx); ln.setAttribute('y1', cy); ln.setAttribute('x2', x); ln.setAttribute('y2', y); svg.appendChild(ln);
+      const b = el('button', 'pbub' + (pState.pi === i ? ' on' : ''), pvRest(p.p)); b.style.left = x + 'px'; b.style.top = y + 'px'; b.addEventListener('click', () => pick(i)); star.appendChild(b);
+    });
+    const c = center(); c.style.left = cx + 'px'; c.style.top = cy + 'px'; star.appendChild(c);
+    // Überlappung an den Rändern vermeiden
+    [].slice.call(star.querySelectorAll('.pbub')).forEach(b => { const w = b.offsetWidth, l = parseFloat(b.style.left); if (l - w / 2 < 4) b.style.left = (w / 2 + 4) + 'px'; else if (l + w / 2 > W - 4) b.style.left = (W - w / 2 - 4) + 'px'; });
+  } else {
+    const cl = el('div', 'pcloud'), head = el('div', 'pcloudhead'); head.append(center(), el('div', 'phint', n + ' Partikelverben. Tippe auf eine Partikel.')); cl.appendChild(head);
+    const chips = el('div', 'pchips'); v.pv.forEach((p, i) => { const b = el('button', 'pchip' + (pState.pi === i ? ' on' : ''), pvRest(p.p)); b.addEventListener('click', () => pick(i)); chips.appendChild(b); });
+    cl.appendChild(chips); box.appendChild(cl);
+  }
+  renderPvDetail();
+}
+function renderPvDetail() {
+  const d = $('pDetail'); d.textContent = '';
+  const v = PD.verbs[pState.vi];
+  if (!(pState.pi >= 0 && pState.pi < v.pv.length)) {
+    const c = el('div', 'pcard'); c.appendChild(el('div', 'phint', 'Tippe auf eine Partikel, um Bedeutung, Übersetzung und Beispiele zu sehen.'));
+    c.appendChild(el('div', 'psmall', 'Formen: ' + v.f)); d.appendChild(c); return;
+  }
+  const p = v.pv[pState.pi], c = el('div', 'pcard'), t = el('div', 'ptitle');
+  t.append(pvNode(p.p), spkBtn(p.p)); c.appendChild(t);
+  const sp = stressPart(p.p); if (sp) c.appendChild(el('div', 'phint', 'Betont wird die Partikel: ' + p.p.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim() + ' – „' + p.p.split(' ')[stressTok(p.p)].replace(/[()]/g, '') + '“ trägt den Akzent.'));
+  p.m.forEach((m, i) => {
+    const b = el('div', 'pmean');
+    b.appendChild(el('div', 'pmde', (p.m.length > 1 ? (i + 1) + ' · ' : '') + (m.de || '–')));
+    if (enOn && m.en) { const e = el('div', 'pmsv'); const tg = el('span', 'tag en', 'EN'); tg.style.marginRight = '6px'; e.append(tg, m.en); b.appendChild(e); }
+    b.appendChild(el('div', 'pmsv', m.sv ? 'Im Buch: ' + m.sv : 'Wörtliche Bedeutung'));
+    m.ex.forEach(x => b.appendChild(exBlock(x)));
+    c.appendChild(b);
+  });
+  if (p.k && p.k.length) {
+    c.appendChild(el('div', 'psec warn', 'ZUM VERGLEICH: UNBETONT – KEIN PARTIKELVERB'));
+    p.k.forEach(x => c.appendChild(exBlock(x)));
+  }
+  if (p.n && p.n.length) p.n.forEach(x => c.appendChild(el('div', 'psmall', x.replace(/^SAMMANSATT:/, 'Zusammengesetzt:').replace(/^PERF PART:/, 'Partizip:'))));
+  if (sp && lexOf(sp).length) { const b = el('button', 'plink', '„' + sp + '“ im Partikel-Lexikon'); b.addEventListener('click', () => { pState.part = sp; pTab(2); window.scrollTo(0, 0); }); c.appendChild(b); }
+  c.appendChild(el('div', 'psmall', 'Schwedische Erklärungen und Beispiele aus „Se upp!“. Deutsch und Englisch: von Claude übersetzt, ungeprüft.'));
+  d.appendChild(c);
+}
+function renderLex() {
+  const sel = $('pPartSel');
+  const parts = []; PD.lex.forEach(x => { if (parts.indexOf(x.p) < 0) parts.push(x.p); });
+  if (sel.dataset.built !== String(parts.length)) { sel.textContent = ''; parts.forEach(p => { const o = el('option', null, p + ' (' + lexOf(p).length + (lexOf(p).length === 1 ? ' Bedeutung)' : ' Bedeutungen)')); o.value = p; sel.appendChild(o); }); sel.dataset.built = String(parts.length); }
+  sel.value = pState.part;
+  const body = $('pLexBody'); body.textContent = '';
+  const L = lexOf(pState.part), c = el('div', 'pcard');
+  const t = el('div', 'ptitle'); t.append(el('span', 'ppart', pState.part)); c.appendChild(t);
+  c.appendChild(el('div', 'psec', 'GRUNDBEDEUTUNGEN'));
+  L.forEach((x, i) => {
+    const r = el('div', 'plexrow');
+    r.appendChild(el('div', 'pmde', (L.length > 1 ? (i + 1) + ' · ' : '') + x.de));
+    if (enOn && x.en) { const e = el('div', 'pmsv'); const tg = el('span', 'tag en', 'EN'); tg.style.marginRight = '6px'; e.append(tg, x.en); r.appendChild(e); }
+    r.appendChild(el('div', 'pmsv', 'Im Buch: ' + x.sv));
+    const chips = el('div', 'pexchips');
+    (x.ex || []).forEach(e => {
+      const hit = findPv(e[0]), b = el('button', 'pexchip' + (hit ? '' : ' nolink')); b.append(el('b', null, e[0]), ' · ' + e[1]);
+      if (hit) b.addEventListener('click', () => { pState.vi = hit[0]; pState.pi = hit[1]; pTab(1); setTimeout(() => $('pDetail').scrollIntoView({ behavior: 'smooth', block: 'start' }), 40); });
+      else b.disabled = true;
+      chips.appendChild(b);
+    });
+    r.appendChild(chips); c.appendChild(r);
+  });
+  c.appendChild(el('div', 'psmall', 'Beispiele mit durchgezogenem Rahmen öffnen das Partikelverb im Verb-Stern.'));
+  body.appendChild(c);
+  // Betonung
+  const s = el('div', 'pcard'); s.appendChild(el('div', 'psec warn', 'ACHTUNG: BETONUNG'));
+  const st = el('div', 'pstress'); st.append('Als Partikel ist „' + pState.part + '“ betont: '); const u = el('u', null, pState.part.toUpperCase()); st.appendChild(u); st.append('. Steht dasselbe Wort unbetont, ist es meist eine Präposition, und der Satz bedeutet etwas anderes.'); s.appendChild(st);
+  let pair = null;
+  PD.verbs.some(v => v.pv.some(p => { if (stressPart(p.p) === pState.part && p.k && p.k.length && p.m.some(m => m.ex.length)) { pair = p; return true; } return false; }));
+  if (pair) {
+    const m = pair.m.find(m => m.ex.length);
+    s.appendChild(el('div', 'psec', 'BETONT = PARTIKELVERB (' + pair.p.toUpperCase() + ')')); s.appendChild(exBlock(m.ex[0]));
+    s.appendChild(el('div', 'psec', 'UNBETONT = KEIN PARTIKELVERB')); s.appendChild(exBlock(pair.k[0]));
+  }
+  body.appendChild(s);
+}
+
+// Üben: Bedeutung erraten
+let pRound = [], pPos = 0, pScore = 0, pAnswered = false, pStarted = false;
+function pScopeOk(it) { return pState.scope === 'all' || String(it.vi) === String(pState.scope); }
+function pNewRound() {
+  P.buildQueue();
+  const cand = P.queue.filter(i => pScopeOk(PITEMS[i]));
+  pRound = cand.slice(0, 10).map(i => PITEMS[i]).sort(() => Math.random() - 0.5); pPos = 0; pScore = 0; renderUeben();
+}
+function pOptions(it) {
+  const v = PD.verbs[it.vi], p = v.pv[it.pi], m = p.m[it.mi], right = m.de, seen = new Set([right.toLowerCase()]);
+  const sameP = new Set(p.m.map(x => (x.de || '').toLowerCase()));
+  const pool = [], add = arr => arr.forEach(x => { const k = x.toLowerCase(); if (x && !seen.has(k) && !sameP.has(k)) { seen.add(k); pool.push(x); } });
+  add(v.pv.filter((_, i) => i !== it.pi).map(q => q.m.filter(x => x.de)).reduce((a, b) => a.concat(b), []).sort(() => Math.random() - 0.5).map(x => x.de));
+  const sp = stressPart(p.p);
+  if (pool.length < 3) add(PITEMS.filter(x => x.vi !== it.vi && stressPart(PD.verbs[x.vi].pv[x.pi].p) === sp).sort(() => Math.random() - 0.5).slice(0, 12).map(x => PD.verbs[x.vi].pv[x.pi].m[x.mi].de));
+  if (pool.length < 3) add(PITEMS.slice().sort(() => Math.random() - 0.5).slice(0, 12).map(x => PD.verbs[x.vi].pv[x.pi].m[x.mi].de));
+  return pool.slice(0, 3).concat([right]).sort(() => Math.random() - 0.5);
+}
+function renderUeben() {
+  fillVerbSelect($('pScope'), true); $('pScope').value = String(pState.scope);
+  updateGoalLines();
+  const done = pPos >= pRound.length;
+  $('pPlay').classList.toggle('hidden', done); $('pDoneBox').classList.toggle('hidden', !done);
+  $('pProgress').style.width = (pRound.length ? pPos / pRound.length * 100 : 0) + '%';
+  if (done) {
+    $('pCounter').textContent = 'Runde beendet';
+    if (!pRound.length) { $('pDoneTitle').textContent = 'Für heute ist hier alles geübt'; $('pDoneText').textContent = 'In dieser Auswahl ist gerade nichts fällig. Wähle oben andere Verben oder komm morgen wieder.'; }
+    else { $('pDoneTitle').textContent = pScore + ' von ' + pRound.length + ' richtig' + (pScore === pRound.length ? ' 🎉' : ''); $('pDoneText').textContent = 'Falsche Antworten kommen bald wieder, richtige erst nach einigen Tagen. ' + P.doneText(); }
+    return;
+  }
+  const it = pRound[pPos], v = PD.verbs[it.vi], p = v.pv[it.pi], m = p.m[it.mi]; pAnswered = false;
+  $('pCounter').textContent = 'Bedeutung erraten · Frage ' + (pPos + 1) + ' von ' + pRound.length + ' · ' + pScore + ' richtig';
+  $('pCard').className = 'scard qcard'; $('pFeed').textContent = ''; $('pFeed').className = 'sfeed'; $('pInfo').textContent = ''; $('pNextRow').classList.add('hidden');
+  const task = $('pTask'); task.textContent = '';
+  task.appendChild(el('div', 'slabel', 'WAS BEDEUTET …'));
+  const big = el('div', 'pbig'); big.appendChild(pvNode(p.p)); task.appendChild(big);
+  const sp = stressPart(p.p);
+  task.appendChild(el('div', 'phint', 'Grundverb: ' + v.v + ' = ' + v.de + (sp ? ' · betonte Partikel: ' + sp : '')));
+  if (m.ex.length) { const cx = el('div', 'pctx'); cx.append(el('span', null, m.ex[0][0]), spkBtn(m.ex[0][0])); task.appendChild(cx); }
+  const opts = el('div', 'popts'); opts.id = 'pOpts';
+  pOptions(it).forEach((o, n) => { const b = el('button', null, o); b.dataset.n = String(n + 1); b.addEventListener('click', () => pChoose(o, b)); opts.appendChild(b); });
+  task.appendChild(opts);
+}
+function pChoose(o, btn) {
+  if (pAnswered || pPos >= pRound.length) return; pAnswered = true;
+  const it = pRound[pPos], p = PD.verbs[it.vi].pv[it.pi], m = p.m[it.mi], ok = o === m.de;
+  if (ok) pScore++;
+  [].slice.call($('pOpts').children).forEach(b => { if (b.textContent === m.de) b.classList.add('right'); else if (b === btn) b.classList.add('wrong'); b.disabled = true; });
+  $('pCard').classList.add(ok ? 'ok' : 'bad');
+  $('pFeed').textContent = ok ? 'Richtig ✓' : 'Leider falsch – richtig ist „' + m.de + '“.'; $('pFeed').className = 'sfeed ' + (ok ? 'ok' : 'bad');
+  const info = $('pInfo'); info.textContent = '';
+  const w = el('div', 'qwhy'); w.append(el('b', null, p.p + ':'), ' ' + m.de); info.appendChild(w);
+  if (enOn && m.en) { const e = el('div', 'pmsv'); const tg = el('span', 'tag en', 'EN'); tg.style.marginRight = '6px'; e.append(tg, m.en); info.appendChild(e); }
+  info.appendChild(el('div', 'pmsv', m.sv ? 'Im Buch: ' + m.sv : 'Wörtliche Bedeutung'));
+  if (m.ex.length) info.appendChild(exBlock(m.ex[0]));
+  if (p.m.length > 1) info.appendChild(el('div', 'psmall', p.p + ' hat ' + p.m.length + ' Bedeutungen – alle im Verb-Stern.'));
+  // Lernstand
+  const qi = P.queue.indexOf(PITEMS.indexOf(it)); if (qi > 0) { P.queue.splice(qi, 1); P.queue.unshift(PITEMS.indexOf(it)); }
+  if (qi >= 0) P.rate(ok ? 'known' : 'again');
+  PSTATS.push({ t: Date.now(), k: it.key, p: stressPart(p.p), v: PD.verbs[it.vi].v, ok }); if (PSTATS.length > 3000) PSTATS = PSTATS.slice(-3000); saveJSON(LS_PSTATS, PSTATS);
+  playSwipe(ok ? 'known' : 'again'); track('p', 1);
+  $('pNextRow').classList.remove('hidden');
+}
+$('pNext').addEventListener('click', () => { pPos++; renderUeben(); });
+$('pAgain').addEventListener('click', pNewRound);
+[1, 2, 3].forEach(s => $('pTab' + s).addEventListener('click', () => pTab(s)));
+$('pVerb').addEventListener('change', e => { pState.vi = Number(e.target.value); pState.pi = -1; savePState(); renderStern(); });
+$('pPartSel').addEventListener('change', e => { pState.part = e.target.value; savePState(); renderLex(); });
+$('pScope').addEventListener('change', e => { pState.scope = e.target.value; savePState(); pNewRound(); });
+$('pLoad').addEventListener('click', () => $('fileInput').click());
+$('goPart').addEventListener('click', () => showView('part'));
+$('backP').addEventListener('click', () => showView('home'));
+window.addEventListener('resize', () => { if (activeView() === 'part' && PD && pState.tab === 1) renderStern(); });
+function partHome() {
+  const sub = $('homePSub'), bar = $('homePBar'), v = dayView();
+  if (!PD) { sub.textContent = 'Datei partikel.json laden'; bar.style.width = '0%'; return; }
+  P.buildQueue(); sub.textContent = 'Heute ' + v.p + ' von ' + v.gp + (v.p >= v.gp ? ' ✓' : '') + ' · ' + PD.verbs.reduce((a, x) => a + x.pv.length, 0) + ' Partikelverben';
+  const q = v.gp > 0 ? Math.min(1, v.p / v.gp) : 0; bar.style.width = (q * 100) + '%'; bar.classList.toggle('full', q >= 1);
+}
+function partAnalysisCard() {
+  if (PSTATS.length < 20) return null;
+  const c = el('div', 'acard'), n = PSTATS.length, ok = PSTATS.filter(e => e.ok).length;
+  c.append(el('h3', null, 'Partikelverben'), el('p', 'an', n + ' Antworten bei „Bedeutung erraten“, ' + Math.round(ok / n * 100) + ' % richtig.'));
+  const by = {}; PSTATS.forEach(e => { const k = e.p || '–'; by[k] = by[k] || { n: 0, ok: 0 }; by[k].n++; if (e.ok) by[k].ok++; });
+  const l = Object.keys(by).filter(k => by[k].n >= 3).map(k => ({ k, n: by[k].n, r: by[k].ok / by[k].n })).sort((a, b) => a.r - b.r).slice(0, 12);
+  if (l.length) {
+    c.appendChild(el('div', 'agrp', 'NACH PARTIKEL (SCHWÄCHSTE ZUERST)'));
+    l.forEach(x => { const r = el('div', 'arow'); const cls = x.r < 0.65 ? 'lvl-bad' : x.r < 0.85 ? 'lvl-mid' : 'lvl-ok'; const bar = el('div', 'bar ' + cls); const s = el('span'); s.style.width = Math.round(x.r * 100) + '%'; bar.appendChild(s); r.append(el('b', null, x.k), bar, el('small', null, Math.round(x.r * 100) + ' % · ' + x.n)); c.appendChild(r); });
+  }
+  return c;
+}
+
 // ---------- Daten sichern und wiederherstellen ----------
 function setEn(id, txt) { const el = $(id); el.textContent = ''; if (!enOn || !txt) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const tg = document.createElement('span'); tg.className = 'tag en'; tg.textContent = 'EN'; const s = document.createElement('span'); s.textContent = txt; el.append(tg, s); }
 function dataMsg(t) { $('dataMsg').textContent = t; }
@@ -3880,11 +4234,11 @@ $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderMan
 
 // ---------- Navigation ----------
 function showView(v) {
-  ['home', 'flash', 'sent', 'verb', 'work', 'quiz', 'stats', 'satz'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
-  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else if (v === 'stats') renderStats(); else if (v === 'satz') renderSatz(); else renderHome();
+  ['home', 'flash', 'sent', 'verb', 'work', 'quiz', 'stats', 'satz', 'part'].forEach(n => $('view' + n[0].toUpperCase() + n.slice(1)).classList.toggle('hidden', n !== v));
+  if (v === 'sent') renderSent(); else if (v === 'flash') renderFlash(); else if (v === 'verb') renderVerb(); else if (v === 'work') renderWork(); else if (v === 'quiz') renderQuiz(); else if (v === 'stats') renderStats(); else if (v === 'satz') renderSatz(); else if (v === 'part') renderPart(); else renderHome();
   window.scrollTo(0, 0);
 }
-const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : !$('viewStats').classList.contains('hidden') ? 'stats' : !$('viewSatz').classList.contains('hidden') ? 'satz' : 'home');
+const activeView = () => (!$('viewSent').classList.contains('hidden') ? 'sent' : !$('viewFlash').classList.contains('hidden') ? 'flash' : !$('viewVerb').classList.contains('hidden') ? 'verb' : !$('viewWork').classList.contains('hidden') ? 'work' : !$('viewQuiz').classList.contains('hidden') ? 'quiz' : !$('viewStats').classList.contains('hidden') ? 'stats' : !$('viewSatz').classList.contains('hidden') ? 'satz' : !$('viewPart').classList.contains('hidden') ? 'part' : 'home');
 ['RUM', 'TID', 'OVR'].forEach(s => $('goF' + s).addEventListener('click', () => openFlashSet(s)));
 $('goSent').addEventListener('click', () => showView('sent'));
 $('backF').addEventListener('click', () => showView('home'));
@@ -3904,6 +4258,8 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') swipeS.commit('known'); else if (e.key === 'ArrowLeft') swipeS.commit('again');
   } else if (v === 'quiz') {
     if (e.key === 'Enter' || e.key === ' ') { if (qAnswered) { e.preventDefault(); $('qNext').click(); } } else if (/^[1-4]$/.test(e.key)) { const b = document.querySelector('#qChoices button[data-n="' + e.key + '"]'); if (b && !qAnswered) b.click(); }
+  } else if (v === 'part' && pState.tab === 3) {
+    if (e.key === 'Enter' || e.key === ' ') { if (pAnswered) { e.preventDefault(); $('pNext').click(); } } else if (/^[1-4]$/.test(e.key)) { const b = document.querySelector('#pOpts button[data-n="' + e.key + '"]'); if (b && !pAnswered) b.click(); }
   } else if (v === 'work' && !typing) {
     if (e.key === 'ArrowRight') swipeW.commit('known'); else if (e.key === 'ArrowLeft') swipeW.commit('again');
   }
@@ -3954,6 +4310,7 @@ function importFile(file) {
     try {
       const raw = JSON.parse(r.result);
       if (raw && raw.type === 'eigene-karten') { importCustom(raw); return; }
+      if (raw && raw.type === 'partikelverben') { importPart(raw); return; }
       const list = Array.isArray(raw) ? raw : raw.cards;
       if (!validCards(list)) throw new Error('format');
       try { localStorage.setItem(LS_CARDS, JSON.stringify(list)); } catch (e) { importMsg.textContent = 'Die Karten konnten nicht auf dem Gerät gespeichert werden.'; return; }
