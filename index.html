@@ -317,6 +317,7 @@
   .grow .tgl { min-width: 64px; }
   .ttsin { display: block; width: 100%; box-sizing: border-box; margin: 8px 0 0; min-height: 44px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; padding: 0 12px; }
   .ttsbtn { display: block; width: 100%; margin-top: 8px; min-height: 44px; }
+  #ttsKey { -webkit-text-security: disc; text-security: disc; }
   #ttsMsg.bad { color: var(--bad); } #ttsMsg.ok { color: var(--ok); }
   .grow .tgl[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   .gnote { font-size: .8rem; color: var(--muted); line-height: 1.5; text-align: left; }
@@ -459,7 +460,7 @@
   <div class="grow"><span>Darstellung</span><button class="tgl" id="modeToggle" aria-pressed="false">Daylight</button></div>
   <div class="gsec">VORLESESTIMME</div>
   <p class="gnote">Ohne Schlüssel liest die iPhone-Stimme. Mit deinem Google-Schlüssel (derselbe wie in Affärssvenska) liest eine professionelle KI-Stimme. Jeder Satz wird einmal erzeugt und dann auf dem Gerät gespeichert. Der Schlüssel bleibt nur auf diesem Gerät.</p>
-  <input class="ttsin" id="ttsKey" type="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Google-Cloud-Schlüssel (AIza…)" aria-label="Google-Cloud-Schlüssel">
+  <input class="ttsin" id="ttsKey" type="text" name="tts-key-noauto" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Google-Cloud-Schlüssel (AIza…)" aria-label="Google-Cloud-Schlüssel">
   <select class="ttsin" id="ttsVoice" aria-label="Stimme wählen"></select>
   <button class="ttsbtn" id="ttsTry">▶ Hörprobe</button>
   <p class="gnote" id="ttsMsg" aria-live="polite"></p>
