@@ -315,6 +315,9 @@
   .grow .step { display: flex; align-items: center; gap: 10px; } .grow b { min-width: 2.5ch; font-size: 1.1rem; text-align: center; }
   .grow .step button { width: 44px; padding: 0; font-size: 1.15rem; }
   .grow .tgl { min-width: 64px; }
+  .ttsin { display: block; width: 100%; box-sizing: border-box; margin: 8px 0 0; min-height: 44px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; padding: 0 12px; }
+  .ttsbtn { display: block; width: 100%; margin-top: 8px; min-height: 44px; }
+  #ttsMsg.bad { color: var(--bad); } #ttsMsg.ok { color: var(--ok); }
   .grow .tgl[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   .gnote { font-size: .8rem; color: var(--muted); line-height: 1.5; text-align: left; }
   .gbox .primary { margin-top: 8px; min-width: 140px; }
@@ -454,6 +457,12 @@
   <div class="grow"><span>Töne (Wischen und Tagesziel)</span><button class="tgl" id="soundToggle" aria-pressed="true">An</button></div>
   <div class="grow"><span>Gelöschte Karten</span><button class="tgl" id="undeleteBtn">Wiederherstellen</button></div>
   <div class="grow"><span>Darstellung</span><button class="tgl" id="modeToggle" aria-pressed="false">Daylight</button></div>
+  <div class="gsec">VORLESESTIMME</div>
+  <p class="gnote">Ohne Schlüssel liest die iPhone-Stimme. Mit deinem Google-Schlüssel (derselbe wie in Affärssvenska) liest eine professionelle KI-Stimme. Jeder Satz wird einmal erzeugt und dann auf dem Gerät gespeichert. Der Schlüssel bleibt nur auf diesem Gerät.</p>
+  <input class="ttsin" id="ttsKey" type="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Google-Cloud-Schlüssel (AIza…)" aria-label="Google-Cloud-Schlüssel">
+  <select class="ttsin" id="ttsVoice" aria-label="Stimme wählen"></select>
+  <button class="ttsbtn" id="ttsTry">▶ Hörprobe</button>
+  <p class="gnote" id="ttsMsg" aria-live="polite"></p>
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
@@ -1161,7 +1170,7 @@ function renderHome() {
 }
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
-function renderGoalModal() { renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; $('gPv').textContent = streak.goalP; $('gXv').textContent = streak.goalX; $('gJv').textContent = streak.goalJ; $('gOv').textContent = streak.goalO; $('gKv').textContent = streak.goalK; }
+function renderGoalModal() { if (typeof ttsRenderSettings === 'function') ttsRenderSettings(); renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; $('gPv').textContent = streak.goalP; $('gXv').textContent = streak.goalX; $('gJv').textContent = streak.goalJ; $('gOv').textContent = streak.goalO; $('gKv').textContent = streak.goalK; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -4403,10 +4412,70 @@ function importPart(d) {
 let svVoice = null;
 function pickVoice() { try { const vs = speechSynthesis.getVoices().filter(v => /^sv/i.test(v.lang)); svVoice = vs.find(v => /oskar/i.test(v.name) && /förbättrad|enhanced|premium/i.test(v.name)) || vs.find(v => /oskar/i.test(v.name)) || vs[0] || null; } catch (e) {} }
 if ('speechSynthesis' in window) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch (e) {} }
-function speakSv(t) {
+function speakDevice(t) {
   if (!('speechSynthesis' in window) || !t) return;
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/\//g, ' ')); u.lang = 'sv-SE'; if (svVoice) u.voice = svVoice; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) {}
 }
+// Professionelle Stimme (Google Cloud Text-to-Speech, Chirp 3 HD); Audio wird auf dem Gerät gespeichert
+const TTS_KEY = 'sv-ttskey', LS_TTSVOICE = 'schwedisch-app-ttsvoice-v1';
+const TTS_VOICES = [['sv-SE-Chirp3-HD-Charon', 'Charon · Mann (Empfehlung)'], ['sv-SE-Chirp3-HD-Orus', 'Orus · Mann'], ['sv-SE-Chirp3-HD-Kore', 'Kore · Frau'], ['sv-SE-Chirp3-HD-Aoede', 'Aoede · Frau'], ['', 'iPhone-Stimme']];
+const TTS_SAMPLE = 'Hej! Jag heter Charon. Hur kommer du på det?';
+const ttsKey = () => { try { return (localStorage.getItem(TTS_KEY) || '').trim(); } catch (e) { return ''; } };
+const ttsVoice = () => { let v = null; try { v = localStorage.getItem(LS_TTSVOICE); } catch (e) {} return v !== null && TTS_VOICES.some(x => x[0] === v) ? v : TTS_VOICES[0][0]; };
+let ttsDb = null;
+function ttsStore() {
+  if (ttsDb) return ttsDb;
+  ttsDb = new Promise((res, rej) => { try { const r = indexedDB.open('sv-tts', 1); r.onupgradeneeded = () => r.result.createObjectStore('a'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } });
+  ttsDb.catch(() => { ttsDb = null; }); return ttsDb;
+}
+async function ttsGet(k) { try { const db = await ttsStore(); return await new Promise(res => { const r = db.transaction('a').objectStore('a').get(k); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch (e) { return null; } }
+async function ttsPut(k, v) { try { const db = await ttsStore(); db.transaction('a', 'readwrite').objectStore('a').put(v, k); } catch (e) {} }
+async function ttsFetch(text, voice, key) {
+  const r = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize?key=' + encodeURIComponent(key), { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input: { text }, voice: { languageCode: 'sv-SE', name: voice }, audioConfig: { audioEncoding: 'MP3' } }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.audioContent) throw new Error((j.error && j.error.message) || ('Fehler ' + r.status));
+  return j.audioContent;
+}
+let ttsSrc = null, ttsSeq = 0;
+function ttsStop() { try { if (ttsSrc) ttsSrc.stop(); } catch (e) {} ttsSrc = null; try { speechSynthesis.cancel(); } catch (e) {} }
+async function ttsPlay(text, voice, key, onErr) {
+  const c = audio(); // im Tipp-Ereignis aufrufen, damit iOS den Ton freigibt
+  const seq = ++ttsSeq; ttsStop();
+  const k = voice + '|' + text;
+  let b64 = await ttsGet(k);
+  if (!b64) { b64 = await ttsFetch(text, voice, key); ttsPut(k, b64); }
+  if (seq !== ttsSeq || !c) return;
+  const bin = atob(b64), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  const ab = await new Promise((res, rej) => { try { const pr = c.decodeAudioData(buf.buffer, res, rej); if (pr && pr.then) pr.then(res, rej); } catch (e) { rej(e); } });
+  if (seq !== ttsSeq) return;
+  if (c.state === 'suspended') { try { await c.resume(); } catch (e) {} }
+  const src = c.createBufferSource(); src.buffer = ab; src.connect(c.destination); src.start(0); ttsSrc = src;
+}
+let ttsWarned = false;
+function speakSv(t) {
+  if (!t) return;
+  const text = t.replace(/\//g, ' ').replace(/\s+/g, ' ').trim(), key = ttsKey(), voice = ttsVoice();
+  if (!key || !voice) { speakDevice(text); return; }
+  ttsPlay(text, voice, key).catch(e => { speakDevice(text); if (!ttsWarned) { ttsWarned = true; note('Profi-Stimme gerade nicht erreichbar – die iPhone-Stimme liest vor.'); } });
+}
+function ttsRenderSettings() {
+  const sel = $('ttsVoice'), cur = ttsVoice();
+  sel.innerHTML = TTS_VOICES.map(([v, l]) => '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + l + '</option>').join('');
+  $('ttsKey').value = ttsKey(); $('ttsMsg').textContent = ''; $('ttsMsg').className = 'gnote';
+}
+function ttsSave() { try { localStorage.setItem(TTS_KEY, $('ttsKey').value.trim()); localStorage.setItem(LS_TTSVOICE, $('ttsVoice').value); } catch (e) {} }
+$('ttsKey').addEventListener('change', ttsSave);
+$('ttsVoice').addEventListener('change', ttsSave);
+$('ttsTry').addEventListener('click', () => {
+  ttsSave(); const m = $('ttsMsg'), key = ttsKey(), voice = ttsVoice();
+  const name = (TTS_VOICES.find(x => x[0] === voice) || ['', ''])[1].split(' ·')[0];
+  if (!voice) { speakDevice('Hej! Så här låter iPhone-rösten.'); m.className = 'gnote'; m.textContent = 'Das ist die iPhone-Stimme.'; return; }
+  if (!key) { m.className = 'gnote bad'; m.textContent = 'Bitte zuerst den Google-Schlüssel eintragen.'; return; }
+  m.className = 'gnote'; m.textContent = 'Lade Hörprobe …';
+  ttsPlay(TTS_SAMPLE.replace('Charon', name), voice, key).then(() => { m.className = 'gnote ok'; m.textContent = 'Das ist ' + name + '. Gefällt sie dir, tippe auf „Fertig“.'; })
+    .catch(e => { m.className = 'gnote bad'; m.textContent = 'Das hat nicht geklappt: ' + e.message; });
+});
 function spkBtn(t) {
   const b = el('button', 'pspk'); b.setAttribute('aria-label', 'Vorlesen');
   b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path></svg>';
