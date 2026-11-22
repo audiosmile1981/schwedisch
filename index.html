@@ -752,7 +752,7 @@
   </div>
   <div id="viewPvk" class="hidden">
     <div class="topbar"><button id="kBack" aria-label="Zurück zum Start">‹</button><span class="ttl">Partikelverben-Flashcards</span></div>
-    <div class="sub">Setz das Partikelverb in der richtigen Form ein. Beim ersten Fehlversuch wackelt die Karte, nach dem zweiten kommt die Lösung. Nach rechts wischen: gewusst, die Pflanze wächst (1, 2, 4, 8, 15, 30, 60, 90 Tage). Nach links wischen: zurück auf Samen, die Karte kommt in dieser Runde nochmal.</div>
+    <div class="sub">Setz das Partikelverb in der richtigen Form ein. Beim ersten Fehlversuch wackelt die Karte, nach dem zweiten kommt die Lösung. Nach rechts wischen: gewusst, die Pflanze wächst (1, 2, 4, 8, 15, 30, 60, 90 Tage). Nach links wischen: zurück auf Samen, die Karte kommt nochmal, sobald du die übrigen Karten fürs Tagesziel geübt hast.</div>
     <div id="kEmpty" class="hidden donebox"><h2>Noch keine Karten</h2><p id="kEmptyText"></p></div>
     <div id="kMain">
     <div class="kpills"><span class="kpill" id="kGoal"></span><span class="kpill kcnt" id="kCount"></span></div>
@@ -4751,7 +4751,7 @@ $('mSearch').addEventListener('input', e => { mQuery = e.target.value; renderMan
 
 // ---------- Navigation ----------
 // ---------- Partikelverben-Flashcards ----------
-const LS_PVK = 'schwedisch-app-pvkarten-v1';
+const LS_PVK = 'schwedisch-app-pvkarten-v1', LS_PVK_MIX = 'schwedisch-app-pvkarten-mix-v1';
 const KINT = [1, 2, 4, 8, 15, 30, 60, 90];
 const KSTAGES = ['Samen', 'Keimling', 'Sprössling', 'Jungpflanze', 'Pflanze', 'Knospe', 'Blüte', 'Strauch', 'Baum'];
 const KICON = [
@@ -4779,14 +4779,23 @@ class KLearner extends Learner {
     this.history.push({ i, prev: this.status[k] ? Object.assign({}, this.status[k]) : null, kind }); if (this.history.length > 40) this.history.shift();
     this.status[k] = kNext(this.status[k], kind);
     this.queue.shift();
-    // Nicht gewusst: zurück auf Samen und in dieser Runde nach ein paar Karten nochmal
-    if (kind === 'again') this.queue.splice(Math.min(5, this.queue.length), 0, i);
+    // Nicht gewusst: zurück auf Samen; kommt erst wieder, wenn die übrigen Karten fürs Tagesziel geübt sind
+    if (kind === 'again') { const v = dayView(), left = Math.max(0, v.gk - v.k); this.queue.splice(Math.min(Math.max(left - 1, 10), this.queue.length), 0, i); }
     this.save();
   }
   undo() {
     const h = this.history.pop(); if (!h) return null;
     if (h.prev) this.status[this.keys[h.i]] = h.prev; else delete this.status[this.keys[h.i]];
     this.queue = this.queue.filter(x => x !== h.i); this.queue.unshift(h.i); this.save(); return h;
+  }
+  buildQueue() {
+    super.buildQueue();
+    // heute nicht gewusste Karten nicht gleich nach vorne, sondern hinter die übrigen Karten fürs Tagesziel
+    const t = today(), ag = this.queue.filter(i => { const st = this.status[this.keys[i]]; return st && st.s === 'again' && st.at === t; });
+    if (!ag.length) return;
+    this.queue = this.queue.filter(i => ag.indexOf(i) < 0);
+    const v = dayView(), left = Math.max(0, v.gk - v.k);
+    this.queue.splice(Math.min(Math.max(left - 1, 10), this.queue.length), 0, ...ag);
   }
   stageOf(i) { const st = this.status[this.keys[i]]; return !st || st.s === 'again' ? 0 : st.s === 'mastered' ? 8 : st.stage; }
 }
@@ -4795,7 +4804,10 @@ let KITEMS = [], kState = null, kLastInput = null;
 function kSetup() {
   KITEMS = [];
   if (PD) PD.verbs.forEach((v, vi) => v.pv.forEach((p, pi) => p.m.forEach((m, mi) => { if (Array.isArray(m.fc) && m.fc[0]) KITEMS.push({ vi, pi, mi, key: p.p + '|' + mi }); })));
-  K.init(KITEMS, KITEMS.map(x => x.key), false);
+  K.init(KITEMS, KITEMS.map(x => x.key), true);
+  // einmalig: die bisher alphabetische Reihenfolge zufällig mischen
+  let mixed = false; try { mixed = localStorage.getItem(LS_PVK_MIX) === '1'; } catch (e) {}
+  if (!mixed && KITEMS.length) { shuffleArray(K.order); K.buildQueue(); K.save(); try { localStorage.setItem(LS_PVK_MIX, '1'); } catch (e) {} }
 }
 // Satz in Text und Lücken zerlegen: {kommer} … {på}, Varianten mit „/“
 function kParse(sv) {
@@ -4862,7 +4874,7 @@ function kResolve(kind) {
   $('kCard').className = 'scard kcard ' + (kind === 'correct' ? 'ok' : 'bad');
   const it = KITEMS[kState.i], v = PD.verbs[it.vi], p = v.pv[it.pi], m = p.m[it.mi];
   if (kind === 'correct') kFeed('Richtig ✓' + (kState.tries ? ' Im 2. Versuch – zählt als gewusst.' : '') + (kState.accent ? ' Achte auf å, ä und ö.' : '') + ' Nach rechts wischen.', 'ok');
-  else kFeed('Die Lösung steht im Satz. Nach links wischen: die Karte fängt wieder als Samen an und kommt gleich nochmal.', 'bad');
+  else kFeed('Die Lösung steht im Satz. Nach links wischen: die Karte fängt wieder als Samen an und kommt nach den übrigen Karten fürs Tagesziel nochmal.', 'bad');
   const info = $('kInfo'); info.textContent = '';
   const full = kState.segs.map(s => s.gap ? s.show : s.t).join('');
   const r1 = el('div', 'krow'); r1.append(el('span', null, full), spkBtn(full)); info.appendChild(r1);
@@ -4912,7 +4924,8 @@ document.querySelectorAll('#kChars button').forEach(b => {
   b.addEventListener('mousedown', e => e.preventDefault());
   b.addEventListener('click', () => { const inp = kLastInput; if (!inp || !inp.isConnected) return; inp.setRangeText(b.dataset.ch, inp.selectionStart, inp.selectionEnd, 'end'); inp.classList.remove('bad'); inp.focus(); });
 });
-$('goPvk').addEventListener('click', () => { if (PD && K.builtOn !== today()) K.buildQueue(); showView('pvk'); });
+let kStartBuilt = false;
+$('goPvk').addEventListener('click', () => { if (PD && (!kStartBuilt || K.builtOn !== today())) { K.buildQueue(); kStartBuilt = true; } showView('pvk'); });
 $('kBack').addEventListener('click', () => showView('home'));
 function pvkHome() {
   const v = dayView();
