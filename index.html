@@ -4927,7 +4927,9 @@ function renderPvk() {
   $('kCounter').textContent = 'Heute noch ' + K.queue.length + (K.stateOf(i) === 'again' ? ' · Nochmal' : '');
   kState = { i, segs: kParse(m.fc[0]), tries: 0, resolved: null, logged: false };
   kPlantLine(i);
-  const g = kGloss(m.de); $('kWord').textContent = g.main; $('kAlso').textContent = [g.paren, g.also.length ? 'auch: ' + g.also.join(', ') : ''].filter(Boolean).join(' · ');
+  const g = kGloss(m.de);
+  if (m.fc[2]) { $('kWord').textContent = m.fc[2]; $('kAlso').textContent = m.fc[3] ? 'hier: ' + m.fc[3] : ''; }
+  else { $('kWord').textContent = g.main; $('kAlso').textContent = [g.paren, g.also.length ? 'auch: ' + g.also.join(', ') : ''].filter(Boolean).join(' · '); }
   const sv = $('kSv'); sv.textContent = '';
   kState.segs.forEach((s, n) => {
     if (!s.gap) { sv.append(s.t); return; }
