@@ -242,6 +242,16 @@
   .sinfo:empty { display: none; }
   @keyframes shake { 0%,100% { transform: translateX(0); } 15% { transform: translateX(-10px); } 30% { transform: translateX(9px); } 45% { transform: translateX(-7px); } 60% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
   .shake { animation: shake .45s; }
+  .kchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .kchips button { min-height: 40px; padding: 4px 10px; border-radius: 12px; font-size: .8rem; font-weight: 700; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); }
+  .kchips button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .kdir { display: inline-block; font-size: .7rem; font-weight: 800; letter-spacing: .06em; color: var(--accent); background: var(--tint); border-radius: 8px; padding: 2px 8px; margin-bottom: 4px; }
+  .kcard .kword, .kcard .ksv, .kcard .kde, .kcard .sinfo { -webkit-user-select: text; user-select: text; }
+  .kcopy { flex: none; min-height: 0; width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 16px; }
+  .tlast { display: flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 700; color: var(--muted); }
+  .tlast i { width: 9px; height: 9px; border-radius: 50%; background: #9AA8B6; flex: none; }
+  .tlast.d0 i { background: #2E9E5B; } .tlast.d1 i { background: #E0A800; } .tlast.d3 i { background: #C8402F; }
+  .tlast b { color: var(--ok); }
   .kpills { display: flex; gap: 8px; margin: 4px 0 6px; }
   .kpill { flex: 1; min-height: 38px; border-radius: 19px; background: var(--surface); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
   .kpill.kcnt { flex: 0 0 auto; padding: 0 14px; font-size: 13px; color: var(--muted); }
@@ -307,6 +317,10 @@
   .chaprow { display: flex; gap: 8px; align-items: stretch; margin-bottom: 12px; }
   .chaprow .vfilter { margin-bottom: 0; flex: 1; min-width: 0; }
   .chaprow button { flex: none; border-radius: 14px; }
+  #goalScreen { align-items: flex-start !important; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-top: calc(56px + env(safe-area-inset-top, 0px)) !important; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important; }
+  #goalScreen .gbox { max-height: none; overflow: visible; margin: 0 auto; }
+  body.modal { overflow: hidden; }
+  .gx { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: 14px; z-index: 61; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface); color: var(--ink); font-size: 22px; font-weight: 700; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; padding: 0; min-height: 0; }
   #goalScreen, #praiseScreen, #dataScreen { position: fixed; inset: 0; z-index: 60; background: var(--overlay); display: none; align-items: center; justify-content: center; padding: 20px; }
   .gbox, .pbox { background: var(--surface); color: var(--ink); border-radius: 24px; box-shadow: var(--shadow); padding: 24px 20px; max-width: 400px; width: 100%; text-align: center; max-height: 90vh; overflow-y: auto; }
   .gbox h2, .pbox h2 { margin: 0 0 10px; font-weight: 800; }
@@ -437,7 +451,13 @@
     <div class="msg" id="importMsg" role="status"></div>
   </div>
 </div>
-<div id="goalScreen" role="dialog" aria-modal="true" aria-label="Einstellungen"><div class="gbox"><h2>Einstellungen</h2>
+<div id="goalScreen" role="dialog" aria-modal="true" aria-label="Einstellungen"><button class="gx" id="goalX" aria-label="Einstellungen schließen">✕</button><div class="gbox"><h2>Einstellungen</h2>
+  <div class="gsec">VORLESESTIMME</div>
+  <p class="gnote">Ohne Schlüssel liest die iPhone-Stimme. Mit deinem Google-Schlüssel (derselbe wie in Affärssvenska) liest eine professionelle KI-Stimme. Jeder Satz wird einmal erzeugt und dann auf dem Gerät gespeichert. Der Schlüssel bleibt nur auf diesem Gerät.</p>
+  <input class="ttsin" id="ttsKey" type="text" name="tts-key-noauto" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Google-Cloud-Schlüssel (AIza…)" aria-label="Google-Cloud-Schlüssel">
+  <select class="ttsin" id="ttsVoice" aria-label="Stimme wählen"></select>
+  <button class="ttsbtn" id="ttsTry">▶ Hörprobe</button>
+  <p class="gnote" id="ttsMsg" aria-live="polite"></p>
   <div class="gsec">TAGESZIELE</div>
   <div class="grow"><span>Flashcards Präpositionen</span><span class="step"><button id="gFm" aria-label="weniger">−</button><b id="gFv">20</b><button id="gFp" aria-label="mehr">+</button></span></div>
   <div class="grow"><span>Präpositionen üben</span><span class="step"><button id="gSm" aria-label="weniger">−</button><b id="gSv">10</b><button id="gSp" aria-label="mehr">+</button></span></div>
@@ -456,14 +476,10 @@
   <div class="gsec">ANZEIGE UND TON</div>
   <div class="grow"><span>Englische Beispiele</span><button class="tgl" id="enToggle" aria-pressed="true">An</button></div>
   <div class="grow"><span>Ton (Wischen, Tagesziel, automatisches Vorlesen)</span><button class="tgl" id="soundToggle" aria-pressed="true">An</button></div>
-  <div class="grow"><span>Gelöschte Karten</span><button class="tgl" id="undeleteBtn">Wiederherstellen</button></div>
   <div class="grow"><span>Darstellung</span><button class="tgl" id="modeToggle" aria-pressed="false">Daylight</button></div>
-  <div class="gsec">VORLESESTIMME</div>
-  <p class="gnote">Ohne Schlüssel liest die iPhone-Stimme. Mit deinem Google-Schlüssel (derselbe wie in Affärssvenska) liest eine professionelle KI-Stimme. Jeder Satz wird einmal erzeugt und dann auf dem Gerät gespeichert. Der Schlüssel bleibt nur auf diesem Gerät.</p>
-  <input class="ttsin" id="ttsKey" type="text" name="tts-key-noauto" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Google-Cloud-Schlüssel (AIza…)" aria-label="Google-Cloud-Schlüssel">
-  <select class="ttsin" id="ttsVoice" aria-label="Stimme wählen"></select>
-  <button class="ttsbtn" id="ttsTry">▶ Hörprobe</button>
-  <p class="gnote" id="ttsMsg" aria-live="polite"></p>
+  <div class="gsec">PARTIKELVERBEN-FLASHCARDS</div>
+  <p class="gnote">Bei diesen Stufen kommt die Karte umgekehrt: Schwedisch → Deutsch. Antippen zum An- und Ausschalten.</p>
+  <div class="kchips" id="kRevChips"></div>
   <button class="primary" id="goalClose">Fertig</button></div></div>
 <div id="praiseScreen" role="dialog" aria-modal="true" aria-label="Tagesziel erreicht"><div class="pbox"><div class="pemoji" id="pEmoji">🎉</div><h2 id="pTitle"></h2><p id="pText"></p><div class="prow"><button class="primary" id="pContinue">Weiter üben</button><button id="pHome">Zum Start</button></div></div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
@@ -773,7 +789,7 @@
         <div class="swipe-badge right" id="kBadgeRight">✓ Gewusst</div>
         <div class="swipe-badge left" id="kBadgeLeft">↺ Nochmal</div>
         <div class="scard kcard" id="kCard">
-          <div class="kplant" id="kPlant"></div>
+          <div class="kplant" id="kPlant"></div><div class="kdir hidden" id="kDir">SCHWEDISCH → DEUTSCH</div>
           <div class="kword" id="kWord"></div><div class="kalso" id="kAlso"></div>
           <div class="ksv" id="kSv"></div>
           <div class="kde" id="kDe"></div>
@@ -781,7 +797,7 @@
           <div class="sinfo" id="kInfo"></div>
         </div>
       </div>
-      <div class="chars" id="kChars"><button type="button" data-ch="å">å</button><button type="button" data-ch="ö">ö</button><button type="button" data-ch="ä">ä</button></div>
+      <div class="chars" id="kChars"></div>
       <div class="controls" id="kOpenRow"><button id="kHintBtn">💡 Hinweis</button><button class="primary" id="kCheckBtn">Prüfen</button><button id="kRevealBtn">Aufdecken</button></div>
       <div class="controls hidden" id="kDoneRow"><button class="again" id="kAgainBtn">↺ Nochmal</button><button class="known" id="kKnownBtn">Gewusst ✓</button></div>
     </div>
@@ -1107,6 +1123,7 @@ function streakInfo() {
 }
 function dayView() { const e = peekDay(today()); return { f: e ? e.f : 0, s: e ? e.s : 0, v: e ? (e.v || 0) : 0, gf: e ? e.gf : streak.goalF, gs: e ? e.gs : streak.goalS, gv: e && typeof e.gv === 'number' ? e.gv : streak.goalV, w: e ? (e.w || 0) : 0, gw: e && typeof e.gw === 'number' ? e.gw : streak.goalW, b: e ? (e.b || 0) : 0, gb: e && typeof e.gb === 'number' ? e.gb : streak.goalB, p: e ? (e.p || 0) : 0, gp: e && typeof e.gp === 'number' ? e.gp : streak.goalP, x: e ? (e.x || 0) : 0, gx: e && typeof e.gx === 'number' ? e.gx : streak.goalX, j: e ? (e.j || 0) : 0, gj: e && typeof e.gj === 'number' ? e.gj : streak.goalJ, o: e ? (e.o || 0) : 0, go: e && typeof e.go === 'number' ? e.go : streak.goalO, k: e ? (e.k || 0) : 0, gk: e && typeof e.gk === 'number' ? e.gk : streak.goalK }; }
 function track(kind, delta) {
+  if (delta > 0) markTile(kind);
   const e = dayEntry(today());
   e[kind] = delta > 0 ? e[kind] + 1 : Math.max(0, e[kind] - 1);
   saveStreak();
@@ -1165,13 +1182,36 @@ function renderHome() {
   });
   if (typeof partHome === 'function') partHome();
   if (typeof formHome === 'function') formHome();
+  tileStatus();
   if (typeof pvkHome === 'function') pvkHome();
   if (typeof GQJ !== 'undefined') { GQJ.home(); GQO.home(); }
   renderMode(); if (typeof homeAnalysis === 'function') homeAnalysis();
 }
+// Kacheln: zuletzt geübt (Punkt) und Tagesziel (✓)
+const LS_LASTSEEN = 'schwedisch-app-lastseen-v1';
+const TILE_KIND = { goFRUM: 'f', goFTID: 'f', goFOVR: 'f', goSent: 's', goQuiz: 's', goVerb: 'v', goWork: 'w', goForm: 'x', goSatz: 'b', goAdj: 'j', goPoss: 'o', goPart: 'p', goPvk: 'k' };
+let LASTSEEN = {}; try { const d = JSON.parse(localStorage.getItem(LS_LASTSEEN)); if (d && typeof d === 'object') LASTSEEN = d; } catch (e) {}
+function markTile(kind, tile) {
+  let id = tile;
+  if (!id) { const v = typeof activeView === 'function' ? activeView() : ''; id = kind === 'f' ? 'goF' + (typeof fSet !== 'undefined' ? fSet : 'RUM') : kind === 's' ? (v === 'quiz' ? 'goQuiz' : 'goSent') : Object.keys(TILE_KIND).find(k => TILE_KIND[k] === kind); }
+  if (!id || LASTSEEN[id] === today()) return; LASTSEEN[id] = today(); saveJSON(LS_LASTSEEN, LASTSEEN);
+}
+function lastOfKind(kind) { const ds = Object.keys(streak.daily).filter(d => (streak.daily[d][kind] || 0) > 0).sort(); return ds.length ? ds[ds.length - 1] : null; }
+function tileStatus() {
+  const t = today(), e = peekDay(t);
+  Object.keys(TILE_KIND).forEach(id => {
+    const tile = $(id); if (!tile) return; const kind = TILE_KIND[id];
+    let tl = tile.querySelector('.tlast'); if (!tl) { tl = el('span', 'tlast'); tile.insertBefore(tl, tile.querySelector('.tbar')); }
+    const last = LASTSEEN[id] || lastOfKind(kind);
+    let days = null; if (last) { const [y, m, d] = last.split('-').map(Number), [y2, m2, d2] = t.split('-').map(Number); days = Math.round((new Date(y2, m2 - 1, d2) - new Date(y, m - 1, d)) / 864e5); }
+    tl.className = 'tlast ' + (days === null ? '' : days <= 0 ? 'd0' : days <= 2 ? 'd1' : 'd3');
+    const done = e && e['g' + kind] > 0 && (e[kind] || 0) >= e['g' + kind];
+    tl.innerHTML = '<i></i>' + (days === null ? 'noch nicht geübt' : days <= 0 ? 'heute geübt' : days === 1 ? 'gestern geübt' : 'vor ' + days + ' Tagen geübt') + (done ? ' · <b>Ziel ✓</b>' : '');
+  });
+}
 function renderSoundToggle() { const b = $('soundToggle'); b.textContent = soundOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(soundOn)); const m = $('kMute'); if (m) { m.textContent = soundOn ? '🔊' : '🔇'; m.setAttribute('aria-label', soundOn ? 'Ton ausschalten' : 'Ton einschalten'); m.setAttribute('aria-pressed', String(!soundOn)); } }
 function renderEnToggle() { const b = $('enToggle'); b.textContent = enOn ? 'An' : 'Aus'; b.setAttribute('aria-pressed', String(enOn)); }
-function renderGoalModal() { if (typeof ttsRenderSettings === 'function') ttsRenderSettings(); renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; $('gPv').textContent = streak.goalP; $('gXv').textContent = streak.goalX; $('gJv').textContent = streak.goalJ; $('gOv').textContent = streak.goalO; $('gKv').textContent = streak.goalK; }
+function renderGoalModal() { if (typeof ttsRenderSettings === 'function') ttsRenderSettings(); if (typeof kRevRender === 'function') kRevRender(); renderSoundToggle(); renderEnToggle(); renderMode(); renderUndelete(); $('gFv').textContent = streak.goalF; $('gSv').textContent = streak.goalS; $('gVv').textContent = streak.goalV; $('gWv').textContent = streak.goalW; $('gBv').textContent = streak.goalB; $('gPv').textContent = streak.goalP; $('gXv').textContent = streak.goalX; $('gJv').textContent = streak.goalJ; $('gOv').textContent = streak.goalO; $('gKv').textContent = streak.goalK; }
 function changeGoal(kind, delta) {
   const key = 'goal' + kind.toUpperCase(); streak[key] = Math.min(200, Math.max(5, streak[key] + delta));
   const e = peekDay(today()); if (e) { e['g' + kind] = streak[key]; }
@@ -1191,8 +1231,10 @@ $('gOm').addEventListener('click', () => changeGoal('o', -5)); $('gOp').addEvent
 $('gXm').addEventListener('click', () => changeGoal('x', -5)); $('gXp').addEventListener('click', () => changeGoal('x', 5));
 $('gKm').addEventListener('click', () => changeGoal('k', -5)); $('gKp').addEventListener('click', () => changeGoal('k', 5));
 $('gPm').addEventListener('click', () => changeGoal('p', -5)); $('gPp').addEventListener('click', () => changeGoal('p', 5));
-$('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; });
-$('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; renderHome(); });
+$('goalsBtn').addEventListener('click', () => { renderGoalModal(); $('goalScreen').style.display = 'flex'; $('goalScreen').scrollTop = 0; document.body.classList.add('modal'); });
+$('goalX').addEventListener('click', () => $('goalClose').click());
+$('goalScreen').addEventListener('click', e => { if (e.target === $('goalScreen')) $('goalClose').click(); });
+$('goalClose').addEventListener('click', () => { $('goalScreen').style.display = 'none'; document.body.classList.remove('modal'); renderHome(); });
 
 // ---------- Wischen (gemeinsam) ----------
 function bindSwipe(stageEl, badgeR, badgeL, o) {
@@ -2407,8 +2449,7 @@ $('fChapRen').addEventListener('click', () => {
     onSave: v => { const n = v.name.trim(); if (!n) return 'Der Name darf nicht leer sein.'; CHAPNAMES[fSet] = CHAPNAMES[fSet] || {}; if (n === info.auto || n === ch) delete CHAPNAMES[fSet][ch]; else CHAPNAMES[fSet][ch] = n; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); return true; },
     onRestore: CHAPNAMES[fSet] && CHAPNAMES[fSet][ch] ? () => { delete CHAPNAMES[fSet][ch]; saveJSON(LS_CHAPNAMES, CHAPNAMES); renderFlash(); } : null, restoreLabel: 'Originalnamen verwenden' });
 });
-function renderUndelete() { const n = DELETED.f.length + DELETED.s.length + DELETED.v.length + DELETED.w.length; const b = $('undeleteBtn'); b.textContent = n ? 'Wiederherstellen (' + n + ')' : 'Keine'; b.disabled = !n; }
-$('undeleteBtn').addEventListener('click', () => { DELETED = { f: [], s: [], v: [], w: [] }; saveJSON(LS_DELETED, DELETED); buildAll(); renderUndelete(); });
+function renderUndelete() {}
 
 // ---------- Präpositions-Quiz ----------
 const LS_QPAIR = 'schwedisch-app-quizpair-v1', LS_QNOTES = 'schwedisch-app-quiznotes-v1';
@@ -4912,6 +4953,25 @@ function kPlantLine(i) {
   const b = $('kPlant'); b.className = 'kplant' + (st === 0 ? ' seed' : '');
   b.innerHTML = kIcon(st); b.appendChild(el('span', null, KSTAGES[st] + (fresh ? ' · neu' : m ? ' · gemeistert' : ' · ' + st + '/8')));
 }
+const LS_PVK_REV = 'schwedisch-app-pvk-rev-v1';
+let KREV = [4, 5]; try { const d = JSON.parse(localStorage.getItem(LS_PVK_REV)); if (Array.isArray(d)) KREV = d.filter(n => n >= 1 && n <= 8); } catch (e) {}
+const kRevOn = st => KREV.indexOf(st) >= 0;
+function kRevRender() {
+  const box = $('kRevChips'); box.textContent = '';
+  for (let n = 1; n <= 8; n++) { const b = el('button', kRevOn(n) ? 'on' : null, n + ' · ' + KSTAGES[n]); b.setAttribute('aria-pressed', String(kRevOn(n)));
+    b.addEventListener('click', () => { KREV = kRevOn(n) ? KREV.filter(x => x !== n) : KREV.concat(n).sort((a, c) => a - c); saveJSON(LS_PVK_REV, KREV); kRevRender(); }); box.appendChild(b); }
+}
+function kSetChars(list) {
+  const box = $('kChars'); if (box.dataset.set === list.join('')) return; box.dataset.set = list.join(''); box.textContent = '';
+  list.forEach(ch => { const b = el('button', null, ch); b.type = 'button'; b.addEventListener('mousedown', e => e.preventDefault());
+    b.addEventListener('click', () => { const inp = kLastInput; if (!inp || !inp.isConnected) return; inp.setRangeText(ch, inp.selectionStart, inp.selectionEnd, 'end'); inp.classList.remove('bad'); inp.focus(); }); box.appendChild(b); });
+}
+function kCopy(t) {
+  const ok = () => note('Satz kopiert.');
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(ok, () => kCopyOld(t, ok)); return; } } catch (e) {}
+  kCopyOld(t, ok);
+}
+function kCopyOld(t, ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); } catch (e) { note('Kopieren hat nicht geklappt.'); } }
 function renderPvk() {
   updateGoalLines();
   const has = !!PD, none = has && KITEMS.length === 0;
@@ -4925,24 +4985,27 @@ function renderPvk() {
   if (done) { $('kDoneText').textContent = K.doneText().replace('Gemeistert:', 'Bäume (gemeistert):'); $('kCounter').textContent = 'Heute ist nichts mehr offen'; return; }
   const i = K.queue[0], it = KITEMS[i], v = PD.verbs[it.vi], p = v.pv[it.pi], m = p.m[it.mi];
   $('kCounter').textContent = 'Heute noch ' + K.queue.length + (K.stateOf(i) === 'again' ? ' · Nochmal' : '');
-  kState = { i, segs: kParse(m.fc[0]), tries: 0, resolved: null, logged: false };
-  kPlantLine(i);
+  const rev = kRevOn(K.stageOf(i)) && K.stateOf(i) !== 'again';
+  kState = { i, rev, segs: kParse(rev ? m.fc[1].replace(/\*\*([^*]+)\*\*/g, '{$1}') : m.fc[0]), tries: 0, resolved: null, logged: false };
+  kPlantLine(i); $('kDir').classList.toggle('hidden', !rev);
   const g = kGloss(m.de);
-  if (m.fc[2]) { $('kWord').textContent = m.fc[2]; $('kAlso').textContent = m.fc[3] ? 'hier: ' + m.fc[3] : ''; }
+  if (rev) { $('kWord').textContent = p.p; $('kAlso').textContent = ''; }
+  else if (m.fc[2]) { $('kWord').textContent = m.fc[2]; $('kAlso').textContent = m.fc[3] ? 'hier: ' + m.fc[3] : ''; }
   else { $('kWord').textContent = g.main; $('kAlso').textContent = [g.paren, g.also.length ? 'auch: ' + g.also.join(', ') : ''].filter(Boolean).join(' · '); }
+  kSetChars(rev ? ['ä', 'ö', 'ü', 'ß'] : ['å', 'ö', 'ä']);
   const sv = $('kSv'); sv.textContent = '';
   kState.segs.forEach((s, n) => {
     if (!s.gap) { sv.append(s.t); return; }
     const inp = document.createElement('input'); inp.className = 'kgap'; inp.type = 'text'; inp.dataset.n = n;
     ['autocomplete', 'autocapitalize', 'autocorrect'].forEach(a => inp.setAttribute(a, 'off')); inp.spellcheck = false; inp.setAttribute('enterkeyhint', 'done');
-    inp.setAttribute('aria-label', n === kState.segs.findIndex(x => x.gap) ? 'Verb' : 'Partikel');
+    inp.setAttribute('aria-label', rev ? 'Deutsches Wort' : n === kState.segs.findIndex(x => x.gap) ? 'Verb' : 'Partikel');
     inp.style.width = (Math.max(3, Math.max.apply(null, s.ans.map(a => a.length))) + 1.4) + 'ch';
     inp.addEventListener('focus', () => { kLastInput = inp; });
     inp.addEventListener('input', () => inp.classList.remove('bad'));
     inp.addEventListener('keydown', e => { if (e.key !== 'Enter') return; e.preventDefault(); const ins = kInputs(), nx = ins.slice(ins.indexOf(inp) + 1).find(x => !x.value.trim()); if (nx && inp.value.trim()) nx.focus(); else kCheck(); });
     s.el = inp; sv.appendChild(inp);
   });
-  const de = $('kDe'); de.textContent = ''; kBold(de, m.fc[1]);
+  const de = $('kDe'); de.textContent = ''; kBold(de, rev ? m.fc[0].replace(/\{([^}]+)\}/g, (x, a) => '**' + a.split('/')[0] + '**') : m.fc[1]);
   $('kCard').className = 'scard kcard'; kFeed(''); $('kInfo').textContent = '';
   $('kOpenRow').classList.remove('hidden'); $('kDoneRow').classList.add('hidden'); $('kChars').classList.remove('hidden');
   $('kAgainBtn').classList.remove('rec'); $('kKnownBtn').classList.remove('rec');
@@ -4956,11 +5019,12 @@ function kResolve(kind) {
   gaps.forEach(s => { const sp = el('span', 'ksol', s.show); s.el.replaceWith(sp); s.el = null; });
   $('kCard').className = 'scard kcard ' + (kind === 'correct' ? 'ok' : 'bad');
   const it = KITEMS[kState.i], v = PD.verbs[it.vi], p = v.pv[it.pi], m = p.m[it.mi];
-  if (kind === 'correct') kFeed('Richtig ✓' + (kState.tries ? ' Im 2. Versuch – zählt als gewusst.' : '') + (kState.accent ? ' Achte auf å, ä und ö.' : '') + ' Nach rechts wischen.', 'ok');
+  if (kind === 'correct') kFeed('Richtig ✓' + (kState.tries ? ' Im 2. Versuch – zählt als gewusst.' : '') + (kState.accent ? (kState.rev ? ' Achte auf ä, ö, ü und ß.' : ' Achte auf å, ä und ö.') : '') + ' Nach rechts wischen.', 'ok');
   else kFeed('Die Lösung steht im Satz. Nach links wischen: die Karte fängt wieder als Samen an und kommt ans Ende des heutigen Stapels.', 'bad');
   const info = $('kInfo'); info.textContent = '';
-  const full = kState.segs.map(s => s.gap ? s.show : s.t).join('');
-  const r1 = el('div', 'krow'); r1.append(el('span', null, full), spkBtn(full)); info.appendChild(r1);
+  const full = m.fc[0].replace(/\{([^}]+)\}/g, (x, a) => a.split('/')[0]), deFull = m.fc[1].replace(/\*\*/g, '');
+  const cp = el('button', 'kcopy', '📋'); cp.setAttribute('aria-label', 'Satz kopieren'); cp.addEventListener('click', e => { e.stopPropagation(); kCopy(full + '\n' + deFull); });
+  const r1 = el('div', 'krow'); r1.append(el('span', null, full), spkBtn(full), cp); info.appendChild(r1);
   const r2 = el('div', 'kforms'); r2.append(el('b', null, p.p), ' · ' + String(v.f || '').replace(/\s*\([^)]*\)/g, '').replace(/\s*,\s*$/, '')); info.appendChild(r2);
   $('kOpenRow').classList.add('hidden'); $('kChars').classList.add('hidden'); $('kDoneRow').classList.remove('hidden');
   $('kAgainBtn').classList.toggle('rec', kind === 'failed'); $('kKnownBtn').classList.toggle('rec', kind === 'correct');
@@ -4994,7 +5058,7 @@ function kHint() {
 const swipeK = bindSwipe($('kStage'), $('kBadgeRight'), $('kBadgeLeft'), {
   hasCard: () => K.queue.length > 0 && !!kState, canSwipe: () => !!(kState && kState.resolved),
   onBlocked: () => { kShake(); kFeed('Erst die Lücken ausfüllen und prüfen – oder „Aufdecken“ tippen.'); },
-  onCommit: kind => { K.rate(kind); if (kind === 'known') track('k', 1); renderPvk(); }
+  onCommit: kind => { K.rate(kind); markTile('k', 'goPvk'); if (kind === 'known') track('k', 1); renderPvk(); }
 });
 $('kCheckBtn').addEventListener('click', kCheck);
 $('kRevealBtn').addEventListener('click', kReveal);
@@ -5005,10 +5069,7 @@ $('kUndoBtn').addEventListener('click', () => { const h = K.undo(); if (h) { if 
 $('kSkipBtn').addEventListener('click', () => { if (K.skip()) renderPvk(); });
 $('kShuffleBtn').addEventListener('click', () => { K.shuffle(); renderPvk(); });
 $('kMore').addEventListener('click', () => { K.addMore(10); renderPvk(); });
-document.querySelectorAll('#kChars button').forEach(b => {
-  b.addEventListener('mousedown', e => e.preventDefault());
-  b.addEventListener('click', () => { const inp = kLastInput; if (!inp || !inp.isConnected) return; inp.setRangeText(b.dataset.ch, inp.selectionStart, inp.selectionEnd, 'end'); inp.classList.remove('bad'); inp.focus(); });
-});
+
 let kStartBuilt = false;
 $('goPvk').addEventListener('click', () => { if (PD && (!kStartBuilt || K.builtOn !== today())) { window.kRoundReady = true; K.buildQueue(); kStartBuilt = true; } showView('pvk'); });
 $('kBack').addEventListener('click', () => showView('home'));
